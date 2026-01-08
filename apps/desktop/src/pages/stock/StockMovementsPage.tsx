@@ -182,9 +182,9 @@ export const StockMovementsPage: FC = () => {
                         </span>
                       </TableCell>
                       <TableCell className="text-center text-muted-foreground">
-                        {movement.previousQty}
+                        {movement.previousStock}
                       </TableCell>
-                      <TableCell className="text-center font-medium">{movement.newQty}</TableCell>
+                      <TableCell className="text-center font-medium">{movement.newStock}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">
                         {movement.reason || '-'}
                       </TableCell>

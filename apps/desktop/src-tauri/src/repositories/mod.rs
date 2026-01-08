@@ -1,24 +1,27 @@
 //! Módulo de Repositórios - Acesso a dados
 
+pub mod alert_repository;
+pub mod cash_repository;
 pub mod category_repository;
 pub mod employee_repository;
 pub mod product_repository;
-pub mod supplier_repository;
 pub mod sale_repository;
-pub mod cash_repository;
-pub mod stock_repository;
-pub mod alert_repository;
 pub mod settings_repository;
+pub mod stock_repository;
+pub mod supplier_repository;
 
+#[cfg(test)]
+mod stock_repository_test;
+
+pub use alert_repository::AlertRepository;
+pub use cash_repository::CashRepository;
 pub use category_repository::CategoryRepository;
 pub use employee_repository::EmployeeRepository;
 pub use product_repository::ProductRepository;
-pub use supplier_repository::SupplierRepository;
 pub use sale_repository::SaleRepository;
-pub use cash_repository::CashRepository;
-pub use stock_repository::StockRepository;
-pub use alert_repository::AlertRepository;
 pub use settings_repository::SettingsRepository;
+pub use stock_repository::StockRepository;
+pub use supplier_repository::SupplierRepository;
 
 /// Gera um novo UUID
 pub fn new_id() -> String {

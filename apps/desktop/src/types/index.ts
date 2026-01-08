@@ -150,7 +150,9 @@ export interface Sale {
   cashSession?: CashSession;
   items: SaleItem[];
   subtotal: number;
-  discount: number;
+  discountType?: string;
+  discountValue: number;
+  discountReason?: string;
   total: number;
   paymentMethod: PaymentMethod;
   amountPaid: number;
@@ -161,6 +163,7 @@ export interface Sale {
   canceledBy?: Employee;
   cancelReason?: string;
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface SaleItem {
@@ -240,10 +243,10 @@ export interface StockMovement {
   lot?: ProductLot;
   type: StockMovementType;
   quantity: number;
-  previousQty: number;
-  newQty: number;
+  previousStock: number;
+  newStock: number;
   reason?: string;
-  employeeId: string;
+  employeeId?: string;
   employee?: Employee;
   referenceId?: string;
   referenceType?: string;

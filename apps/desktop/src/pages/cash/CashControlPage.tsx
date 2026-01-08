@@ -41,7 +41,7 @@ export const CashControlPage: FC = () => {
   const { data: sessionData } = useCurrentCashSession();
   const openSession = useOpenCashSession();
   const closeSession = useCloseCashSession();
-  const { user } = useAuthStore();
+  const { employee } = useAuthStore();
 
   const [isOpenDialogOpen, setIsOpenDialogOpen] = useState(false);
   const [isCloseDialogOpen, setIsCloseDialogOpen] = useState(false);
@@ -55,14 +55,13 @@ export const CashControlPage: FC = () => {
       return;
     }
 
-    if (!user?.id) {
+    if (!employee?.id) {
       toast({ title: 'Usuário não autenticado', variant: 'destructive' });
       return;
     }
 
     try {
       await openSession.mutateAsync({
-        employeeId: user.id,
         openingBalance: value,
       });
       toast({ title: 'Caixa aberto com sucesso!' });
@@ -88,7 +87,6 @@ export const CashControlPage: FC = () => {
 
     try {
       await closeSession.mutateAsync({
-        id: sessionData.id,
         actualBalance: value,
       });
       toast({ title: 'Caixa fechado com sucesso!' });

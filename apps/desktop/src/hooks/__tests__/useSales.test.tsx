@@ -68,9 +68,10 @@ const mockSale: Sale = {
   dailyNumber: 1,
   cashSessionId: 'session-1',
   employeeId: 'emp-1',
-  customerId: null,
   subtotal: 100,
-  discount: 0,
+  discountType: undefined,
+  discountValue: 0,
+  discountReason: undefined,
   total: 100,
   paymentMethod: 'CASH',
   amountPaid: 100,
@@ -256,7 +257,7 @@ describe('useCancelSale', () => {
   });
 
   it('should cancel sale successfully', async () => {
-    const cancelledSale = { ...mockSale, status: 'CANCELLED' as const };
+    const cancelledSale = { ...mockSale, status: 'CANCELED' as const };
     vi.mocked(tauriLib.cancelSale).mockResolvedValue(cancelledSale);
 
     const { result } = renderHook(() => useCancelSale(), {
