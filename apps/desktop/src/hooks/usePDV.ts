@@ -61,15 +61,26 @@ function toAuthCashSession(session: BackendCashSession): AuthCashSession {
   };
 }
 
+// Tipo simplificado para a UI (employeeId é injetado)
+export type UIOpenCashSessionInput = Omit<OpenCashSessionInput, 'employeeId'>;
+
 /**
  * Abre sessão de caixa
  */
 export function useOpenCashSession() {
   const queryClient = useQueryClient();
-  const { openCashSession: setOpenCashSession } = useAuthStore();
+  const { openCashSession: setOpenCashSession, employee } = useAuthStore();
 
   return useMutation({
-    mutationFn: (input: OpenCashSessionInput) => openCashSession(input),
+    mutationFn: (input: UIOpenCashSessionInput) => {
+      if (!employee?.id) {
+        throw new Error('Usuário não autenticado');
+      }
+      return openCashSession({
+        ...input,
+        employeeId: employee.id,
+      });
+    },
     onSuccess: (session) => {
       setOpenCashSession(toAuthCashSession(session));
       queryClient.invalidateQueries({ queryKey: cashSessionKeys.current() });
@@ -80,12 +91,26 @@ export function useOpenCashSession() {
 /**
  * Fecha sessão de caixa
  */
+// Tipo simplificado para a UI (id é injetado)
+export type UICloseCashSessionInput = Omit<CloseCashSessionInput, 'id'>;
+
+/**
+ * Fecha sessão de caixa
+ */
 export function useCloseCashSession() {
   const queryClient = useQueryClient();
-  const { closeCashSession: clearCashSession } = useAuthStore();
+  const { closeCashSession: clearCashSession, currentSession } = useAuthStore();
 
   return useMutation({
-    mutationFn: (input: CloseCashSessionInput) => closeCashSession(input),
+    mutationFn: (input: UICloseCashSessionInput) => {
+      if (!currentSession?.id) {
+        throw new Error('Nenhuma sessão aberta');
+      }
+      return closeCashSession({
+        ...input,
+        id: currentSession.id,
+      });
+    },
     onSuccess: () => {
       clearCashSession();
       queryClient.invalidateQueries({ queryKey: cashSessionKeys.current() });

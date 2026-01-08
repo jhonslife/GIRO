@@ -430,10 +430,13 @@ export interface CreateSaleInput {
 }
 
 export interface OpenCashSessionInput {
+  employeeId: string;
   openingBalance: number;
+  notes?: string;
 }
 
 export interface CloseCashSessionInput {
+  id: string;
   actualBalance: number;
   notes?: string;
 }

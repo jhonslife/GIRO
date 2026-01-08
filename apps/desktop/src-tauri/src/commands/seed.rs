@@ -9,7 +9,8 @@ use crate::repositories::{
 };
 use crate::AppState;
 use chrono::{Duration, NaiveTime, TimeZone, Utc, Datelike, Timelike};
-use rand::Rng;
+use rand::{Rng, SeedableRng};
+use rand::rngs::StdRng;
 use tauri::State;
 
 // Constants for Mock Data
@@ -110,7 +111,7 @@ pub async fn seed_database(state: State<'_, AppState>) -> AppResult<String> {
                 color: None,
                 icon: None,
                 parent_id: None,
-                sort_order: 0,
+                sort_order: Some(0),
             }).await?;
             cat.id
         };
@@ -177,7 +178,7 @@ pub async fn seed_database(state: State<'_, AppState>) -> AppResult<String> {
     let start_date = end_date - Duration::days(150);
     let mut current_date = start_date;
 
-    let mut rng = rand::rng(); 
+    let mut rng = StdRng::seed_from_u64(42);
     let admin_id = "emp-admin-001"; // Assuming from seed.sql or we assume standard
 
     while current_date <= end_date {
