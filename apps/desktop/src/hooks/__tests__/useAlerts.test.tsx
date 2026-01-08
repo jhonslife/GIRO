@@ -64,7 +64,6 @@ const mockAlert: Alert = {
   title: 'Estoque Baixo',
   message: 'Produto X está com estoque baixo',
   productId: 'prod-1',
-  productName: 'Produto Teste',
   isRead: false,
   isDismissed: false,
   createdAt: new Date().toISOString(),

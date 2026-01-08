@@ -88,7 +88,7 @@ describe('useSales', () => {
   });
 
   it('should fetch sales list', async () => {
-    const mockSales = { data: [mockSale], total: 1, page: 1, pageSize: 10 };
+    const mockSales = { data: [mockSale], total: 1, page: 1, limit: 10, totalPages: 1 };
     vi.mocked(tauriLib.getSales).mockResolvedValue(mockSales);
 
     const { result } = renderHook(() => useSales(), {
@@ -104,7 +104,7 @@ describe('useSales', () => {
   });
 
   it('should fetch sales with filter', async () => {
-    const mockSales = { data: [mockSale], total: 1, page: 1, pageSize: 10 };
+    const mockSales = { data: [mockSale], total: 1, page: 1, limit: 10, totalPages: 1 };
     vi.mocked(tauriLib.getSales).mockResolvedValue(mockSales);
 
     const filter = { status: 'COMPLETED' as const };
@@ -238,8 +238,6 @@ describe('useCreateSale', () => {
     });
 
     result.current.mutate({
-      cashSessionId: 'session-1',
-      employeeId: 'emp-1',
       items: [],
       paymentMethod: 'CASH',
       amountPaid: 0,

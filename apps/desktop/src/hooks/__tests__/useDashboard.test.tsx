@@ -4,7 +4,7 @@
 
 import { useDashboardStats } from '@/hooks/useDashboard';
 import * as tauriLib from '@/lib/tauri';
-import type { Sale } from '@/types';
+import type { Product, Sale } from '@/types';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -37,15 +37,25 @@ const mockSale: Sale = {
   dailyNumber: 1,
   cashSessionId: 'session-1',
   employeeId: 'emp-1',
-  customerId: null,
   subtotal: 100,
-  discount: 0,
+  discountValue: 0,
   total: 100,
   paymentMethod: 'CASH',
   amountPaid: 100,
   change: 0,
   status: 'COMPLETED',
-  items: [{ id: 'item-1', productId: 'prod-1', quantity: 2, unitPrice: 50, discount: 0 }],
+  items: [
+    {
+      id: 'item-1',
+      saleId: 'sale-1',
+      productId: 'prod-1',
+      quantity: 2,
+      unitPrice: 50,
+      discount: 0,
+      total: 100,
+      createdAt: new Date().toISOString(),
+    },
+  ],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 };
@@ -58,9 +68,45 @@ const mockStockReport = {
   expiringCount: 5,
 };
 
-const mockTopProducts = [
-  { product: { name: 'Arroz 5kg' }, quantity: 50, revenue: 1245.0 },
-  { product: { name: 'Feijão 1kg' }, quantity: 40, revenue: 356.0 },
+const mockTopProducts: { product: Product; quantity: number; revenue: number }[] = [
+  {
+    product: {
+      id: 'prod-1',
+      name: 'Arroz 5kg',
+      internalCode: 'P0001',
+      categoryId: 'cat-1',
+      unit: 'UNIT',
+      salePrice: 24.9,
+      costPrice: 18,
+      minStock: 10,
+      currentStock: 100,
+      isWeighted: false,
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    quantity: 50,
+    revenue: 1245.0,
+  },
+  {
+    product: {
+      id: 'prod-2',
+      name: 'Feijão 1kg',
+      internalCode: 'P0002',
+      categoryId: 'cat-1',
+      unit: 'UNIT',
+      salePrice: 8.9,
+      costPrice: 6,
+      minStock: 10,
+      currentStock: 80,
+      isWeighted: false,
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    quantity: 40,
+    revenue: 356.0,
+  },
 ];
 
 describe('useDashboardStats', () => {

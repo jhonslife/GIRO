@@ -231,7 +231,7 @@ test.describe('Gerenciamento de Estoque E2E', () => {
     const isVisible = await dateFilter.isVisible().catch(() => false);
 
     if (isVisible) {
-      const today = new Date().toISOString().split('T')[0];
+      const today = new Date().toISOString().split('T')[0] ?? '';
       await dateFilter.fill(today);
       await page.waitForTimeout(1000);
 

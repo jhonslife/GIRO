@@ -50,10 +50,10 @@ test.describe('Relatórios E2E', () => {
       const today = new Date();
       const lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-      await startDateInput.fill(lastWeek.toISOString().split('T')[0]);
+      await startDateInput.fill(lastWeek.toISOString().split('T')[0] ?? '');
 
       const endDateInput = page.locator('input[name="endDate"], input[placeholder*="fim"]').first();
-      await endDateInput.fill(today.toISOString().split('T')[0]);
+      await endDateInput.fill(today.toISOString().split('T')[0] ?? '');
 
       const applyButton = page
         .locator('button:has-text("Aplicar"), button:has-text("Filtrar")')

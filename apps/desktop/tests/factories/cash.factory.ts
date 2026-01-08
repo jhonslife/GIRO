@@ -18,7 +18,7 @@ export const createCashSession = (overrides: Partial<CashSession> = {}): CashSes
     id,
     employeeId: 'emp-1',
     openedAt: new Date().toISOString(),
-    closedAt: null,
+    closedAt: undefined,
     openingBalance: 200,
     actualBalance: 200,
     expectedBalance: 200,
@@ -31,6 +31,10 @@ export const createCashSession = (overrides: Partial<CashSession> = {}): CashSes
       id: 'emp-1',
       name: 'Admin',
       role: 'ADMIN',
+      pin: '1234',
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     },
     ...overrides,
   };
@@ -59,10 +63,9 @@ export const createCashMovement = (overrides: Partial<CashMovement> = {}): CashM
   return {
     id: `movement-${movementCounter}`,
     sessionId: 'session-1',
-    type: 'SALE_INCOME',
+    type: 'SALE',
     amount: 50,
-    balance: 250,
-    notes: 'Venda #1',
+    description: 'Venda #1',
     employeeId: 'emp-1',
     createdAt: new Date().toISOString(),
     ...overrides,
@@ -79,7 +82,7 @@ export const createWithdrawal = (
   return createCashMovement({
     type: 'WITHDRAWAL',
     amount: -amount,
-    notes: 'Sangria',
+    description: 'Sangria',
     ...overrides,
   });
 };
@@ -94,7 +97,7 @@ export const createDeposit = (
   return createCashMovement({
     type: 'DEPOSIT',
     amount,
-    notes: 'Suprimento',
+    description: 'Suprimento',
     ...overrides,
   });
 };
@@ -106,13 +109,14 @@ export const createCashSessionSummary = (
   overrides: Partial<CashSessionSummary> = {}
 ): CashSessionSummary => {
   return {
-    id: 'session-1',
-    openingBalance: 200,
-    salesTotal: 1500,
-    withdrawals: 100,
-    deposits: 50,
-    expectedBalance: 1650,
-    salesCount: 25,
+    session: createCashSession(),
+    totalSales: 1500,
+    totalCanceled: 0,
+    totalWithdrawals: 100,
+    totalSupplies: 50,
+    movementCount: 25,
+    salesByMethod: [],
+    cashInDrawer: 1650,
     ...overrides,
   };
 };

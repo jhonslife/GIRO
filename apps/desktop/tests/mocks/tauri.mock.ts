@@ -31,7 +31,17 @@ export const mockTauriCommands = {
 
   get_employees: () => [],
   login_with_pin: (args: { pin: string }) =>
-    args.pin === '0000' ? { id: 'admin', name: 'Admin', role: 'ADMIN' } : null,
+    args.pin === '0000'
+      ? {
+          id: 'admin',
+          name: 'Admin',
+          role: 'ADMIN',
+          pin: '0000',
+          isActive: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }
+      : null,
 
   open_cash_session: () => ({
     id: 'session-001',
@@ -52,9 +62,9 @@ export const mockTauriCommands = {
 };
 
 export const setupTauriMock = () => {
-  setInvokeHandler((cmd) => {
+  setInvokeHandler((cmd, args) => {
     const handler = mockTauriCommands[cmd as keyof typeof mockTauriCommands];
-    if (handler) return handler({});
+    if (handler) return handler(args as never);
     console.warn(`No mock handler for command: ${cmd}`);
     return null;
   });

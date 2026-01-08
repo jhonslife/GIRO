@@ -64,7 +64,7 @@ const mockSession: CashSession = {
   id: 'session-1',
   employeeId: 'emp-1',
   openedAt: new Date().toISOString(),
-  closedAt: null,
+  closedAt: undefined,
   openingBalance: 200,
   actualBalance: 200,
   expectedBalance: 200,
@@ -72,17 +72,32 @@ const mockSession: CashSession = {
   status: 'OPEN',
   movements: [],
   sales: [],
-  employee: { id: 'emp-1', name: 'Admin', role: 'ADMIN' },
+  employee: {
+    id: 'emp-1',
+    name: 'Admin',
+    role: 'ADMIN',
+    pin: '1234',
+    isActive: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
 };
 
 const mockSummary: CashSessionSummary = {
-  id: 'session-1',
-  openingBalance: 200,
-  salesTotal: 1500,
-  withdrawals: 100,
-  deposits: 50,
-  expectedBalance: 1650,
-  salesCount: 25,
+  session: {
+    id: 'session-1',
+    employeeId: 'emp-1',
+    openedAt: new Date().toISOString(),
+    openingBalance: 200,
+    status: 'OPEN',
+  } as CashSession,
+  totalSales: 1500,
+  totalCanceled: 0,
+  totalWithdrawals: 100,
+  totalSupplies: 50,
+  movementCount: 25,
+  salesByMethod: [],
+  cashInDrawer: 1650,
 };
 
 describe('useCashSessionSummary', () => {

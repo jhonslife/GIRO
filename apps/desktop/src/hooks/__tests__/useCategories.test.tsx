@@ -51,8 +51,7 @@ const mockCategory: Category = {
   name: 'Bebidas',
   color: '#3b82f6',
   icon: 'wine',
-  parentId: null,
-  isActive: true,
+  parentId: undefined,
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 };

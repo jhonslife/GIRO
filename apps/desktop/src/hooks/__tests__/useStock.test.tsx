@@ -169,7 +169,7 @@ describe('useAddStockEntry', () => {
   });
 
   it('should add stock entry successfully', async () => {
-    vi.mocked(tauriLib.addStockEntry).mockResolvedValue(mockMovement);
+    vi.mocked(tauriLib.addStockEntry).mockResolvedValue(undefined);
 
     const { result } = renderHook(() => useAddStockEntry(), {
       wrapper: createWrapper(),
@@ -223,7 +223,7 @@ describe('useAdjustStock', () => {
   });
 
   it('should adjust stock successfully', async () => {
-    vi.mocked(tauriLib.adjustStock).mockResolvedValue(mockMovement);
+    vi.mocked(tauriLib.adjustStock).mockResolvedValue(undefined);
 
     const { result } = renderHook(() => useAdjustStock(), {
       wrapper: createWrapper(),

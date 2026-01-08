@@ -5,7 +5,7 @@
 import { useAuthStore } from '@/stores/auth-store';
 import { usePDVStore } from '@/stores/pdv-store';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { createProductData } from '../factories/product.factory';
+import { createProduct } from '../factories/product.factory';
 
 // Mock Tauri invoke
 vi.mock('@tauri-apps/api/core', () => ({
@@ -26,34 +26,34 @@ describe('Sale Flow Integration', () => {
 
   describe('Complete sale flow', () => {
     it('should add products to cart', () => {
-      const product = createProductData({ price: 10 });
+      const product = createProduct({ salePrice: 10 });
 
       usePDVStore.getState().addItem({
         productId: product.id,
         productName: product.name,
         barcode: product.barcode,
         quantity: 2,
-        unitPrice: product.price,
+        unitPrice: product.salePrice,
         unit: product.unit,
         isWeighted: false,
       });
 
       const state = usePDVStore.getState();
       expect(state.items.length).toBe(1);
-      expect(state.items[0].quantity).toBe(2);
+      expect(state.items[0]?.quantity).toBe(2);
       expect(state.getSubtotal()).toBe(20);
     });
 
     it('should calculate totals correctly', () => {
-      const product1 = createProductData({ price: 10 });
-      const product2 = createProductData({ price: 15.5 });
+      const product1 = createProduct({ salePrice: 10 });
+      const product2 = createProduct({ salePrice: 15.5 });
 
       usePDVStore.getState().addItem({
         productId: product1.id,
         productName: product1.name,
         barcode: product1.barcode,
         quantity: 2,
-        unitPrice: product1.price,
+        unitPrice: product1.salePrice,
         unit: product1.unit,
         isWeighted: false,
       });
@@ -63,7 +63,7 @@ describe('Sale Flow Integration', () => {
         productName: product2.name,
         barcode: product2.barcode,
         quantity: 1,
-        unitPrice: product2.price,
+        unitPrice: product2.salePrice,
         unit: product2.unit,
         isWeighted: false,
       });
@@ -74,14 +74,14 @@ describe('Sale Flow Integration', () => {
     });
 
     it('should apply discount', () => {
-      const product = createProductData({ price: 100 });
+      const product = createProduct({ salePrice: 100 });
 
       usePDVStore.getState().addItem({
         productId: product.id,
         productName: product.name,
         barcode: product.barcode,
         quantity: 1,
-        unitPrice: product.price,
+        unitPrice: product.salePrice,
         unit: product.unit,
         isWeighted: false,
       });
@@ -94,14 +94,14 @@ describe('Sale Flow Integration', () => {
     });
 
     it('should calculate change', () => {
-      const product = createProductData({ price: 27.5 });
+      const product = createProduct({ salePrice: 27.5 });
 
       usePDVStore.getState().addItem({
         productId: product.id,
         productName: product.name,
         barcode: product.barcode,
         quantity: 1,
-        unitPrice: product.price,
+        unitPrice: product.salePrice,
         unit: product.unit,
         isWeighted: false,
       });
@@ -114,14 +114,14 @@ describe('Sale Flow Integration', () => {
     });
 
     it('should clear cart after sale', () => {
-      const product = createProductData({ price: 10 });
+      const product = createProduct({ salePrice: 10 });
 
       usePDVStore.getState().addItem({
         productId: product.id,
         productName: product.name,
         barcode: product.barcode,
         quantity: 1,
-        unitPrice: product.price,
+        unitPrice: product.salePrice,
         unit: product.unit,
         isWeighted: false,
       });
@@ -139,9 +139,9 @@ describe('Sale Flow Integration', () => {
 
   describe('Weighted products', () => {
     it('should handle weighted items correctly', () => {
-      const product = createProductData({
-        price: 29.9,
-        unit: 'KG',
+      const product = createProduct({
+        salePrice: 29.9,
+        unit: 'KILOGRAM',
       });
 
       usePDVStore.getState().addItem({
@@ -149,7 +149,7 @@ describe('Sale Flow Integration', () => {
         productName: product.name,
         barcode: product.barcode,
         quantity: 0.55, // 550g
-        unitPrice: product.price,
+        unitPrice: product.salePrice,
         unit: product.unit,
         isWeighted: true,
       });
@@ -158,8 +158,10 @@ describe('Sale Flow Integration', () => {
       const expectedTotal = Math.round(0.55 * 29.9 * 100) / 100;
       // item total calculation
       const item = state.items[0];
-      const itemTotal = item.quantity * item.unitPrice - item.discount;
-      expect(itemTotal).toBeCloseTo(expectedTotal, 2);
+      if (item) {
+        const itemTotal = item.quantity * item.unitPrice - item.discount;
+        expect(itemTotal).toBeCloseTo(expectedTotal, 2);
+      }
     });
   });
 });
