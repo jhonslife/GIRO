@@ -1,0 +1,146 @@
+//! Repositório de Categorias
+
+use crate::error::AppResult;
+use crate::models::{Category, CategoryWithCount, CreateCategory, UpdateCategory};
+use crate::repositories::{new_id, PaginatedResult, Pagination};
+use sqlx::SqlitePool;
+
+pub struct CategoryRepository<'a> {
+    pool: &'a SqlitePool,
+}
+
+impl<'a> CategoryRepository<'a> {
+    pub fn new(pool: &'a SqlitePool) -> Self {
+        Self { pool }
+    }
+
+    pub async fn find_by_id(&self, id: &str) -> AppResult<Option<Category>> {
+        let result = sqlx::query_as::<_, Category>(
+            "SELECT id, name, description, color, icon, parent_id, sort_order, active, created_at, updated_at FROM Category WHERE id = ?"
+        )
+        .bind(id)
+        .fetch_optional(self.pool)
+        .await?;
+        Ok(result)
+    }
+
+    pub async fn find_all_active(&self) -> AppResult<Vec<Category>> {
+        let result = sqlx::query_as::<_, Category>(
+            "SELECT id, name, description, color, icon, parent_id, sort_order, active, created_at, updated_at FROM Category WHERE active = 1 ORDER BY sort_order, name"
+        )
+        .fetch_all(self.pool)
+        .await?;
+        Ok(result)
+    }
+
+    pub async fn find_all_with_count(&self) -> AppResult<Vec<CategoryWithCount>> {
+        let categories = self.find_all_active().await?;
+        let mut result = Vec::with_capacity(categories.len());
+        
+        for cat in categories {
+            let count: (i64,) = sqlx::query_as(
+                "SELECT COUNT(*) FROM Product WHERE category_id = ? AND is_active = 1"
+            )
+            .bind(&cat.id)
+            .fetch_one(self.pool)
+            .await?;
+            
+            result.push(CategoryWithCount {
+                category: cat,
+                product_count: count.0,
+            });
+        }
+        Ok(result)
+    }
+
+    pub async fn find_paginated(&self, pagination: &Pagination) -> AppResult<PaginatedResult<Category>> {
+        let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM Category WHERE active = 1")
+            .fetch_one(self.pool)
+            .await?;
+
+        let data = sqlx::query_as::<_, Category>(
+            "SELECT id, name, description, color, icon, parent_id, sort_order, active, created_at, updated_at FROM Category WHERE active = 1 ORDER BY sort_order, name LIMIT ? OFFSET ?"
+        )
+        .bind(pagination.per_page)
+        .bind(pagination.offset())
+        .fetch_all(self.pool)
+        .await?;
+
+        Ok(PaginatedResult::new(data, total.0, pagination))
+    }
+
+    pub async fn find_children(&self, parent_id: &str) -> AppResult<Vec<Category>> {
+        let result = sqlx::query_as::<_, Category>(
+            "SELECT id, name, description, color, icon, parent_id, sort_order, active, created_at, updated_at FROM Category WHERE parent_id = ? AND active = 1 ORDER BY sort_order, name"
+        )
+        .bind(parent_id)
+        .fetch_all(self.pool)
+        .await?;
+        Ok(result)
+    }
+
+    pub async fn create(&self, data: CreateCategory) -> AppResult<Category> {
+        let id = new_id();
+        let now = chrono::Utc::now().to_rfc3339();
+        let sort_order = data.sort_order.unwrap_or(0);
+        let color = data.color.unwrap_or_else(|| "#6366f1".to_string());
+        let icon = data.icon.unwrap_or_else(|| "package".to_string());
+
+        sqlx::query(
+            "INSERT INTO Category (id, name, description, color, icon, parent_id, sort_order, active, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, ?)"
+        )
+        .bind(&id)
+        .bind(&data.name)
+        .bind(&data.description)
+        .bind(&color)
+        .bind(&icon)
+        .bind(&data.parent_id)
+        .bind(sort_order)
+        .bind(&now)
+        .bind(&now)
+        .execute(self.pool)
+        .await?;
+
+        self.find_by_id(&id).await?.ok_or_else(|| crate::error::AppError::NotFound { entity: "Category".into(), id })
+    }
+
+    pub async fn update(&self, id: &str, data: UpdateCategory) -> AppResult<Category> {
+        let existing = self.find_by_id(id).await?.ok_or_else(|| crate::error::AppError::NotFound { entity: "Category".into(), id: id.into() })?;
+        let now = chrono::Utc::now().to_rfc3339();
+
+        let name = data.name.unwrap_or(existing.name);
+        let description = data.description.or(existing.description);
+        let color = data.color.or(existing.color);
+        let icon = data.icon.or(existing.icon);
+        let parent_id = data.parent_id.or(existing.parent_id);
+        let sort_order = data.sort_order.unwrap_or(existing.sort_order);
+        let active = data.active.unwrap_or(existing.active);
+
+        sqlx::query(
+            "UPDATE Category SET name = ?, description = ?, color = ?, icon = ?, parent_id = ?, sort_order = ?, active = ?, updated_at = ? WHERE id = ?"
+        )
+        .bind(&name)
+        .bind(&description)
+        .bind(&color)
+        .bind(&icon)
+        .bind(&parent_id)
+        .bind(sort_order)
+        .bind(active)
+        .bind(&now)
+        .bind(id)
+        .execute(self.pool)
+        .await?;
+
+        self.find_by_id(id).await?.ok_or_else(|| crate::error::AppError::NotFound { entity: "Category".into(), id: id.into() })
+    }
+
+    pub async fn delete(&self, id: &str) -> AppResult<()> {
+        let now = chrono::Utc::now().to_rfc3339();
+        sqlx::query("UPDATE Category SET active = 0, updated_at = ? WHERE id = ?")
+            .bind(&now)
+            .bind(id)
+            .execute(self.pool)
+            .await?;
+        Ok(())
+    }
+}

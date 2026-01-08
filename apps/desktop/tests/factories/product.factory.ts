@@ -1,0 +1,23 @@
+import { Product } from '@/types';
+
+export const createProduct = (overrides: Partial<Product> = {}): Product => {
+  return {
+    id: crypto.randomUUID(),
+    name: 'Test Product',
+    description: 'A test product description',
+    barcode: '7891234567895',
+    price: 10.0,
+    costPrice: 5.0,
+    stock: 100,
+    minStock: 10,
+    unit: 'UNIT',
+    categoryId: 'cat-001',
+    supplierId: 'sup-001',
+    isActive: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    ...overrides,
+  };
+};
+
+export const createProductData = createProduct;

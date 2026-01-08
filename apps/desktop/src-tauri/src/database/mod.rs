@@ -1,0 +1,49 @@
+//! Módulo de Banco de Dados - Conexão SQLite via SQLx
+
+use sqlx::sqlite::{SqliteConnectOptions, SqlitePool, SqlitePoolOptions};
+use std::str::FromStr;
+use std::path::Path;
+use crate::error::AppResult;
+
+/// Gerenciador de conexão com o banco de dados
+pub struct DatabaseManager {
+    pool: SqlitePool,
+}
+
+impl DatabaseManager {
+    /// Cria nova instância e conecta ao banco
+    pub async fn new(db_path: &str) -> AppResult<Self> {
+        // Garante que o diretório existe
+        if let Some(parent) = Path::new(db_path).parent() {
+            std::fs::create_dir_all(parent)?;
+        }
+
+        let options = SqliteConnectOptions::from_str(&format!("sqlite:{}", db_path))?
+            .create_if_missing(true)
+            .journal_mode(sqlx::sqlite::SqliteJournalMode::Wal)
+            .synchronous(sqlx::sqlite::SqliteSynchronous::Normal)
+            .foreign_keys(true);
+
+        let pool = SqlitePoolOptions::new()
+            .max_connections(5)
+            .connect_with(options)
+            .await?;
+
+        Ok(Self { pool })
+    }
+
+    /// Retorna referência ao pool
+    pub fn pool(&self) -> &SqlitePool {
+        &self.pool
+    }
+
+    /// Consome o manager e retorna o pool
+    pub fn into_pool(self) -> SqlitePool {
+        self.pool
+    }
+
+    /// Fecha conexões
+    pub async fn close(&self) {
+        self.pool.close().await;
+    }
+}

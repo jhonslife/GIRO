@@ -1,0 +1,711 @@
+# 🏗️ Mercearias - Arquitetura do Sistema
+
+> **Versão:** 1.0.0  
+> **Status:** Aprovado  
+> **Última Atualização:** 7 de Janeiro de 2026
+
+---
+
+## 📋 Sumário
+
+1. [Visão Geral da Arquitetura](#visão-geral-da-arquitetura)
+2. [Stack Tecnológica](#stack-tecnológica)
+3. [Decisões Arquiteturais](#decisões-arquiteturais)
+4. [Estrutura do Projeto](#estrutura-do-projeto)
+5. [Integrações de Hardware](#integrações-de-hardware)
+6. [Segurança](#segurança)
+7. [Performance](#performance)
+
+---
+
+## 🎯 Visão Geral da Arquitetura
+
+### Arquitetura High-Level
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        MERCEARIAS DESKTOP APP                           │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  ┌──────────────────────────────────────────────────────────────────┐  │
+│  │                     PRESENTATION LAYER                            │  │
+│  │  ┌────────────┐  ┌────────────┐  ┌────────────┐  ┌────────────┐  │  │
+│  │  │    PDV     │  │  Estoque   │  │  Produtos  │  │ Relatórios │  │  │
+│  │  │   (Caixa)  │  │            │  │            │  │            │  │  │
+│  │  └────────────┘  └────────────┘  └────────────┘  └────────────┘  │  │
+│  │                                                                   │  │
+│  │  ┌────────────┐  ┌────────────┐  ┌────────────┐  ┌────────────┐  │  │
+│  │  │Funcionários│  │   Caixa    │  │  Validade  │  │   Config   │  │  │
+│  │  │            │  │  Controle  │  │            │  │            │  │  │
+│  │  └────────────┘  └────────────┘  └────────────┘  └────────────┘  │  │
+│  │                                                                   │  │
+│  │  Tech: React 18 + TypeScript + TailwindCSS + Shadcn/UI           │  │
+│  └──────────────────────────────────────────────────────────────────┘  │
+│                                    │                                    │
+│                                    ▼                                    │
+│  ┌──────────────────────────────────────────────────────────────────┐  │
+│  │                      APPLICATION LAYER                            │  │
+│  │                                                                   │  │
+│  │  ┌─────────────────────────────────────────────────────────────┐ │  │
+│  │  │                    TAURI BRIDGE (IPC)                        │ │  │
+│  │  │   Commands | Events | State Management | File System         │ │  │
+│  │  └─────────────────────────────────────────────────────────────┘ │  │
+│  │                                                                   │  │
+│  │  Tech: Tauri 2.0 + Rust Core                                     │  │
+│  └──────────────────────────────────────────────────────────────────┘  │
+│                                    │                                    │
+│                                    ▼                                    │
+│  ┌──────────────────────────────────────────────────────────────────┐  │
+│  │                      BACKEND LAYER (Rust)                         │  │
+│  │                                                                   │  │
+│  │  ┌────────────┐  ┌────────────┐  ┌────────────┐  ┌────────────┐  │  │
+│  │  │  Services  │  │ Repositories│ │  Hardware  │  │   Backup   │  │  │
+│  │  │            │  │            │  │  Drivers   │  │   Engine   │  │  │
+│  │  └────────────┘  └────────────┘  └────────────┘  └────────────┘  │  │
+│  │                                                                   │  │
+│  │  Tech: Rust + SQLx + SerialPort + Google Drive API               │  │
+│  └──────────────────────────────────────────────────────────────────┘  │
+│                                    │                                    │
+│                                    ▼                                    │
+│  ┌──────────────────────────────────────────────────────────────────┐  │
+│  │                       DATA LAYER                                  │  │
+│  │                                                                   │  │
+│  │  ┌─────────────────────────────────┐  ┌────────────────────────┐ │  │
+│  │  │         SQLite Database         │  │     Google Drive       │ │  │
+│  │  │   (Local - Embedded)            │  │     (Backup Only)      │ │  │
+│  │  │                                 │  │                        │ │  │
+│  │  │  • Produtos                     │  │  • db_backup_*.sqlite  │ │  │
+│  │  │  • Vendas                       │  │  • Criptografado       │ │  │
+│  │  │  • Estoque                      │  │  • Agendado            │ │  │
+│  │  │  • Funcionários                 │  │                        │ │  │
+│  │  │  • Configurações                │  │                        │ │  │
+│  │  └─────────────────────────────────┘  └────────────────────────┘ │  │
+│  │                                                                   │  │
+│  │  Tech: SQLite 3 + Prisma (Schema Only) + SQLx (Runtime)          │  │
+│  └──────────────────────────────────────────────────────────────────┘  │
+│                                                                         │
+├─────────────────────────────────────────────────────────────────────────┤
+│                         HARDWARE LAYER                                  │
+│                                                                         │
+│  ┌────────────┐  ┌────────────┐  ┌────────────┐  ┌────────────┐        │
+│  │ Impressora │  │  Balança   │  │  Leitora   │  │  Gaveta    │        │
+│  │  Térmica   │  │            │  │  Código    │  │  Dinheiro  │        │
+│  │            │  │            │  │            │  │            │        │
+│  │  ESC/POS   │  │ Serial/USB │  │  HID/COM   │  │  Via       │        │
+│  │  USB/Serial│  │            │  │            │  │  Impressora│        │
+│  └────────────┘  └────────────┘  └────────────┘  └────────────┘        │
+│                                                                         │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │                    MOBILE SCANNER (PWA)                          │   │
+│  │    Celular ──WebSocket──► Tauri App (localhost:3847)            │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🛠️ Stack Tecnológica
+
+### Frontend (Renderer Process)
+
+| Tecnologia          | Versão | Justificativa                                                      |
+| ------------------- | ------ | ------------------------------------------------------------------ |
+| **React**           | 18.3+  | Ecossistema maduro, componentes reutilizáveis, DevTools excelentes |
+| **TypeScript**      | 5.4+   | Type safety, IntelliSense, menos bugs em runtime                   |
+| **Vite**            | 5.0+   | Build extremamente rápido, HMR instantâneo                         |
+| **TailwindCSS**     | 3.4+   | Utility-first, consistência de design, bundle otimizado            |
+| **Shadcn/UI**       | Latest | Componentes acessíveis, customizáveis, não é dependência           |
+| **Zustand**         | 4.5+   | State management leve, sem boilerplate                             |
+| **TanStack Query**  | 5.0+   | Cache de dados, sync automático, loading states                    |
+| **React Hook Form** | 7.50+  | Forms performáticos, validação integrada                           |
+| **Zod**             | 3.22+  | Schema validation, type inference                                  |
+
+### Backend (Tauri/Rust)
+
+| Tecnologia     | Versão | Justificativa                                 |
+| -------------- | ------ | --------------------------------------------- |
+| **Tauri**      | 2.0+   | Bundle 10x menor que Electron, seguro, nativo |
+| **Rust**       | 1.75+  | Performance, segurança de memória, sem GC     |
+| **SQLx**       | 0.7+   | Compile-time checked queries, async           |
+| **SQLite**     | 3.45+  | Zero config, single file, performático        |
+| **Tokio**      | 1.35+  | Async runtime de alta performance             |
+| **Serde**      | 1.0+   | Serialização eficiente                        |
+| **serialport** | 4.3+   | Comunicação com balanças e periféricos        |
+
+### Banco de Dados
+
+| Tecnologia | Uso                        | Justificativa                                   |
+| ---------- | -------------------------- | ----------------------------------------------- |
+| **SQLite** | Produção (Local)           | Funciona offline, arquivo único, backup fácil   |
+| **Prisma** | Schema Design + Migrations | DX excelente, type-safe, migrations versionadas |
+| **SQLx**   | Runtime Queries            | Queries verificadas em compile-time no Rust     |
+
+### Integrações
+
+| Tecnologia               | Uso                    | Justificativa                    |
+| ------------------------ | ---------------------- | -------------------------------- |
+| **node-thermal-printer** | Impressão de cupons    | Suporte a Epson, Elgin, Daruma   |
+| **ESC/POS Protocol**     | Comandos de impressora | Padrão da indústria              |
+| **Google Drive API**     | Backup em nuvem        | Familiar para usuários, gratuito |
+| **WebSocket**            | Scanner Mobile         | Comunicação real-time            |
+
+### DevOps & Build
+
+| Tecnologia         | Uso                    | Justificativa                      |
+| ------------------ | ---------------------- | ---------------------------------- |
+| **GitHub Actions** | CI/CD                  | Integrado ao repo, runners Windows |
+| **NSIS**           | Instalador Windows     | Padrão de mercado, customizável    |
+| **WiX Toolset**    | Instalador alternativo | MSI enterprise-grade               |
+
+---
+
+## 📐 Decisões Arquiteturais
+
+### ADR-001: Tauri vs Electron
+
+| Critério                 | Electron    | Tauri           | Decisão                 |
+| ------------------------ | ----------- | --------------- | ----------------------- |
+| **Tamanho do Bundle**    | ~150MB      | ~10MB           | ✅ Tauri                |
+| **Uso de RAM**           | ~300MB      | ~50MB           | ✅ Tauri                |
+| **Startup Time**         | ~3s         | ~0.5s           | ✅ Tauri                |
+| **Acesso a Hardware**    | Via Node.js | Via Rust        | ✅ Tauri (mais robusto) |
+| **Curva de Aprendizado** | Familiar    | Rust necessário | ⚠️ Electron             |
+| **Ecossistema**          | Maduro      | Crescendo       | ⚠️ Electron             |
+
+**Decisão:** Tauri é escolhido pela performance crítica no PDV e tamanho do instalador.
+
+### ADR-002: SQLite vs PostgreSQL Local
+
+| Critério                | SQLite         | PostgreSQL       | Decisão       |
+| ----------------------- | -------------- | ---------------- | ------------- |
+| **Instalação**          | Zero config    | Serviço + config | ✅ SQLite     |
+| **Backup**              | Copiar arquivo | pg_dump          | ✅ SQLite     |
+| **Performance (local)** | Excelente      | Excelente        | Empate        |
+| **Concurrent writes**   | Limitado       | Excelente        | ⚠️ PostgreSQL |
+| **Manutenção**          | Zero           | Updates, vacuum  | ✅ SQLite     |
+
+**Decisão:** SQLite pela simplicidade. Volume de operações de mercearia não justifica PostgreSQL.
+
+### ADR-003: Monorepo vs Multi-Repo
+
+```
+✅ DECISÃO: MONOREPO
+
+mercearias/
+├── apps/
+│   ├── desktop/          # Tauri app principal
+│   └── mobile-scanner/   # PWA para scanner
+├── packages/
+│   ├── database/         # Prisma schema + migrations
+│   ├── shared/           # Types e utils compartilhados
+│   └── ui/               # Design system
+└── tools/
+    └── scripts/          # Build, deploy, etc.
+```
+
+**Justificativa:**
+
+- Compartilhamento de tipos entre frontend e backend
+- Schema único para database
+- CI/CD unificado
+- Versionamento sincronizado
+
+### ADR-004: Backup Strategy
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                     ESTRATÉGIA DE BACKUP                          │
+├──────────────────────────────────────────────────────────────────┤
+│                                                                   │
+│  LOCAL                          NUVEM                             │
+│  ─────                          ─────                             │
+│  • SQLite WAL mode              • Google Drive                    │
+│  • Backup diário automático     • Upload criptografado (AES-256)  │
+│  • Rotação 7 dias               • Rotação 30 dias                 │
+│  • Pasta: %APPDATA%/Mercearias  • Pasta: Mercearias/backups/      │
+│                                                                   │
+│  TRIGGER: A cada fechamento de caixa                             │
+│  TRIGGER: Diariamente às 03:00 (se PC ligado)                    │
+│  TRIGGER: Manual pelo usuário                                     │
+│                                                                   │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+### ADR-005: Comunicação Frontend-Backend
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    TAURI IPC PATTERNS                            │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  COMMANDS (Request-Response)                                     │
+│  ────────────────────────────                                    │
+│  Frontend ──invoke('get_products', filters)──► Rust              │
+│  Frontend ◄──────────── Result<Vec<Product>> ───Rust             │
+│                                                                  │
+│  EVENTS (Push Notifications)                                     │
+│  ───────────────────────────                                     │
+│  Rust ──emit('barcode_scanned', code)──► Frontend               │
+│  Rust ──emit('print_completed', status)──► Frontend             │
+│  Rust ──emit('alert_triggered', alert)──► Frontend              │
+│                                                                  │
+│  STATE (Reactive)                                                │
+│  ────────────────                                                │
+│  Zustand Store ──sync──► Tauri State Manager                    │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 📁 Estrutura do Projeto
+
+```
+mercearias/
+├── .github/
+│   ├── workflows/
+│   │   ├── ci.yml              # Lint, test, build check
+│   │   ├── release.yml         # Build installers
+│   │   └── tauri-build.yml     # Cross-platform builds
+│   └── ISSUE_TEMPLATE/
+│
+├── apps/
+│   ├── desktop/                 # ─── TAURI APP PRINCIPAL ───
+│   │   ├── src/                 # React Frontend
+│   │   │   ├── components/
+│   │   │   │   ├── ui/          # Shadcn components
+│   │   │   │   ├── layout/      # Shell, Sidebar, Header
+│   │   │   │   ├── pdv/         # Componentes do caixa
+│   │   │   │   ├── products/    # Cadastro de produtos
+│   │   │   │   ├── stock/       # Gestão de estoque
+│   │   │   │   ├── reports/     # Relatórios
+│   │   │   │   └── settings/    # Configurações
+│   │   │   │
+│   │   │   ├── pages/           # Rotas/Páginas
+│   │   │   │   ├── pdv/
+│   │   │   │   ├── products/
+│   │   │   │   ├── stock/
+│   │   │   │   ├── employees/
+│   │   │   │   ├── cash-control/
+│   │   │   │   ├── reports/
+│   │   │   │   └── settings/
+│   │   │   │
+│   │   │   ├── hooks/           # Custom React hooks
+│   │   │   │   ├── useProducts.ts
+│   │   │   │   ├── usePDV.ts
+│   │   │   │   ├── useHardware.ts
+│   │   │   │   └── useAuth.ts
+│   │   │   │
+│   │   │   ├── stores/          # Zustand stores
+│   │   │   │   ├── pdvStore.ts
+│   │   │   │   ├── authStore.ts
+│   │   │   │   ├── settingsStore.ts
+│   │   │   │   └── alertStore.ts
+│   │   │   │
+│   │   │   ├── lib/             # Utilities
+│   │   │   │   ├── tauri.ts     # Tauri invoke wrappers
+│   │   │   │   ├── formatters.ts
+│   │   │   │   └── validators.ts
+│   │   │   │
+│   │   │   ├── types/           # TypeScript types
+│   │   │   └── styles/          # Global CSS
+│   │   │
+│   │   ├── src-tauri/           # Rust Backend
+│   │   │   ├── src/
+│   │   │   │   ├── main.rs
+│   │   │   │   ├── lib.rs
+│   │   │   │   │
+│   │   │   │   ├── commands/    # Tauri commands
+│   │   │   │   │   ├── mod.rs
+│   │   │   │   │   ├── products.rs
+│   │   │   │   │   ├── sales.rs
+│   │   │   │   │   ├── stock.rs
+│   │   │   │   │   ├── employees.rs
+│   │   │   │   │   ├── cash.rs
+│   │   │   │   │   ├── reports.rs
+│   │   │   │   │   └── settings.rs
+│   │   │   │   │
+│   │   │   │   ├── services/    # Business logic
+│   │   │   │   │   ├── mod.rs
+│   │   │   │   │   ├── product_service.rs
+│   │   │   │   │   ├── sale_service.rs
+│   │   │   │   │   ├── stock_service.rs
+│   │   │   │   │   ├── alert_service.rs
+│   │   │   │   │   └── backup_service.rs
+│   │   │   │   │
+│   │   │   │   ├── repositories/ # Data access
+│   │   │   │   │   ├── mod.rs
+│   │   │   │   │   ├── product_repo.rs
+│   │   │   │   │   ├── sale_repo.rs
+│   │   │   │   │   └── ...
+│   │   │   │   │
+│   │   │   │   ├── hardware/    # Device drivers
+│   │   │   │   │   ├── mod.rs
+│   │   │   │   │   ├── printer.rs
+│   │   │   │   │   ├── scale.rs
+│   │   │   │   │   ├── barcode_scanner.rs
+│   │   │   │   │   └── cash_drawer.rs
+│   │   │   │   │
+│   │   │   │   ├── models/      # Domain models
+│   │   │   │   ├── database/    # DB connection
+│   │   │   │   └── config/      # App config
+│   │   │   │
+│   │   │   ├── Cargo.toml
+│   │   │   ├── tauri.conf.json
+│   │   │   └── icons/
+│   │   │
+│   │   ├── package.json
+│   │   ├── vite.config.ts
+│   │   ├── tailwind.config.ts
+│   │   └── tsconfig.json
+│   │
+│   └── mobile-scanner/          # ─── PWA SCANNER ───
+│       ├── src/
+│       │   ├── App.tsx
+│       │   ├── Scanner.tsx      # Camera barcode reader
+│       │   └── WebSocketClient.tsx
+│       ├── package.json
+│       └── vite.config.ts
+│
+├── packages/
+│   ├── database/                # ─── PRISMA SCHEMA ───
+│   │   ├── prisma/
+│   │   │   ├── schema.prisma
+│   │   │   └── migrations/
+│   │   ├── src/
+│   │   │   └── types.ts         # Generated types
+│   │   └── package.json
+│   │
+│   ├── shared/                  # ─── SHARED CODE ───
+│   │   ├── src/
+│   │   │   ├── constants.ts
+│   │   │   ├── types.ts
+│   │   │   └── utils.ts
+│   │   └── package.json
+│   │
+│   └── ui/                      # ─── DESIGN SYSTEM ───
+│       ├── src/
+│       │   ├── components/
+│       │   ├── tokens/
+│       │   └── index.ts
+│       └── package.json
+│
+├── tools/
+│   └── scripts/
+│       ├── build-installer.ts
+│       ├── generate-types.ts
+│       └── seed-database.ts
+│
+├── docs/                        # Documentação
+├── roadmaps/                    # Gestão do projeto
+│
+├── package.json                 # Root package (workspaces)
+├── pnpm-workspace.yaml
+├── turbo.json                   # Turborepo config
+└── README.md
+```
+
+---
+
+## 🔌 Integrações de Hardware
+
+### Impressora Térmica (ESC/POS)
+
+```rust
+// src-tauri/src/hardware/printer.rs
+
+pub struct ThermalPrinter {
+    interface: PrinterInterface,
+    config: PrinterConfig,
+}
+
+pub enum PrinterInterface {
+    Usb { vendor_id: u16, product_id: u16 },
+    Serial { port: String, baud_rate: u32 },
+    Network { ip: String, port: u16 },
+}
+
+impl ThermalPrinter {
+    pub async fn print_receipt(&self, sale: &Sale) -> Result<(), PrintError> {
+        let mut buffer = EscPosBuffer::new();
+
+        buffer.initialize();
+        buffer.align_center();
+        buffer.bold(true);
+        buffer.text(&self.config.store_name);
+        buffer.bold(false);
+        buffer.line_feed();
+        buffer.text(&self.config.store_address);
+        buffer.line_feed(2);
+
+        buffer.align_left();
+        buffer.text("─".repeat(42));
+
+        for item in &sale.items {
+            buffer.table_row(&[
+                &item.quantity.to_string(),
+                &item.product_name,
+                &format_currency(item.total),
+            ]);
+        }
+
+        buffer.text("─".repeat(42));
+        buffer.bold(true);
+        buffer.text(&format!("TOTAL: {}", format_currency(sale.total)));
+        buffer.bold(false);
+
+        buffer.line_feed(3);
+        buffer.cut();
+
+        self.send_raw(&buffer.bytes()).await
+    }
+}
+```
+
+### Balança Serial
+
+```rust
+// src-tauri/src/hardware/scale.rs
+
+pub struct DigitalScale {
+    port: SerialPort,
+    protocol: ScaleProtocol,
+}
+
+pub enum ScaleProtocol {
+    Toledo,    // Toledo Prix
+    Filizola,  // Filizola
+    Urano,     // Urano
+    Generic,   // Protocol comum
+}
+
+impl DigitalScale {
+    pub async fn read_weight(&mut self) -> Result<Weight, ScaleError> {
+        let mut buffer = [0u8; 32];
+
+        // Envia comando de leitura
+        self.port.write(&[0x05])?; // ENQ
+
+        // Aguarda resposta
+        let bytes_read = self.port.read(&mut buffer)?;
+
+        // Parse conforme protocolo
+        match self.protocol {
+            ScaleProtocol::Toledo => self.parse_toledo(&buffer[..bytes_read]),
+            ScaleProtocol::Filizola => self.parse_filizola(&buffer[..bytes_read]),
+            _ => self.parse_generic(&buffer[..bytes_read]),
+        }
+    }
+
+    fn parse_toledo(&self, data: &[u8]) -> Result<Weight, ScaleError> {
+        // Formato Toledo: STX + 6 dígitos peso + status + ETX
+        // Exemplo: [0x02, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x20, 0x03]
+        //          STX   0     1     2     3     4     5    OK   ETX
+        //          = 012.345 kg
+
+        if data.len() < 9 || data[0] != 0x02 || data[8] != 0x03 {
+            return Err(ScaleError::InvalidResponse);
+        }
+
+        let weight_str: String = data[1..7]
+            .iter()
+            .map(|&b| b as char)
+            .collect();
+
+        let grams: u32 = weight_str.parse()?;
+
+        Ok(Weight {
+            grams,
+            stable: data[7] == 0x20,
+        })
+    }
+}
+```
+
+### Scanner Mobile (WebSocket)
+
+```typescript
+// apps/mobile-scanner/src/Scanner.tsx
+
+import { BrowserMultiFormatReader } from '@zxing/library';
+
+export function Scanner() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const wsRef = useRef<WebSocket | null>(null);
+
+  useEffect(() => {
+    // Conecta ao desktop app
+    wsRef.current = new WebSocket('ws://192.168.1.100:3847');
+
+    // Inicia scanner de câmera
+    const reader = new BrowserMultiFormatReader();
+    reader.decodeFromVideoDevice(
+      undefined, // Câmera padrão
+      videoRef.current!,
+      (result) => {
+        if (result) {
+          // Envia código para desktop
+          wsRef.current?.send(
+            JSON.stringify({
+              type: 'barcode',
+              code: result.getText(),
+              format: result.getBarcodeFormat(),
+              timestamp: Date.now(),
+            })
+          );
+
+          // Vibra para feedback
+          navigator.vibrate(100);
+        }
+      }
+    );
+
+    return () => {
+      reader.reset();
+      wsRef.current?.close();
+    };
+  }, []);
+
+  return <video ref={videoRef} className="w-full h-full" />;
+}
+```
+
+---
+
+## 🔐 Segurança
+
+### Modelo de Segurança
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    SECURITY LAYERS                               │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  AUTENTICAÇÃO                                                    │
+│  ─────────────                                                   │
+│  • Login com PIN (4-6 dígitos) para operadores                  │
+│  • Senha alfanumérica para administradores                      │
+│  • Bcrypt para hash de senhas                                   │
+│  • Rate limiting: 5 tentativas, bloqueio 5 min                  │
+│                                                                  │
+│  AUTORIZAÇÃO (RBAC)                                             │
+│  ──────────────────                                              │
+│  • ADMIN: Acesso total                                          │
+│  • MANAGER: Relatórios, estoque, funcionários                   │
+│  • CASHIER: PDV, consultas básicas                              │
+│  • VIEWER: Apenas visualização                                  │
+│                                                                  │
+│  DADOS                                                           │
+│  ─────                                                           │
+│  • SQLite: Criptografia de arquivo (SQLCipher)                  │
+│  • Backups: AES-256 antes de upload                             │
+│  • Logs: Não incluem dados sensíveis                            │
+│                                                                  │
+│  REDE                                                            │
+│  ────                                                            │
+│  • Scanner mobile: Apenas rede local (192.168.x.x)              │
+│  • Backup: HTTPS para Google Drive                              │
+│  • Zero portas expostas para internet                           │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Permissões por Role
+
+| Funcionalidade         | Admin | Manager | Cashier | Viewer |
+| ---------------------- | ----- | ------- | ------- | ------ |
+| Vender                 | ✅    | ✅      | ✅      | ❌     |
+| Cancelar item          | ✅    | ✅      | ✅      | ❌     |
+| Cancelar venda         | ✅    | ✅      | ❌      | ❌     |
+| Dar desconto           | ✅    | ✅      | ❌      | ❌     |
+| Ver relatórios         | ✅    | ✅      | ❌      | ✅     |
+| Cadastrar produtos     | ✅    | ✅      | ❌      | ❌     |
+| Editar preços          | ✅    | ✅      | ❌      | ❌     |
+| Gerenciar estoque      | ✅    | ✅      | ❌      | ❌     |
+| Gerenciar funcionários | ✅    | ❌      | ❌      | ❌     |
+| Configurações          | ✅    | ❌      | ❌      | ❌     |
+| Backup/Restore         | ✅    | ❌      | ❌      | ❌     |
+
+---
+
+## ⚡ Performance
+
+### Targets
+
+| Operação                  | Meta    | Medição             |
+| ------------------------- | ------- | ------------------- |
+| Startup da aplicação      | < 2s    | Cold start          |
+| Busca de produto (código) | < 50ms  | P99                 |
+| Busca de produto (texto)  | < 100ms | P99                 |
+| Finalizar venda           | < 200ms | Incluindo impressão |
+| Gerar relatório diário    | < 1s    | 10k transações      |
+| Backup completo           | < 30s   | 100MB de dados      |
+
+### Estratégias de Otimização
+
+```
+DATABASE
+────────
+• Índices em: barcode, name, category_id, created_at
+• Views materializadas para relatórios frequentes
+• Prepared statements para queries repetidas
+• Connection pooling (r2d2)
+
+FRONTEND
+────────
+• Virtual scrolling para listas grandes
+• Lazy loading de páginas
+• Memoização agressiva (React.memo, useMemo)
+• Code splitting por rota
+• Debounce em buscas (300ms)
+
+BACKEND
+───────
+• Async I/O para hardware
+• Cache em memória para produtos frequentes (LRU)
+• Batch inserts para movimentações de estoque
+• Background jobs para alertas e backups
+```
+
+---
+
+## 📊 Monitoramento
+
+### Logs
+
+```rust
+// Níveis de log
+- ERROR: Falhas críticas (impressora offline, DB corrupto)
+- WARN: Problemas recuperáveis (timeout de balança, retry)
+- INFO: Operações importantes (venda, backup, login)
+- DEBUG: Detalhes para troubleshooting
+
+// Localização
+Windows: %APPDATA%/Mercearias/logs/
+  ├── app.log         # Log principal (rotação diária)
+  ├── hardware.log    # Comunicação com periféricos
+  └── error.log       # Apenas erros (retenção 30 dias)
+```
+
+### Health Checks
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    HEALTH CHECK DASHBOARD                        │
+│                    (Exibido no rodapé do app)                   │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ● Database     Conectado (1.2GB, 98% livre)                    │
+│  ● Impressora   Epson TM-T20X (Online)                          │
+│  ● Balança      Toledo Prix 4 (Offline)                         │
+│  ● Scanner      Mobile conectado (iPhone de João)               │
+│  ● Backup       Último: 06/01/2026 03:00 (Google Drive)        │
+│  ● Alertas      3 produtos vencendo em 7 dias                   │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+_Documento gerado seguindo metodologia "Architect First, Code Later" - Arkheion Corp_

@@ -1,0 +1,126 @@
+//! Modelos de Funcionário
+
+use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
+use sqlx::FromRow;
+
+/// Papel do funcionário
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, sqlx::Type)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+#[sqlx(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum EmployeeRole {
+    Admin,
+    Manager,
+    Cashier,
+    Viewer,
+}
+
+impl Default for EmployeeRole {
+    fn default() -> Self {
+        Self::Cashier
+    }
+}
+
+impl std::fmt::Display for EmployeeRole {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Admin => write!(f, "Administrador"),
+            Self::Manager => write!(f, "Gerente"),
+            Self::Cashier => write!(f, "Operador"),
+            Self::Viewer => write!(f, "Visualizador"),
+        }
+    }
+}
+
+/// Funcionário completo (interno, com hash da senha)
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[serde(rename_all = "camelCase")]
+pub struct Employee {
+    pub id: String,
+    pub name: String,
+    pub cpf: Option<String>,
+    pub phone: Option<String>,
+    pub email: Option<String>,
+    pub pin: String,              // Hash do PIN
+    pub password: Option<String>, // Hash da senha
+    pub role: String,             // Armazenado como String
+    pub is_active: bool,
+    pub created_at: String,
+    pub updated_at: String,
+}
+
+/// Funcionário seguro (para retorno ao frontend, sem senhas)
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SafeEmployee {
+    pub id: String,
+    pub name: String,
+    pub cpf: Option<String>,
+    pub phone: Option<String>,
+    pub email: Option<String>,
+    pub role: String,
+    pub is_active: bool,
+    pub created_at: String,
+    pub updated_at: String,
+}
+
+impl From<Employee> for SafeEmployee {
+    fn from(e: Employee) -> Self {
+        Self {
+            id: e.id,
+            name: e.name,
+            cpf: e.cpf,
+            phone: e.phone,
+            email: e.email,
+            role: e.role,
+            is_active: e.is_active,
+            created_at: e.created_at,
+            updated_at: e.updated_at,
+        }
+    }
+}
+
+/// Para criar funcionário
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CreateEmployee {
+    pub name: String,
+    pub cpf: Option<String>,
+    pub phone: Option<String>,
+    pub email: Option<String>,
+    pub pin: String,              // PIN em texto plano, será hasheado
+    pub password: Option<String>, // Senha em texto plano
+    pub role: Option<EmployeeRole>,
+}
+
+/// Para atualizar funcionário
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct UpdateEmployee {
+    pub name: Option<String>,
+    pub cpf: Option<String>,
+    pub phone: Option<String>,
+    pub email: Option<String>,
+    pub pin: Option<String>,
+    pub password: Option<String>,
+    pub role: Option<EmployeeRole>,
+    pub is_active: Option<bool>,
+}
+
+/// Resultado de autenticação
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AuthResult {
+    pub employee: SafeEmployee,
+    pub token: Option<String>, // JWT ou session token (futuro)
+    pub expires_at: Option<DateTime<Utc>>,
+}
+
+/// Credenciais de login
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LoginCredentials {
+    pub pin: Option<String>,
+    pub password: Option<String>,
+    pub cpf: Option<String>,
+}

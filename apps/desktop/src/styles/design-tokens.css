@@ -1,0 +1,245 @@
+/**
+ * Design Tokens CSS - Variáveis CSS para o Design System Mercearias
+ * 
+ * Tema: "Mercearia Brasileira"
+ * - Verde Mercado (Primary)
+ * - Laranja Tropical (Accent)
+ * - Grid 4px
+ * - WCAG 2.1 AA Compliance
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  /* ═══════════════════════════════════════════════════════════════════════════
+     CORES PRIMÁRIAS - Verde Mercado
+     ═══════════════════════════════════════════════════════════════════════════ */
+  --color-primary-50: 142 100% 97%;
+  --color-primary-100: 141 93% 93%;
+  --color-primary-200: 141 88% 86%;
+  --color-primary-300: 142 79% 73%;
+  --color-primary-400: 142 69% 58%;
+  --color-primary-500: 142 71% 45%; /* Principal */
+  --color-primary-600: 142 76% 36%;
+  --color-primary-700: 142 72% 29%;
+  --color-primary-800: 143 64% 24%;
+  --color-primary-900: 144 61% 20%;
+  --color-primary-950: 145 80% 10%;
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     CORES ACCENT - Laranja Tropical
+     ═══════════════════════════════════════════════════════════════════════════ */
+  --color-accent-50: 33 100% 96%;
+  --color-accent-100: 34 100% 91%;
+  --color-accent-200: 32 98% 83%;
+  --color-accent-300: 31 97% 72%;
+  --color-accent-400: 27 96% 61%;
+  --color-accent-500: 25 95% 53%; /* Principal */
+  --color-accent-600: 21 90% 48%;
+  --color-accent-700: 17 88% 40%;
+  --color-accent-800: 15 79% 34%;
+  --color-accent-900: 15 75% 28%;
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     CORES NEUTRAS
+     ═══════════════════════════════════════════════════════════════════════════ */
+  --color-neutral-50: 0 0% 98%;
+  --color-neutral-100: 0 0% 96%;
+  --color-neutral-200: 0 0% 90%;
+  --color-neutral-300: 0 0% 83%;
+  --color-neutral-400: 0 0% 64%;
+  --color-neutral-500: 0 0% 45%;
+  --color-neutral-600: 0 0% 32%;
+  --color-neutral-700: 0 0% 25%;
+  --color-neutral-800: 0 0% 15%;
+  --color-neutral-900: 0 0% 9%;
+  --color-neutral-950: 0 0% 4%;
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     CORES SEMÂNTICAS
+     ═══════════════════════════════════════════════════════════════════════════ */
+  --color-success: 142 71% 45%;
+  --color-warning: 38 92% 50%;
+  --color-error: 0 84% 60%;
+  --color-info: 217 91% 60%;
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     SHADCN/UI VARIABLES
+     ═══════════════════════════════════════════════════════════════════════════ */
+  --background: 0 0% 100%;
+  --foreground: 0 0% 9%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 9%;
+  --primary: 142 71% 45%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 0 0% 96%;
+  --secondary-foreground: 0 0% 9%;
+  --muted: 0 0% 96%;
+  --muted-foreground: 0 0% 45%;
+  --accent: 25 95% 53%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 0 0% 90%;
+  --input: 0 0% 90%;
+  --ring: 142 71% 45%;
+  --radius: 0.5rem;
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     TIPOGRAFIA
+     ═══════════════════════════════════════════════════════════════════════════ */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+
+  /* Font Sizes */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  --text-price: 2.25rem;
+  --text-price-lg: 3rem;
+  --text-price-xl: 4rem;
+
+  /* Font Weights */
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     ESPAÇAMENTOS (4px Grid)
+     ═══════════════════════════════════════════════════════════════════════════ */
+  --space-0: 0;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     SOMBRAS
+     ═══════════════════════════════════════════════════════════════════════════ */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-card: 0 2px 8px rgb(0 0 0 / 0.08);
+  --shadow-button: 0 1px 2px rgb(0 0 0 / 0.05);
+  --shadow-dropdown: 0 4px 12px rgb(0 0 0 / 0.15);
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     BORDER RADIUS
+     ═══════════════════════════════════════════════════════════════════════════ */
+  --radius-sm: 0.125rem;
+  --radius: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-full: 9999px;
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     ANIMAÇÕES
+     ═══════════════════════════════════════════════════════════════════════════ */
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+  --easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     Z-INDEX
+     ═══════════════════════════════════════════════════════════════════════════ */
+  --z-dropdown: 1000;
+  --z-sticky: 1100;
+  --z-overlay: 1300;
+  --z-modal: 1400;
+  --z-popover: 1500;
+  --z-toast: 1700;
+  --z-tooltip: 1800;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DARK MODE
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark {
+  --background: 0 0% 4%;
+  --foreground: 0 0% 98%;
+  --card: 0 0% 9%;
+  --card-foreground: 0 0% 98%;
+  --popover: 0 0% 9%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 142 71% 45%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 0 0% 15%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 0 0% 15%;
+  --muted-foreground: 0 0% 64%;
+  --accent: 25 95% 53%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 62% 30%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 0 0% 15%;
+  --input: 0 0% 15%;
+  --ring: 142 71% 45%;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BASE STYLES
+   ═══════════════════════════════════════════════════════════════════════════ */
+* {
+  border-color: hsl(var(--border));
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Touch target mínimo (44x44px) para acessibilidade */
+button,
+a,
+input[type='button'],
+input[type='submit'],
+[role='button'] {
+  min-height: 2.75rem; /* 44px */
+  min-width: 2.75rem;
+}
+
+/* Focus visible para acessibilidade */
+:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+/* Preços em destaque */
+.price {
+  font-size: var(--text-price);
+  font-weight: var(--font-bold);
+  line-height: 1;
+  font-family: var(--font-mono);
+}
+
+.price-lg {
+  font-size: var(--text-price-lg);
+}
+
+.price-xl {
+  font-size: var(--text-price-xl);
+}

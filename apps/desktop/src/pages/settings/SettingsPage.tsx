@@ -1,0 +1,405 @@
+/**
+ * @file SettingsPage - Configurações do Sistema
+ * @description Configurações gerais, impressora, balança e preferências
+ */
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { seedDatabase } from '@/lib/tauri';
+import { useSettingsStore } from '@/stores';
+import {
+  Bell,
+  Building2,
+  Database,
+  Monitor,
+  Moon,
+  Palette,
+  Printer,
+  RefreshCw,
+  Save,
+  Scale,
+  Sun,
+  Volume2,
+} from 'lucide-react';
+import { useState, type FC } from 'react';
+
+export const SettingsPage: FC = () => {
+  const { theme, setTheme, printer, scale, company } = useSettingsStore();
+
+  // Local form state
+  const [companyName, setCompanyName] = useState(company.name);
+  const [companyDocument, setCompanyDocument] = useState(company.cnpj || '');
+  const [companyAddress, setCompanyAddress] = useState(company.address || '');
+  const [companyPhone, setCompanyPhone] = useState(company.phone || '');
+
+  const [printerModel, setPrinterModel] = useState(printer.model);
+  const [printerPort, setPrinterPort] = useState(printer.port || '');
+  const [printerEnabled, setPrinterEnabled] = useState(printer.enabled);
+
+  const [scaleModel, setScaleModel] = useState(scale.model);
+  const [scalePort, setScalePort] = useState(scale.port);
+  const [scaleEnabled, setScaleEnabled] = useState(scale.enabled);
+
+  // const [alertsEnabled, setAlertsEnabled] = useState(true); // Unused
+
+  const handleSave = () => {
+    // TODO: Salvar configurações via Tauri
+    console.log('Salvando configurações...');
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Configurações</h1>
+          <p className="text-muted-foreground">
+            Configure o sistema de acordo com suas necessidades
+          </p>
+        </div>
+        <Button onClick={handleSave}>
+          <Save className="mr-2 h-4 w-4" />
+          Salvar Alterações
+        </Button>
+      </div>
+
+      <Tabs defaultValue="general" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-4 lg:w-[600px]">
+          <TabsTrigger value="general">
+            <Building2 className="mr-2 h-4 w-4" />
+            Empresa
+          </TabsTrigger>
+          <TabsTrigger value="hardware">
+            <Printer className="mr-2 h-4 w-4" />
+            Hardware
+          </TabsTrigger>
+          <TabsTrigger value="appearance">
+            <Palette className="mr-2 h-4 w-4" />
+            Aparência
+          </TabsTrigger>
+          <TabsTrigger value="notifications">
+            <Bell className="mr-2 h-4 w-4" />
+            Notificações
+          </TabsTrigger>
+          <TabsTrigger value="developer" className="text-red-500 hover:text-red-600">
+            <Database className="mr-2 h-4 w-4" />
+            Dev
+          </TabsTrigger>
+        </TabsList>
+
+        {/* Empresa */}
+        <TabsContent value="general" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Building2 className="h-5 w-5" />
+                Dados da Empresa
+              </CardTitle>
+              <CardDescription>Informações que aparecem nos cupons e relatórios</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="sm:col-span-2">
+                  <Label htmlFor="companyName">Nome da Empresa</Label>
+                  <Input
+                    id="companyName"
+                    value={companyName}
+                    onChange={(e) => setCompanyName(e.target.value)}
+                    placeholder="Mercearia do João"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="document">CNPJ/CPF</Label>
+                  <Input
+                    id="document"
+                    value={companyDocument}
+                    onChange={(e) => setCompanyDocument(e.target.value)}
+                    placeholder="00.000.000/0001-00"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="phone">Telefone</Label>
+                  <Input
+                    id="phone"
+                    value={companyPhone}
+                    onChange={(e) => setCompanyPhone(e.target.value)}
+                    placeholder="(11) 99999-9999"
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <Label htmlFor="address">Endereço</Label>
+                  <Input
+                    id="address"
+                    value={companyAddress}
+                    onChange={(e) => setCompanyAddress(e.target.value)}
+                    placeholder="Rua das Flores, 123 - Centro"
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Hardware */}
+        <TabsContent value="hardware" className="space-y-6">
+          {/* Impressora */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <Printer className="h-5 w-5" />
+                    Impressora Térmica
+                  </CardTitle>
+                  <CardDescription>Configure a impressora de cupons</CardDescription>
+                </div>
+                <Switch checked={printerEnabled} onCheckedChange={setPrinterEnabled} />
+              </div>
+            </CardHeader>
+            <CardContent
+              className={`space-y-4 ${!printerEnabled ? 'opacity-50 pointer-events-none' : ''}`}
+            >
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <Label htmlFor="printerModel">Modelo</Label>
+                  <Select value={printerModel} onValueChange={setPrinterModel}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="EPSON TM-T20">EPSON TM-T20</SelectItem>
+                      <SelectItem value="EPSON TM-T88">EPSON TM-T88</SelectItem>
+                      <SelectItem value="ELGIN I9">ELGIN I9</SelectItem>
+                      <SelectItem value="BEMATECH MP-4200">BEMATECH MP-4200</SelectItem>
+                      <SelectItem value="GENERIC">Genérica (ESC/POS)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="printerPort">Porta</Label>
+                  <Select value={printerPort} onValueChange={setPrinterPort}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="USB">USB</SelectItem>
+                      <SelectItem value="COM1">COM1</SelectItem>
+                      <SelectItem value="COM2">COM2</SelectItem>
+                      <SelectItem value="COM3">COM3</SelectItem>
+                      <SelectItem value="LPT1">LPT1</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <Button variant="outline" className="w-full">
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Testar Impressora
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Balança */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <Scale className="h-5 w-5" />
+                    Balança
+                  </CardTitle>
+                  <CardDescription>Configure a balança para produtos pesáveis</CardDescription>
+                </div>
+                <Switch checked={scaleEnabled} onCheckedChange={setScaleEnabled} />
+              </div>
+            </CardHeader>
+            <CardContent
+              className={`space-y-4 ${!scaleEnabled ? 'opacity-50 pointer-events-none' : ''}`}
+            >
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <Label htmlFor="scaleModel">Modelo</Label>
+                  <Select value={scaleModel} onValueChange={setScaleModel}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="TOLEDO Prix 4">Toledo Prix 4</SelectItem>
+                      <SelectItem value="FILIZOLA">Filizola</SelectItem>
+                      <SelectItem value="URANO">Urano</SelectItem>
+                      <SelectItem value="GENERIC">Genérica</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="scalePort">Porta Serial</Label>
+                  <Select value={scalePort} onValueChange={setScalePort}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="COM1">COM1</SelectItem>
+                      <SelectItem value="COM2">COM2</SelectItem>
+                      <SelectItem value="COM3">COM3</SelectItem>
+                      <SelectItem value="COM4">COM4</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <Button variant="outline" className="w-full">
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Testar Balança
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Aparência */}
+        <TabsContent value="appearance" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Palette className="h-5 w-5" />
+                Tema
+              </CardTitle>
+              <CardDescription>Personalize a aparência do sistema</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 sm:grid-cols-3">
+                <button
+                  onClick={() => setTheme('light')}
+                  className={`p-4 rounded-lg border-2 transition-colors ${
+                    theme === 'light'
+                      ? 'border-primary bg-primary/5'
+                      : 'border-border hover:border-primary/50'
+                  }`}
+                >
+                  <Sun className="h-8 w-8 mx-auto mb-2 text-yellow-500" />
+                  <p className="font-medium">Claro</p>
+                </button>
+                <button
+                  onClick={() => setTheme('dark')}
+                  className={`p-4 rounded-lg border-2 transition-colors ${
+                    theme === 'dark'
+                      ? 'border-primary bg-primary/5'
+                      : 'border-border hover:border-primary/50'
+                  }`}
+                >
+                  <Moon className="h-8 w-8 mx-auto mb-2 text-blue-500" />
+                  <p className="font-medium">Escuro</p>
+                </button>
+                <button
+                  onClick={() => setTheme('system')}
+                  className={`p-4 rounded-lg border-2 transition-colors ${
+                    theme === 'system'
+                      ? 'border-primary bg-primary/5'
+                      : 'border-border hover:border-primary/50'
+                  }`}
+                >
+                  <Monitor className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                  <p className="font-medium">Sistema</p>
+                </button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Notificações */}
+        <TabsContent value="notifications" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Bell className="h-5 w-5" />
+                Alertas e Notificações
+              </CardTitle>
+              <CardDescription>Configure quando e como receber notificações</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between p-4 rounded-lg border">
+                <div>
+                  <p className="font-medium">Alertas de Estoque Baixo</p>
+                  <p className="text-sm text-muted-foreground">
+                    Notificar quando produtos atingirem o estoque mínimo
+                  </p>
+                </div>
+                <Switch checked={false} onCheckedChange={() => {}} />
+              </div>
+              <div className="flex items-center justify-between p-4 rounded-lg border">
+                <div>
+                  <p className="font-medium">Alertas de Validade</p>
+                  <p className="text-sm text-muted-foreground">
+                    Notificar sobre produtos próximos ao vencimento
+                  </p>
+                </div>
+                <Switch checked={true} />
+              </div>
+              <div className="flex items-center justify-between p-4 rounded-lg border">
+                <div className="flex items-center gap-3">
+                  <Volume2 className="h-5 w-5 text-muted-foreground" />
+                  <div>
+                    <p className="font-medium">Sons</p>
+                    <p className="text-sm text-muted-foreground">Reproduzir sons em ações do PDV</p>
+                  </div>
+                </div>
+                <Switch checked={true} />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        {/* Developer Tools */}
+        <TabsContent value="developer" className="space-y-6">
+          <Card className="border-red-200 bg-red-50/50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-red-800">
+                <Database className="h-5 w-5" />
+                Área de Perigo (Desenvolvedor)
+              </CardTitle>
+              <CardDescription className="text-red-600">
+                Ações irreversíveis para teste e desenvolvimento
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex bg-white p-4 rounded-lg border border-red-100 items-center justify-between">
+                <div>
+                  <p className="font-medium text-red-900">Popular Banco de Dados</p>
+                  <p className="text-sm text-red-600">
+                    Gera dados de teste (5 meses de histórico, produtos, vendas). Pode demorar
+                    alguns minutos.
+                  </p>
+                </div>
+                <Button
+                  variant="destructive"
+                  onClick={async () => {
+                    const confirm = await window.confirm(
+                      'Isso vai gerar muitos dados. Tem certeza?'
+                    );
+                    if (!confirm) return;
+
+                    try {
+                      const msg = await seedDatabase(); // Auto-imported or imported manual
+                      alert(msg);
+                    } catch (e) {
+                      alert('Erro ao popular: ' + e);
+                    }
+                  }}
+                >
+                  Popular Dados
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+};

@@ -1,0 +1,94 @@
+import {
+  closeCashSession,
+  getCashSessionSummary,
+  getCurrentCashSession,
+  openCashSession,
+} from '@/lib/tauri';
+import { useAuthStore } from '@/stores';
+import type { CashSession as AuthCashSession } from '@/stores/auth-store';
+import type {
+  CashSession as BackendCashSession,
+  CloseCashSessionInput,
+  OpenCashSessionInput,
+} from '@/types';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
+export const cashSessionKeys = {
+  all: ['cashSession'] as const,
+  current: () => [...cashSessionKeys.all, 'current'] as const,
+  summary: (id: string) => [...cashSessionKeys.all, 'summary', id] as const,
+};
+
+/**
+ * Busca resumo da sessão de caixa
+ */
+export function useCashSessionSummary(sessionId?: string) {
+  return useQuery({
+    queryKey: cashSessionKeys.summary(sessionId ?? ''),
+    queryFn: () => getCashSessionSummary(sessionId!),
+    enabled: !!sessionId,
+    refetchInterval: 1000 * 30, // 30 segundos
+  });
+}
+
+/**
+ * Busca sessão de caixa ativa (backend)
+ */
+export function useCurrentCashSession() {
+  const { isAuthenticated } = useAuthStore();
+
+  return useQuery({
+    queryKey: cashSessionKeys.current(),
+    queryFn: (): Promise<BackendCashSession | null> => getCurrentCashSession(),
+    enabled: isAuthenticated,
+    staleTime: 1000 * 30,
+  });
+}
+
+function toAuthCashSession(session: BackendCashSession): AuthCashSession {
+  const employeeName =
+    session.employee?.name ?? useAuthStore.getState().employee?.name ?? 'Não identificado';
+
+  return {
+    id: session.id,
+    employeeId: session.employeeId,
+    employeeName,
+    openedAt: session.openedAt,
+    closedAt: session.closedAt,
+    openingBalance: session.openingBalance,
+    closingBalance: session.actualBalance,
+    status: session.status === 'OPEN' ? 'OPEN' : 'CLOSED',
+  };
+}
+
+/**
+ * Abre sessão de caixa
+ */
+export function useOpenCashSession() {
+  const queryClient = useQueryClient();
+  const { openCashSession: setOpenCashSession } = useAuthStore();
+
+  return useMutation({
+    mutationFn: (input: OpenCashSessionInput) => openCashSession(input),
+    onSuccess: (session) => {
+      setOpenCashSession(toAuthCashSession(session));
+      queryClient.invalidateQueries({ queryKey: cashSessionKeys.current() });
+    },
+  });
+}
+
+/**
+ * Fecha sessão de caixa
+ */
+export function useCloseCashSession() {
+  const queryClient = useQueryClient();
+  const { closeCashSession: clearCashSession } = useAuthStore();
+
+  return useMutation({
+    mutationFn: (input: CloseCashSessionInput) => closeCashSession(input),
+    onSuccess: () => {
+      clearCashSession();
+      queryClient.invalidateQueries({ queryKey: cashSessionKeys.current() });
+    },
+  });
+}
