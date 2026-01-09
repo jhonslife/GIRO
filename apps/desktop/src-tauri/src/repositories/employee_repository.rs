@@ -133,6 +133,26 @@ impl<'a> EmployeeRepository<'a> {
         Ok(())
     }
 
+    /// Reativa um funcionário desativado
+    pub async fn reactivate(&self, id: &str) -> AppResult<Employee> {
+        let now = chrono::Utc::now().to_rfc3339();
+        sqlx::query("UPDATE employees SET is_active = 1, updated_at = ? WHERE id = ?")
+            .bind(&now)
+            .bind(id)
+            .execute(self.pool)
+            .await?;
+        self.find_by_id(id).await?.ok_or_else(|| crate::error::AppError::NotFound { entity: "Employee".into(), id: id.into() })
+    }
+
+    /// Retorna apenas funcionários inativos
+    pub async fn find_inactive(&self) -> AppResult<Vec<Employee>> {
+        let query = format!("SELECT {} FROM employees WHERE is_active = 0 ORDER BY name", Self::COLS);
+        let result = sqlx::query_as::<_, Employee>(&query)
+            .fetch_all(self.pool)
+            .await?;
+        Ok(result)
+    }
+
     pub async fn authenticate_pin(&self, pin: &str) -> AppResult<Option<Employee>> {
         // Hash PIN com SHA256 (compatível com seed)
         let pin_hash = hash_pin(pin);

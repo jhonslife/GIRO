@@ -1,20 +1,20 @@
-//! Ponto de entrada do aplicativo Mercearias Desktop
+//! Ponto de entrada do aplicativo GIRO Desktop
 
 #![cfg_attr(
     all(not(debug_assertions), target_os = "windows"),
     windows_subsystem = "windows"
 )]
 
-use mercearias_lib::{AppState, commands, DatabaseManager, HardwareState};
+use giro_lib::{AppState, commands, DatabaseManager, HardwareState};
 use std::path::PathBuf;
 
 fn get_database_path() -> PathBuf {
     let app_data = dirs::data_local_dir()
         .unwrap_or_else(|| PathBuf::from("."))
-        .join("Mercearias");
+        .join("GIRO");
     
     std::fs::create_dir_all(&app_data).ok();
-    app_data.join("mercearias.db")
+    app_data.join("giro.db")
 }
 
 #[tokio::main]
@@ -22,11 +22,11 @@ async fn main() {
     tracing_subscriber::fmt()
         .with_env_filter(
             tracing_subscriber::EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| "mercearias_lib=info,tauri=warn".into()),
+                .unwrap_or_else(|_| "giro_lib=info,tauri=warn".into()),
         )
         .init();
 
-    tracing::info!("Iniciando Mercearias Desktop v{}", env!("CARGO_PKG_VERSION"));
+    tracing::info!("Iniciando GIRO Desktop v{}", env!("CARGO_PKG_VERSION"));
 
     let db_path = get_database_path();
     tracing::info!("Banco de dados: {:?}", db_path);
@@ -63,6 +63,10 @@ async fn main() {
             commands::create_product,
             commands::update_product,
             commands::delete_product,
+            commands::deactivate_product,
+            commands::reactivate_product,
+            commands::get_all_products,
+            commands::get_inactive_products,
             
             // Categorias
             commands::get_categories,
@@ -71,6 +75,10 @@ async fn main() {
             commands::create_category,
             commands::update_category,
             commands::delete_category,
+            commands::deactivate_category,
+            commands::reactivate_category,
+            commands::get_all_categories,
+            commands::get_inactive_categories,
             
             // Funcionários
             commands::get_employees,
@@ -80,6 +88,8 @@ async fn main() {
             commands::create_employee,
             commands::update_employee,
             commands::deactivate_employee,
+            commands::reactivate_employee,
+            commands::get_inactive_employees,
             
             // Vendas
             commands::get_sales_today,
@@ -140,6 +150,10 @@ async fn main() {
             commands::create_supplier,
             commands::update_supplier,
             commands::delete_supplier,
+            commands::deactivate_supplier,
+            commands::reactivate_supplier,
+            commands::get_all_suppliers,
+            commands::get_inactive_suppliers,
             
             // Hardware
             commands::list_serial_ports,
@@ -160,6 +174,11 @@ async fn main() {
             commands::list_scanner_devices,
             commands::get_scanner_server_info,
             commands::generate_pairing_qr,
+
+            // Histórico de Preços
+            commands::get_price_history_by_product,
+            commands::get_recent_price_history,
+            commands::get_price_history_by_id,
 
             // Seeding
             commands::seed::seed_database,

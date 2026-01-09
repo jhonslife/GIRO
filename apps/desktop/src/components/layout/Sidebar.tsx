@@ -16,6 +16,7 @@ import {
   Package,
   Settings,
   ShoppingCart,
+  Truck,
   Users,
   Wallet,
 } from 'lucide-react';
@@ -35,6 +36,7 @@ const navItems: NavItem[] = [
   { icon: ShoppingCart, label: 'PDV', href: '/pdv', tutorialId: 'nav-pdv' },
   { icon: Package, label: 'Produtos', href: '/products', tutorialId: 'nav-products' },
   { icon: Boxes, label: 'Estoque', href: '/stock', tutorialId: 'nav-stock' },
+  { icon: Truck, label: 'Fornecedores', href: '/suppliers', tutorialId: 'nav-suppliers' },
   { icon: Users, label: 'Funcionários', href: '/employees', tutorialId: 'nav-employees' },
   { icon: Wallet, label: 'Caixa', href: '/cash', tutorialId: 'nav-cash' },
   { icon: BarChart3, label: 'Relatórios', href: '/reports', tutorialId: 'nav-reports' },
@@ -59,17 +61,11 @@ export const Sidebar: FC = () => {
       <div className="flex h-16 items-center border-b px-4">
         {!isCollapsed && (
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <ShoppingCart className="h-5 w-5" />
-            </div>
-            <span className="text-lg font-bold text-foreground">Mercearias</span>
+            <img src="/logo.png" alt="GIRO" className="h-8 w-8 rounded-lg" />
+            <span className="text-lg font-bold text-foreground">GIRO</span>
           </div>
         )}
-        {isCollapsed && (
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground mx-auto">
-            <ShoppingCart className="h-5 w-5" />
-          </div>
-        )}
+        {isCollapsed && <img src="/logo.png" alt="GIRO" className="h-8 w-8 rounded-lg mx-auto" />}
       </div>
 
       {/* Navigation */}

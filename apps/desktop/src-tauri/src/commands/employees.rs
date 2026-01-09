@@ -50,3 +50,19 @@ pub async fn deactivate_employee(id: String, state: State<'_, AppState>) -> AppR
     let repo = EmployeeRepository::new(state.pool());
     repo.deactivate(&id).await
 }
+
+/// Reativa um funcionário desativado
+#[tauri::command]
+pub async fn reactivate_employee(id: String, state: State<'_, AppState>) -> AppResult<SafeEmployee> {
+    let repo = EmployeeRepository::new(state.pool());
+    let emp = repo.reactivate(&id).await?;
+    Ok(SafeEmployee::from(emp))
+}
+
+/// Lista apenas funcionários inativos
+#[tauri::command]
+pub async fn get_inactive_employees(state: State<'_, AppState>) -> AppResult<Vec<SafeEmployee>> {
+    let repo = EmployeeRepository::new(state.pool());
+    let employees = repo.find_inactive().await?;
+    Ok(employees.into_iter().map(SafeEmployee::from).collect())
+}

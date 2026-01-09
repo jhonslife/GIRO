@@ -1,5 +1,5 @@
 -- Seed de dados para desenvolvimento/testes
--- Executar: sqlite3 mercearias.db < seed.sql
+-- Executar: sqlite3 giro.db < seed.sql
 
 -- Limpar dados existentes (dev only)
 DELETE FROM sale_items;
@@ -15,10 +15,10 @@ DELETE FROM employees;
 -- PINs: Admin=1234, Gerente=5678, Caixa1=9999, Caixa2=1111
 -- Hash SHA256
 INSERT INTO employees (id, name, email, role, pin, is_active, created_at, updated_at) VALUES
-  ('emp-admin-001', 'Admin Sistema', 'admin@mercearias.com', 'ADMIN', '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4', 1, datetime('now'), datetime('now')),
-  ('emp-manager-001', 'Gerente Loja', 'gerente@mercearias.com', 'MANAGER', 'f8638b979b2f4f793ddb6dbd197e0ee25a7a6ea32b0ae22f5e3c5d119d839e75', 1, datetime('now'), datetime('now')),
-  ('emp-cashier-001', 'Caixa 01', 'caixa01@mercearias.com', 'CASHIER', '888df25ae35772424a560c7152a1de794440e0ea5cfee62828333a456a506e05', 1, datetime('now'), datetime('now')),
-  ('emp-cashier-002', 'Caixa 02', 'caixa02@mercearias.com', 'CASHIER', '0ffe1abd1a08215353c233d6e009613e95eec4253832a761af28ff37ac5a150c', 1, datetime('now'), datetime('now'));
+  ('emp-admin-001', 'Admin Sistema', 'admin@giro.com', 'ADMIN', '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4', 1, datetime('now'), datetime('now')),
+  ('emp-manager-001', 'Gerente Loja', 'gerente@giro.com', 'MANAGER', 'f8638b979b2f4f793ddb6dbd197e0ee25a7a6ea32b0ae22f5e3c5d119d839e75', 1, datetime('now'), datetime('now')),
+  ('emp-cashier-001', 'Caixa 01', 'caixa01@giro.com', 'CASHIER', '888df25ae35772424a560c7152a1de794440e0ea5cfee62828333a456a506e05', 1, datetime('now'), datetime('now')),
+  ('emp-cashier-002', 'Caixa 02', 'caixa02@giro.com', 'CASHIER', '0ffe1abd1a08215353c233d6e009613e95eec4253832a761af28ff37ac5a150c', 1, datetime('now'), datetime('now'));
 
 -- Categorias de produtos
 INSERT INTO categories (id, name, description, created_at, updated_at) VALUES

@@ -1,5 +1,5 @@
 /**
- * @file design-tokens.ts - Sistema de tokens de design Mercearias
+ * @file design-tokens.ts - Sistema de tokens de design GIRO
  *
  * Design System completo baseado em:
  * - Paleta "Mercearia Brasileira" (Verde Mercado + Laranja Tropical)

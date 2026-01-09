@@ -21,86 +21,63 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { daysUntil, formatDate, formatExpirationRelative } from '@/lib/formatters';
+import { useExpiringLots } from '@/hooks/useStock';
+import { daysUntil, formatCurrency, formatDate, formatExpirationRelative } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
-import { AlertTriangle, ArrowLeft, Calendar, Clock } from 'lucide-react';
-import { type FC, useState } from 'react';
+import type { ProductLot } from '@/types';
+import { AlertTriangle, ArrowLeft, Calendar, Clock, Loader2, Package } from 'lucide-react';
+import { type FC, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// Mock data
-const mockExpirations = [
-  {
-    id: '1',
-    productName: 'Iogurte Natural',
-    lotNumber: 'L001',
-    quantity: 15,
-    expirationDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
-  },
-  {
-    id: '2',
-    productName: 'Leite Integral',
-    lotNumber: 'L002',
-    quantity: 8,
-    expirationDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
-  },
-  {
-    id: '3',
-    productName: 'Queijo Minas',
-    lotNumber: 'L003',
-    quantity: 4,
-    expirationDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
-  },
-  {
-    id: '4',
-    productName: 'Presunto',
-    lotNumber: 'L004',
-    quantity: 12,
-    expirationDate: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000),
-  },
-  {
-    id: '5',
-    productName: 'Margarina',
-    lotNumber: 'L005',
-    quantity: 6,
-    expirationDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-  },
-];
+type FilterType = 'all' | 'expired' | 'critical' | 'warning';
+
+const getExpirationStatus = (dateStr: string) => {
+  const date = new Date(dateStr);
+  const days = daysUntil(date);
+  if (days < 0)
+    return { label: 'Vencido', variant: 'destructive' as const, color: 'text-destructive' };
+  if (days <= 3)
+    return { label: 'Crítico', variant: 'destructive' as const, color: 'text-destructive' };
+  if (days <= 7) return { label: 'Urgente', variant: 'warning' as const, color: 'text-warning' };
+  if (days <= 30)
+    return { label: 'Atenção', variant: 'secondary' as const, color: 'text-muted-foreground' };
+  return { label: 'OK', variant: 'default' as const, color: 'text-success' };
+};
 
 export const ExpirationPage: FC = () => {
   const navigate = useNavigate();
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState<FilterType>('all');
 
-  const getExpirationStatus = (date: Date) => {
-    const days = daysUntil(date);
-    if (days < 0)
-      return { label: 'Vencido', variant: 'destructive' as const, color: 'text-destructive' };
-    if (days <= 3)
-      return { label: 'Crítico', variant: 'destructive' as const, color: 'text-destructive' };
-    if (days <= 7) return { label: 'Urgente', variant: 'warning' as const, color: 'text-warning' };
-    if (days <= 30)
-      return { label: 'Atenção', variant: 'secondary' as const, color: 'text-muted-foreground' };
-    return { label: 'OK', variant: 'default' as const, color: 'text-success' };
-  };
+  // Busca lotes que vencem nos próximos 90 dias (inclui já vencidos)
+  const { data: expiringLots = [], isLoading } = useExpiringLots(90);
 
-  const stats = {
-    expired: mockExpirations.filter((p) => daysUntil(p.expirationDate) < 0).length,
-    critical: mockExpirations.filter(
-      (p) => daysUntil(p.expirationDate) >= 0 && daysUntil(p.expirationDate) <= 3
-    ).length,
-    warning: mockExpirations.filter(
-      (p) => daysUntil(p.expirationDate) > 3 && daysUntil(p.expirationDate) <= 7
-    ).length,
-  };
+  // Calcula estatísticas
+  const stats = useMemo(() => {
+    return {
+      expired: expiringLots.filter((lot) => daysUntil(new Date(lot.expirationDate)) < 0).length,
+      critical: expiringLots.filter((lot) => {
+        const days = daysUntil(new Date(lot.expirationDate));
+        return days >= 0 && days <= 3;
+      }).length,
+      warning: expiringLots.filter((lot) => {
+        const days = daysUntil(new Date(lot.expirationDate));
+        return days > 3 && days <= 7;
+      }).length,
+    };
+  }, [expiringLots]);
 
-  const filteredItems = mockExpirations
-    .filter((item) => {
-      const days = daysUntil(item.expirationDate);
-      if (filter === 'expired') return days < 0;
-      if (filter === 'critical') return days >= 0 && days <= 3;
-      if (filter === 'warning') return days > 3 && days <= 7;
-      return true;
-    })
-    .sort((a, b) => a.expirationDate.getTime() - b.expirationDate.getTime());
+  // Filtra e ordena os lotes
+  const filteredLots = useMemo(() => {
+    return expiringLots
+      .filter((lot) => {
+        const days = daysUntil(new Date(lot.expirationDate));
+        if (filter === 'expired') return days < 0;
+        if (filter === 'critical') return days >= 0 && days <= 3;
+        if (filter === 'warning') return days > 3 && days <= 7;
+        return true;
+      })
+      .sort((a, b) => new Date(a.expirationDate).getTime() - new Date(b.expirationDate).getTime());
+  }, [expiringLots, filter]);
 
   return (
     <div className="space-y-6">
@@ -151,7 +128,7 @@ export const ExpirationPage: FC = () => {
 
       {/* Filter */}
       <div className="flex justify-end">
-        <Select value={filter} onValueChange={setFilter}>
+        <Select value={filter} onValueChange={(v) => setFilter(v as FilterType)}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Filtrar" />
           </SelectTrigger>
@@ -164,47 +141,75 @@ export const ExpirationPage: FC = () => {
         </Select>
       </div>
 
+      {/* Loading */}
+      {isLoading && (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!isLoading && filteredLots.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <Package className="h-12 w-12 text-muted-foreground/50" />
+          <h3 className="mt-4 text-lg font-medium">Nenhum produto encontrado</h3>
+          <p className="mt-2 text-muted-foreground">
+            {filter === 'all'
+              ? 'Não há produtos próximos ao vencimento'
+              : 'Nenhum produto corresponde ao filtro selecionado'}
+          </p>
+        </div>
+      )}
+
       {/* Table */}
-      <Card>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Produto</TableHead>
-                <TableHead>Lote</TableHead>
-                <TableHead className="text-center">Quantidade</TableHead>
-                <TableHead>Validade</TableHead>
-                <TableHead className="text-center">Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredItems.map((item) => {
-                const status = getExpirationStatus(item.expirationDate);
-                return (
-                  <TableRow key={item.id}>
-                    <TableCell className="font-medium">{item.productName}</TableCell>
-                    <TableCell className="text-muted-foreground">{item.lotNumber}</TableCell>
-                    <TableCell className="text-center">{item.quantity}</TableCell>
-                    <TableCell>
-                      <div>
-                        <p className={cn('font-medium', status.color)}>
-                          {formatExpirationRelative(item.expirationDate)}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {formatDate(item.expirationDate)}
-                        </p>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Badge variant={status.variant}>{status.label}</Badge>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      {!isLoading && filteredLots.length > 0 && (
+        <Card>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Produto</TableHead>
+                  <TableHead>Lote</TableHead>
+                  <TableHead className="text-center">Quantidade</TableHead>
+                  <TableHead className="text-right">Custo Unit.</TableHead>
+                  <TableHead>Validade</TableHead>
+                  <TableHead className="text-center">Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredLots.map((lot: ProductLot) => {
+                  const status = getExpirationStatus(lot.expirationDate);
+                  return (
+                    <TableRow key={lot.id}>
+                      <TableCell className="font-medium">
+                        {lot.product?.name ?? 'Produto não encontrado'}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {lot.lotNumber ?? '-'}
+                      </TableCell>
+                      <TableCell className="text-center">{lot.quantity}</TableCell>
+                      <TableCell className="text-right">{formatCurrency(lot.costPrice)}</TableCell>
+                      <TableCell>
+                        <div>
+                          <p className={cn('font-medium', status.color)}>
+                            {formatExpirationRelative(new Date(lot.expirationDate))}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {formatDate(new Date(lot.expirationDate))}
+                          </p>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Badge variant={status.variant}>{status.label}</Badge>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

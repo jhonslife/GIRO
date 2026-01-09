@@ -2,7 +2,7 @@ import type { Tutorial } from '../types';
 
 export const welcomeTutorial: Tutorial = {
   id: 'welcome',
-  name: 'Bem-vindo ao Mercearias',
+  name: 'Bem-vindo ao GIRO',
   description:
     'Conheça a interface do sistema e aprenda a navegar pelas principais funcionalidades. Tour completo de 5 minutos.',
   category: 'getting-started',
@@ -12,7 +12,7 @@ export const welcomeTutorial: Tutorial = {
   steps: [
     {
       id: 'welcome-intro',
-      title: '🎉 Bem-vindo ao Mercearias!',
+      title: '🎉 Bem-vindo ao GIRO!',
       description:
         'Este tutorial vai te guiar pelos principais recursos do sistema. Você aprenderá a fazer vendas, gerenciar produtos e muito mais. Vamos começar?',
       placement: 'center',

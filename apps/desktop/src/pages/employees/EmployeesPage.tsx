@@ -21,8 +21,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -31,20 +39,30 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { useCreateEmployee, useEmployees, useUpdateEmployee } from '@/hooks/useEmployees';
-import { type Employee, type EmployeeRole } from '@/types';
 import {
-  Edit,
-  Mail,
-  MoreHorizontal,
-  Phone,
-  Plus,
-  Search,
-  Shield,
-  Trash2,
-  User,
-} from 'lucide-react';
+  useCreateEmployee,
+  useDeactivateEmployee,
+  useEmployees,
+  useInactiveEmployees,
+  useReactivateEmployee,
+  useUpdateEmployee,
+} from '@/hooks/useEmployees';
+import { type Employee, type EmployeeRole } from '@/types';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Edit, Mail, MoreHorizontal, Phone, Plus, Power, Search, Shield, User } from 'lucide-react';
 import { useState, type FC } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+
+// Schema de validação com Zod
+const employeeFormSchema = z.object({
+  name: z.string().min(3, 'Nome deve ter pelo menos 3 caracteres').max(100, 'Nome muito longo'),
+  email: z.string().email('E-mail inválido').optional().or(z.literal('')),
+  phone: z.string().optional(),
+  role: z.enum(['ADMIN', 'MANAGER', 'CASHIER', 'VIEWER'] as const),
+});
+
+type EmployeeFormData = z.infer<typeof employeeFormSchema>;
 
 const roleLabels: Record<EmployeeRole, string> = {
   ADMIN: 'Administrador',
@@ -60,21 +78,41 @@ const roleColors: Record<EmployeeRole, string> = {
   VIEWER: 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400',
 };
 
+type StatusFilter = 'active' | 'inactive' | 'all';
+
 export const EmployeesPage: FC = () => {
-  const { data: employees = [], isLoading } = useEmployees();
+  const { data: activeEmployees = [], isLoading: loadingActive } = useEmployees();
+  const { data: inactiveEmployees = [], isLoading: loadingInactive } = useInactiveEmployees();
   const createEmployee = useCreateEmployee();
   const updateEmployee = useUpdateEmployee();
+  const deactivateEmployee = useDeactivateEmployee();
+  const reactivateEmployee = useReactivateEmployee();
   const { toast } = useToast();
   const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('active');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
 
-  // Form state
-  // TODO: Use React Hook Form for better validation handling
-  const [formName, setFormName] = useState('');
-  const [formEmail, setFormEmail] = useState('');
-  const [formPhone, setFormPhone] = useState('');
-  const [formRole, setFormRole] = useState<EmployeeRole>('CASHIER');
+  // Combine employees based on filter
+  const allEmployees = [...activeEmployees, ...inactiveEmployees];
+  const employees =
+    statusFilter === 'active'
+      ? activeEmployees
+      : statusFilter === 'inactive'
+      ? inactiveEmployees
+      : allEmployees;
+  const isLoading = loadingActive || loadingInactive;
+
+  // React Hook Form com Zod resolver
+  const form = useForm<EmployeeFormData>({
+    resolver: zodResolver(employeeFormSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      phone: '',
+      role: 'CASHIER',
+    },
+  });
 
   const filteredEmployees = employees.filter(
     (emp) =>
@@ -82,18 +120,16 @@ export const EmployeesPage: FC = () => {
       (emp.email && emp.email.toLowerCase().includes(search.toLowerCase()))
   );
 
-  const handleSave = async () => {
-    if (!formName.trim()) return;
-
+  const onSubmit = async (data: EmployeeFormData) => {
     try {
       if (editingEmployee) {
         await updateEmployee.mutateAsync({
           id: editingEmployee.id,
           data: {
-            name: formName,
-            email: formEmail,
-            phone: formPhone,
-            role: formRole,
+            name: data.name,
+            email: data.email || undefined,
+            phone: data.phone || undefined,
+            role: data.role,
           },
         });
         toast({ title: 'Funcionário atualizado com sucesso' });
@@ -101,10 +137,10 @@ export const EmployeesPage: FC = () => {
         // Gera PIN aleatório de 4 dígitos
         const randomPin = Math.floor(1000 + Math.random() * 9000).toString();
         await createEmployee.mutateAsync({
-          name: formName,
-          email: formEmail,
-          phone: formPhone,
-          role: formRole,
+          name: data.name,
+          email: data.email || undefined,
+          phone: data.phone || undefined,
+          role: data.role,
           isActive: true,
           pin: randomPin,
         });
@@ -122,43 +158,63 @@ export const EmployeesPage: FC = () => {
   };
 
   const resetForm = () => {
-    setFormName('');
-    setFormEmail('');
-    setFormPhone('');
-    setFormRole('CASHIER');
+    form.reset({
+      name: '',
+      email: '',
+      phone: '',
+      role: 'CASHIER',
+    });
     setEditingEmployee(null);
     setIsDialogOpen(false);
   };
 
   const handleEdit = (employee: Employee) => {
     setEditingEmployee(employee);
-    setFormName(employee.name);
-    setFormEmail(employee.email || '');
-    setFormPhone(employee.phone || '');
-    setFormRole(employee.role);
+    form.reset({
+      name: employee.name,
+      email: employee.email || '',
+      phone: employee.phone || '',
+      role: employee.role,
+    });
     setIsDialogOpen(true);
   };
 
   const toggleActive = async (employee: Employee) => {
     try {
-      await updateEmployee.mutateAsync({
-        id: employee.id,
-        data: { isActive: !employee.isActive },
-      });
-      toast({ title: `Funcionário ${!employee.isActive ? 'ativado' : 'desativado'}` });
+      if (employee.isActive) {
+        await deactivateEmployee.mutateAsync(employee.id);
+        toast({ title: 'Funcionário desativado' });
+      } else {
+        await reactivateEmployee.mutateAsync(employee.id);
+        toast({ title: 'Funcionário reativado' });
+      }
     } catch {
       toast({ title: 'Erro ao atualizar status', variant: 'destructive' });
     }
   };
 
-  const handleDelete = async (id: string) => {
-    // TODO: Implement soft delete or hard delete if needed
-    if (confirm('Tem certeza que deseja desativar este funcionário?')) {
-      await updateEmployee.mutateAsync({
-        id: id,
-        data: { isActive: false },
-      });
-      toast({ title: 'Funcionário desativado' });
+  // Soft delete: marca como inativo em vez de excluir definitivamente
+  const handleSoftDelete = async (employee: Employee) => {
+    const confirmMessage = employee.isActive
+      ? `Deseja desativar "${employee.name}"?\n\nO funcionário será marcado como inativo e não poderá mais acessar o sistema, mas seu histórico será preservado.`
+      : `Deseja reativar "${employee.name}"?`;
+
+    if (confirm(confirmMessage)) {
+      try {
+        if (employee.isActive) {
+          await deactivateEmployee.mutateAsync(employee.id);
+        } else {
+          await reactivateEmployee.mutateAsync(employee.id);
+        }
+        toast({
+          title: employee.isActive ? 'Funcionário desativado' : 'Funcionário reativado',
+          description: employee.isActive
+            ? 'O funcionário foi marcado como inativo. O histórico foi preservado.'
+            : 'O funcionário foi reativado e pode acessar o sistema novamente.',
+        });
+      } catch {
+        toast({ title: 'Erro ao atualizar funcionário', variant: 'destructive' });
+      }
     }
   };
 
@@ -174,82 +230,130 @@ export const EmployeesPage: FC = () => {
           <h1 className="text-3xl font-bold tracking-tight">Funcionários</h1>
           <p className="text-muted-foreground">Gerencie os operadores e permissões do sistema</p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button
-              onClick={() => {
-                setEditingEmployee(null);
-                resetForm();
-                setIsDialogOpen(true);
-              }}
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Novo Funcionário
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>
-                {editingEmployee ? 'Editar Funcionário' : 'Novo Funcionário'}
-              </DialogTitle>
-              <DialogDescription>
-                {editingEmployee
-                  ? 'Atualize as informações do funcionário'
-                  : 'Cadastre um novo funcionário no sistema'}
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div>
-                <Label htmlFor="name">Nome Completo *</Label>
-                <Input
-                  id="name"
-                  value={formName}
-                  onChange={(e) => setFormName(e.target.value)}
-                  placeholder="Ex: João Silva"
-                />
-              </div>
-              <div>
-                <Label htmlFor="email">E-mail</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formEmail}
-                  onChange={(e) => setFormEmail(e.target.value)}
-                  placeholder="email@exemplo.com"
-                />
-              </div>
-              <div>
-                <Label htmlFor="phone">Telefone</Label>
-                <Input
-                  id="phone"
-                  value={formPhone}
-                  onChange={(e) => setFormPhone(e.target.value)}
-                  placeholder="(11) 99999-9999"
-                />
-              </div>
-              <div>
-                <Label htmlFor="role">Cargo/Permissão *</Label>
-                <Select value={formRole} onValueChange={(v) => setFormRole(v as EmployeeRole)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="ADMIN">Administrador</SelectItem>
-                    <SelectItem value="MANAGER">Gerente</SelectItem>
-                    <SelectItem value="CASHIER">Operador de Caixa</SelectItem>
-                    <SelectItem value="VIEWER">Visualizador</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={resetForm}>
-                Cancelar
+        <div className="flex items-center gap-4">
+          {/* Status Filter */}
+          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as StatusFilter)}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filtrar por status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="active">Ativos</SelectItem>
+              <SelectItem value="inactive">Inativos</SelectItem>
+              <SelectItem value="all">Todos</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button
+                onClick={() => {
+                  setEditingEmployee(null);
+                  resetForm();
+                  setIsDialogOpen(true);
+                }}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Novo Funcionário
               </Button>
-              <Button onClick={handleSave}>{editingEmployee ? 'Salvar' : 'Criar'}</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>
+                  {editingEmployee ? 'Editar Funcionário' : 'Novo Funcionário'}
+                </DialogTitle>
+                <DialogDescription>
+                  {editingEmployee
+                    ? 'Atualize as informações do funcionário'
+                    : 'Cadastre um novo funcionário no sistema'}
+                </DialogDescription>
+              </DialogHeader>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nome Completo *</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Ex: João Silva" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>E-mail</FormLabel>
+                        <FormControl>
+                          <Input type="email" placeholder="email@exemplo.com" {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          Opcional. Usado para contato e recuperação de senha.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Telefone</FormLabel>
+                        <FormControl>
+                          <Input placeholder="(11) 99999-9999" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="role"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Cargo/Permissão *</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="ADMIN">Administrador</SelectItem>
+                            <SelectItem value="MANAGER">Gerente</SelectItem>
+                            <SelectItem value="CASHIER">Operador de Caixa</SelectItem>
+                            <SelectItem value="VIEWER">Visualizador</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormDescription>
+                          Define as permissões de acesso no sistema.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <DialogFooter>
+                    <Button type="button" variant="outline" onClick={resetForm}>
+                      Cancelar
+                    </Button>
+                    <Button type="submit" disabled={form.formState.isSubmitting}>
+                      {editingEmployee ? 'Salvar' : 'Criar'}
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       {/* Search */}
@@ -299,10 +403,10 @@ export const EmployeesPage: FC = () => {
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     className="text-destructive"
-                    onClick={() => handleDelete(employee.id)}
+                    onClick={() => handleSoftDelete(employee)}
                   >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Excluir
+                    <Power className="mr-2 h-4 w-4" />
+                    {employee.isActive ? 'Desativar' : 'Reativar'}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

@@ -4,7 +4,16 @@
  */
 
 import { useToast } from '@/hooks/use-toast';
-import { createCategory, deleteCategory, getCategories, updateCategory } from '@/lib/tauri';
+import {
+  createCategory,
+  deactivateCategory,
+  deleteCategory,
+  getAllCategories,
+  getCategories,
+  getInactiveCategories,
+  reactivateCategory,
+  updateCategory,
+} from '@/lib/tauri';
 import type { Category } from '@/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -15,6 +24,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 export const categoryKeys = {
   all: ['categories'] as const,
   lists: () => [...categoryKeys.all, 'list'] as const,
+  listAll: () => [...categoryKeys.all, 'listAll'] as const,
+  listInactive: () => [...categoryKeys.all, 'listInactive'] as const,
   detail: (id: string) => [...categoryKeys.all, 'detail', id] as const,
 };
 
@@ -23,13 +34,35 @@ export const categoryKeys = {
 // ────────────────────────────────────────────────────────────────────────────
 
 /**
- * Lista todas as categorias
+ * Lista todas as categorias ativas
  */
 export function useCategories() {
   return useQuery({
     queryKey: categoryKeys.lists(),
     queryFn: getCategories,
     staleTime: 10 * 60 * 1000, // 10 minutos - categorias mudam pouco
+  });
+}
+
+/**
+ * Lista todas as categorias (ativas e inativas)
+ */
+export function useAllCategories() {
+  return useQuery({
+    queryKey: categoryKeys.listAll(),
+    queryFn: getAllCategories,
+    staleTime: 10 * 60 * 1000,
+  });
+}
+
+/**
+ * Lista apenas categorias inativas
+ */
+export function useInactiveCategories() {
+  return useQuery({
+    queryKey: categoryKeys.listInactive(),
+    queryFn: getInactiveCategories,
+    staleTime: 10 * 60 * 1000,
   });
 }
 
@@ -77,7 +110,7 @@ export function useUpdateCategory() {
 }
 
 /**
- * Remove uma categoria
+ * Remove uma categoria (hard delete)
  */
 export function useDeleteCategory() {
   const queryClient = useQueryClient();
@@ -86,11 +119,49 @@ export function useDeleteCategory() {
   return useMutation({
     mutationFn: (id: string) => deleteCategory(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: categoryKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: categoryKeys.all });
       success('Categoria removida', 'Categoria excluída com sucesso');
     },
     onError: (err) => {
       error('Erro ao remover categoria', err.message);
+    },
+  });
+}
+
+/**
+ * Desativa uma categoria (soft delete)
+ */
+export function useDeactivateCategory() {
+  const queryClient = useQueryClient();
+  const { success, error } = useToast();
+
+  return useMutation({
+    mutationFn: (id: string) => deactivateCategory(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: categoryKeys.all });
+      success('Categoria desativada', 'Categoria desativada com sucesso');
+    },
+    onError: (err) => {
+      error('Erro ao desativar categoria', err.message);
+    },
+  });
+}
+
+/**
+ * Reativa uma categoria
+ */
+export function useReactivateCategory() {
+  const queryClient = useQueryClient();
+  const { success, error } = useToast();
+
+  return useMutation({
+    mutationFn: (id: string) => reactivateCategory(id),
+    onSuccess: (category) => {
+      queryClient.invalidateQueries({ queryKey: categoryKeys.all });
+      success('Categoria reativada', `${category.name} foi reativada`);
+    },
+    onError: (err) => {
+      error('Erro ao reativar categoria', err.message);
     },
   });
 }

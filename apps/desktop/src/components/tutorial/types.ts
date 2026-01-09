@@ -1,6 +1,6 @@
 /**
  * Sistema de Tutoriais - Tipos
- * Autotreinamento completo do Mercearias
+ * Autotreinamento completo do GIRO
  */
 
 export type TutorialId =

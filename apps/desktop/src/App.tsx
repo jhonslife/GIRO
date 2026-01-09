@@ -14,7 +14,8 @@ import { PDVPage } from '@/pages/pdv';
 import { CategoriesPage, ProductFormPage, ProductsPage } from '@/pages/products';
 import { ReportsPage, SalesReportPage } from '@/pages/reports';
 import { SettingsPage } from '@/pages/settings';
-import { ExpirationPage, StockEntryPage, StockPage } from '@/pages/stock';
+import { ExpirationPage, StockEntryPage, StockMovementsPage, StockPage } from '@/pages/stock';
+import { SuppliersPage } from '@/pages/suppliers';
 import { TutorialsPage } from '@/pages/tutorials';
 
 // Componente de rota protegida
@@ -91,6 +92,7 @@ const App: FC = () => {
         {/* Estoque */}
         <Route path="stock" element={<StockPage />} />
         <Route path="stock/entry" element={<StockEntryPage />} />
+        <Route path="stock/movements" element={<StockMovementsPage />} />
         <Route path="stock/expiration" element={<ExpirationPage />} />
 
         {/* Funcionários */}
@@ -99,6 +101,16 @@ const App: FC = () => {
           element={
             <ProtectedRoute requiredRole={['ADMIN']}>
               <EmployeesPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Fornecedores */}
+        <Route
+          path="suppliers"
+          element={
+            <ProtectedRoute requiredRole={['ADMIN', 'MANAGER']}>
+              <SuppliersPage />
             </ProtectedRoute>
           }
         />

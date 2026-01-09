@@ -26,7 +26,7 @@ describe('Sidebar', () => {
   it('should render logo text', () => {
     renderWithRouter(<Sidebar />);
 
-    expect(screen.getByText('Mercearias')).toBeInTheDocument();
+    expect(screen.getByText('GIRO')).toBeInTheDocument();
   });
 
   it('should render all navigation links', () => {
@@ -72,7 +72,7 @@ describe('Sidebar', () => {
     const collapseButton = screen.getByText('Recolher').closest('button');
     fireEvent.click(collapseButton!);
 
-    expect(screen.queryByText('Mercearias')).not.toBeInTheDocument();
+    expect(screen.queryByText('GIRO')).not.toBeInTheDocument();
   });
 
   it('should expand sidebar when expand button is clicked', () => {
@@ -87,7 +87,7 @@ describe('Sidebar', () => {
     fireEvent.click(expandButton);
 
     // Should show logo text again
-    expect(screen.getByText('Mercearias')).toBeInTheDocument();
+    expect(screen.getByText('GIRO')).toBeInTheDocument();
   });
 });
 

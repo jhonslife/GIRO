@@ -5,10 +5,14 @@
 
 import {
   createProduct,
+  deactivateProduct,
   deleteProduct,
+  getAllProducts,
+  getInactiveProducts,
   getProductByBarcode,
   getProductById,
   getProducts,
+  reactivateProduct,
   searchProducts,
   updateProduct,
 } from '@/lib/tauri';
@@ -108,5 +112,57 @@ export function useDeleteProduct() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
     },
+  });
+}
+
+/**
+ * Desativa produto (soft delete)
+ */
+export function useDeactivateProduct() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => deactivateProduct(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['inactiveProducts'] });
+    },
+  });
+}
+
+/**
+ * Reativa um produto desativado
+ */
+export function useReactivateProduct() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => reactivateProduct(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['inactiveProducts'] });
+    },
+  });
+}
+
+/**
+ * Lista todos os produtos (ativos e inativos)
+ */
+export function useAllProducts(includeInactive = false) {
+  return useQuery({
+    queryKey: ['products', 'all', includeInactive],
+    queryFn: () => getAllProducts(includeInactive),
+    staleTime: 1000 * 60 * 5,
+  });
+}
+
+/**
+ * Lista apenas produtos inativos
+ */
+export function useInactiveProducts() {
+  return useQuery({
+    queryKey: ['inactiveProducts'],
+    queryFn: () => getInactiveProducts(),
+    staleTime: 1000 * 60 * 5,
   });
 }

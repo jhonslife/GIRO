@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// MERCEARIAS - TIPOS TYPESCRIPT
+// GIRO - TIPOS TYPESCRIPT
 // Sistema PDV para Varejo
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -70,6 +70,7 @@ export interface Category {
   parent?: Category;
   children?: Category[];
   productCount?: number;
+  isActive: boolean;
   createdAt: string;
   updatedAt: string;
 }

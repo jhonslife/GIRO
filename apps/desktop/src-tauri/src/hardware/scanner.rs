@@ -9,6 +9,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::Arc;
 use tokio::sync::{broadcast, RwLock};
+use sqlx::SqlitePool;
 
 // ════════════════════════════════════════════════════════════════════════════
 // TIPOS
@@ -152,6 +153,8 @@ pub struct ScannerServerState {
     pub event_tx: broadcast::Sender<ScanEvent>,
     /// Configuração
     pub config: MobileScannerConfig,
+    /// Pool de conexão com banco de dados (opcional)
+    pub db_pool: Option<SqlitePool>,
 }
 
 impl ScannerServerState {
@@ -162,7 +165,50 @@ impl ScannerServerState {
             devices: RwLock::new(HashMap::new()),
             event_tx,
             config,
+            db_pool: None,
         })
+    }
+
+    /// Cria novo estado com pool de banco de dados
+    pub fn with_db_pool(config: MobileScannerConfig, pool: SqlitePool) -> Arc<Self> {
+        let (event_tx, _) = broadcast::channel(100);
+        
+        Arc::new(Self {
+            devices: RwLock::new(HashMap::new()),
+            event_tx,
+            config,
+            db_pool: Some(pool),
+        })
+    }
+
+    /// Busca nome do produto pelo código de barras
+    pub async fn lookup_product_name(&self, barcode: &str) -> Option<String> {
+        if let Some(ref pool) = self.db_pool {
+            let result = sqlx::query_scalar::<_, String>(
+                "SELECT name FROM products WHERE barcode = ? AND is_active = 1 LIMIT 1"
+            )
+            .bind(barcode)
+            .fetch_optional(pool)
+            .await
+            .ok()
+            .flatten();
+            
+            // Se não encontrou por barcode, tenta por internal_code
+            if result.is_none() {
+                return sqlx::query_scalar::<_, String>(
+                    "SELECT name FROM products WHERE internal_code = ? AND is_active = 1 LIMIT 1"
+                )
+                .bind(barcode)
+                .fetch_optional(pool)
+                .await
+                .ok()
+                .flatten();
+            }
+            
+            result
+        } else {
+            None
+        }
     }
     
     /// Registra dispositivo
@@ -312,10 +358,13 @@ async fn handle_scanner_connection(
                             
                             state.send_scan_event(event);
                             
-                            // Envia ACK
+                            // Busca nome do produto no banco de dados
+                            let product_name = state.lookup_product_name(&code).await;
+                            
+                            // Envia ACK com nome do produto
                             let ack = ServerMessage::Ack {
                                 code,
-                                product_name: None, // TODO: buscar nome do produto
+                                product_name,
                             };
                             write.send(Message::Text(serde_json::to_string(&ack).unwrap()))
                                 .await

@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useDashboardStats } from '@/hooks/useDashboard';
 import { formatCurrency } from '@/lib/formatters';
+import { getMonthlySummary, type MonthlySalesSummary } from '@/lib/tauri';
+import { useQuery } from '@tanstack/react-query';
 import {
   AlertTriangle,
   ArrowRight,
@@ -90,10 +92,20 @@ const REPORTS = [
 export const ReportsPage: FC = () => {
   const { data: stats } = useDashboardStats();
 
+  // Buscar estatísticas do mês atual
+  const currentYearMonth = new Date().toISOString().slice(0, 7); // Format: YYYY-MM
+  const { data: monthlyStats } = useQuery<MonthlySalesSummary>({
+    queryKey: ['monthly-summary', currentYearMonth],
+    queryFn: () => getMonthlySummary(currentYearMonth),
+    staleTime: 1000 * 60 * 5, // 5 minutos
+  });
+
   const todayRevenue = stats?.todayRevenue || 0;
   const averageTicket = stats?.averageTicket || 0;
   const todayCount = stats?.todaySales || 0;
   const lowStock = stats?.lowStockCount || 0;
+  const monthlyRevenue = monthlyStats?.totalAmount || 0;
+  const monthlySalesCount = monthlyStats?.totalSales || 0;
 
   return (
     <div className="space-y-6">
@@ -117,13 +129,12 @@ export const ReportsPage: FC = () => {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Vendas Mês (Est.)</CardTitle>
+            <CardTitle className="text-sm font-medium">Vendas Mês</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            {/* TODO: Fetch real monthly stats */}
-            <div className="text-2xl font-bold text-muted-foreground/50">-</div>
-            <p className="text-xs text-muted-foreground">Dados mensais indisponíveis</p>
+            <div className="text-2xl font-bold">{formatCurrency(monthlyRevenue)}</div>
+            <p className="text-xs text-muted-foreground">{monthlySalesCount} vendas no mês</p>
           </CardContent>
         </Card>
         <Card>

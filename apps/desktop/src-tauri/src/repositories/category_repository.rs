@@ -143,6 +143,37 @@ impl<'a> CategoryRepository<'a> {
             .await?;
         Ok(())
     }
+
+    /// Reativa uma categoria desativada
+    pub async fn reactivate(&self, id: &str) -> AppResult<Category> {
+        let now = chrono::Utc::now().to_rfc3339();
+        sqlx::query("UPDATE categories SET is_active = 1, updated_at = ? WHERE id = ?")
+            .bind(&now)
+            .bind(id)
+            .execute(self.pool)
+            .await?;
+        self.find_by_id(id).await?.ok_or_else(|| crate::error::AppError::NotFound { entity: "Category".into(), id: id.into() })
+    }
+
+    /// Retorna todas as categorias (ativas e inativas)
+    pub async fn find_all(&self) -> AppResult<Vec<Category>> {
+        let result = sqlx::query_as::<_, Category>(
+            "SELECT id, name, description, color, icon, parent_id, sort_order, is_active as active, created_at, updated_at FROM categories ORDER BY sort_order, name"
+        )
+        .fetch_all(self.pool)
+        .await?;
+        Ok(result)
+    }
+
+    /// Retorna apenas categorias inativas
+    pub async fn find_inactive(&self) -> AppResult<Vec<Category>> {
+        let result = sqlx::query_as::<_, Category>(
+            "SELECT id, name, description, color, icon, parent_id, sort_order, is_active as active, created_at, updated_at FROM categories WHERE is_active = 0 ORDER BY name"
+        )
+        .fetch_all(self.pool)
+        .await?;
+        Ok(result)
+    }
 }
 
 #[path = "category_repository_test.rs"]

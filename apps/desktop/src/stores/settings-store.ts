@@ -235,7 +235,7 @@ export const useSettingsStore = create<SettingsState>()(
       },
     }),
     {
-      name: 'mercearias-settings',
+      name: 'giro-settings',
     }
   )
 );

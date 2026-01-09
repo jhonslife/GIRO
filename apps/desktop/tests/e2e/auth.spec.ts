@@ -13,7 +13,7 @@ test.describe('Autenticação E2E', () => {
   });
 
   test('deve exibir página de login ao iniciar', async ({ page }) => {
-    // Verificar título "Mercearias" em h3 (CardTitle)
+    // Verificar título "GIRO" em h3 (CardTitle)
     const loginHeading = page.locator('h3:has-text("Mercearias")');
     await expect(loginHeading).toBeVisible({ timeout: 10000 });
 

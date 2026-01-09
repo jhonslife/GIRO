@@ -1,4 +1,4 @@
-//! Módulo de Hardware - Mercearias
+//! Módulo de Hardware - GIRO
 //!
 //! Integração com equipamentos:
 //! - Impressoras térmicas (ESC/POS)

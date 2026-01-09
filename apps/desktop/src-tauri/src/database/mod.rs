@@ -29,6 +29,12 @@ impl DatabaseManager {
             .connect_with(options)
             .await?;
 
+        // Executar migrations automaticamente ao iniciar
+        sqlx::migrate!("./migrations")
+            .run(&pool)
+            .await
+            .map_err(|e| crate::error::AppError::Database(e.to_string()))?;
+
         Ok(Self { pool })
     }
 

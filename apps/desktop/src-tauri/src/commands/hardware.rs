@@ -200,6 +200,7 @@ pub async fn get_drawer_config(state: State<'_, HardwareState>) -> AppResult<Dra
 pub async fn start_scanner_server(
     config: MobileScannerConfig,
     state: State<'_, HardwareState>,
+    app_state: State<'_, crate::AppState>,
 ) -> AppResult<ScannerServerInfo> {
     let mut server = state.scanner_server.write().await;
     
@@ -212,8 +213,9 @@ pub async fn start_scanner_server(
     let local_ip = hardware::scanner::get_local_ip()
         .unwrap_or_else(|| "localhost".to_string());
     
-    // Cria estado do servidor
-    let scanner_state = ScannerServerState::new(config.clone());
+    // Cria estado do servidor com pool de banco de dados para lookup de produtos
+    let db_pool = (*app_state.db_pool).clone();
+    let scanner_state = ScannerServerState::with_db_pool(config.clone(), db_pool);
     let scanner_state_clone = scanner_state.clone();
     
     // Inicia servidor em background

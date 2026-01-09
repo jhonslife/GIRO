@@ -3,6 +3,7 @@
 use crate::error::AppResult;
 use crate::models::{CreateProduct, Product, ProductFilters, StockSummary, UpdateProduct};
 use crate::repositories::new_id;
+use crate::repositories::PriceHistoryRepository;
 use sqlx::SqlitePool;
 
 pub struct ProductRepository<'a> {
@@ -194,6 +195,18 @@ impl<'a> ProductRepository<'a> {
         let is_active = data.is_active.unwrap_or(existing.is_active);
         let category_id = data.category_id.unwrap_or(existing.category_id);
 
+        // Registrar histórico de preço se o preço de venda mudou
+        if (sale_price - existing.sale_price).abs() > 0.001 {
+            let price_history_repo = PriceHistoryRepository::new(self.pool);
+            price_history_repo.create(crate::models::CreatePriceHistory {
+                product_id: id.to_string(),
+                old_price: existing.sale_price,
+                new_price: sale_price,
+                reason: Some("Atualização de preço via edição de produto".to_string()),
+                employee_id: None, // TODO: Receber employee_id do contexto
+            }).await?;
+        }
+
         sqlx::query(
             "UPDATE products SET name = ?, barcode = ?, description = ?, unit = ?, is_weighted = ?, sale_price = ?, cost_price = ?, current_stock = ?, min_stock = ?, is_active = ?, category_id = ?, updated_at = ? WHERE id = ?"
         )
@@ -239,6 +252,35 @@ impl<'a> ProductRepository<'a> {
             .execute(self.pool)
             .await?;
         Ok(())
+    }
+
+    /// Reativa um produto que foi desativado (soft deleted)
+    pub async fn reactivate(&self, id: &str) -> AppResult<Product> {
+        let now = chrono::Utc::now().to_rfc3339();
+        sqlx::query("UPDATE products SET is_active = 1, updated_at = ? WHERE id = ?")
+            .bind(&now)
+            .bind(id)
+            .execute(self.pool)
+            .await?;
+        self.find_by_id(id).await?.ok_or_else(|| crate::error::AppError::NotFound { entity: "Product".into(), id: id.into() })
+    }
+
+    /// Retorna todos os produtos (ativos e inativos)
+    pub async fn find_all(&self) -> AppResult<Vec<Product>> {
+        let query = format!("SELECT {} FROM products ORDER BY name", Self::PRODUCT_COLUMNS);
+        let result = sqlx::query_as::<_, Product>(&query)
+            .fetch_all(self.pool)
+            .await?;
+        Ok(result)
+    }
+
+    /// Retorna apenas produtos inativos
+    pub async fn find_inactive(&self) -> AppResult<Vec<Product>> {
+        let query = format!("SELECT {} FROM products WHERE is_active = 0 ORDER BY name", Self::PRODUCT_COLUMNS);
+        let result = sqlx::query_as::<_, Product>(&query)
+            .fetch_all(self.pool)
+            .await?;
+        Ok(result)
     }
 
     pub async fn get_stock_summary(&self) -> AppResult<Vec<StockSummary>> {

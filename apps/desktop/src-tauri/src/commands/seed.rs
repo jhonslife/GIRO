@@ -178,7 +178,14 @@ pub async fn seed_database(state: State<'_, AppState>) -> AppResult<String> {
     let mut current_date = start_date;
 
     let mut rng = StdRng::seed_from_u64(42);
-    let admin_id = "emp-admin-001"; // Assuming from seed.sql or we assume standard
+    
+    // Busca o ID do admin real no banco de dados
+    let admin_id = sqlx::query_scalar::<_, String>(
+        "SELECT id FROM Employee WHERE role = 'ADMIN' AND is_active = 1 ORDER BY created_at LIMIT 1"
+    )
+    .fetch_optional(pool)
+    .await?
+    .unwrap_or_else(|| "emp-admin-001".to_string());
 
     while current_date <= end_date {
         // Skip Sundays if you want, but groceries work Sundays. Let's keep it.
@@ -194,7 +201,7 @@ pub async fn seed_database(state: State<'_, AppState>) -> AppResult<String> {
             "INSERT INTO CashSession (id, employee_id, opened_at, opening_balance, status, created_at, updated_at) VALUES (?, ?, ?, ?, 'CLOSED', ?, ?)"
         )
         .bind(&session_id)
-        .bind(admin_id)
+        .bind(&admin_id)
         .bind(open_time.to_rfc3339())
         .bind(opening_balance)
         .bind(open_time.to_rfc3339())
@@ -258,7 +265,7 @@ pub async fn seed_database(state: State<'_, AppState>) -> AppResult<String> {
             )
             .bind(&sale_id)
             .bind(sales_count + 1)
-            .bind(admin_id)
+            .bind(&admin_id)
             .bind(&session_id)
             .bind(subtotal)
             .bind(0.0)

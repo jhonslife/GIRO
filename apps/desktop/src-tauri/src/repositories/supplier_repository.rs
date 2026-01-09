@@ -113,6 +113,34 @@ impl<'a> SupplierRepository<'a> {
             .await?;
         Ok(())
     }
+
+    /// Reativa um fornecedor desativado
+    pub async fn reactivate(&self, id: &str) -> AppResult<Supplier> {
+        let now = chrono::Utc::now().to_rfc3339();
+        sqlx::query("UPDATE suppliers SET is_active = 1, updated_at = ? WHERE id = ?")
+            .bind(&now).bind(id)
+            .execute(self.pool)
+            .await?;
+        self.find_by_id(id).await?.ok_or_else(|| crate::error::AppError::NotFound { entity: "Supplier".into(), id: id.into() })
+    }
+
+    /// Retorna todos os fornecedores (ativos e inativos)
+    pub async fn find_all(&self) -> AppResult<Vec<Supplier>> {
+        let query = format!("SELECT {} FROM suppliers ORDER BY name", Self::COLS);
+        let result = sqlx::query_as::<_, Supplier>(&query)
+            .fetch_all(self.pool)
+            .await?;
+        Ok(result)
+    }
+
+    /// Retorna apenas fornecedores inativos
+    pub async fn find_inactive(&self) -> AppResult<Vec<Supplier>> {
+        let query = format!("SELECT {} FROM suppliers WHERE is_active = 0 ORDER BY name", Self::COLS);
+        let result = sqlx::query_as::<_, Supplier>(&query)
+            .fetch_all(self.pool)
+            .await?;
+        Ok(result)
+    }
 }
 
 #[cfg(test)]

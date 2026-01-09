@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Mercearias",
-  "version": "0.1.0",
-  "identifier": "com.arkheion.mercearias",
+  "productName": "GIRO",
+  "version": "1.0.0",
+  "identifier": "com.arkheion.giro",
   "build": {
     "frontendDist": "../dist"
   },
@@ -10,7 +10,7 @@
     "withGlobalTauri": true,
     "windows": [
       {
-        "title": "Mercearias - PDV",
+        "title": "GIRO - Sistema de Gestao Comercial",
         "label": "main",
         "width": 1366,
         "height": 768,
@@ -23,10 +23,35 @@
     ],
     "security": {
       "csp": null
+    },
+    "trayIcon": {
+      "iconPath": "icons/icon.png",
+      "iconAsTemplate": false,
+      "id": "main-tray"
     }
   },
   "bundle": {
     "active": true,
-    "targets": "all"
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "publisher": "Arkheion",
+    "copyright": "Copyright 2026 Arkheion. Todos os direitos reservados.",
+    "shortDescription": "Sistema de gestao comercial para varejo",
+    "longDescription": "GIRO e um sistema completo de PDV e gestao comercial para pequenos e medios varejos brasileiros. Desenvolvido por Arkheion.",
+    "windows": {
+      "nsis": {
+        "displayLanguageSelector": true,
+        "languages": ["PortugueseBR"],
+        "installerIcon": "icons/icon.ico",
+        "headerImage": "icons/128x128.png",
+        "sidebarImage": "icons/128x128.png"
+      }
+    }
   }
 }

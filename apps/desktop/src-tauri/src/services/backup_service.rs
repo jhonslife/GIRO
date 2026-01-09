@@ -221,7 +221,7 @@ impl BackupService {
 
         // Criptografa se necessário
         let (final_data, encrypted) = if self.config.encrypt {
-            let pwd = password.unwrap_or("mercearias-default-key");
+            let pwd = password.unwrap_or("giro-default-key");
             match encrypt_data(&data, pwd) {
                 Ok(encrypted_data) => (encrypted_data, true),
                 Err(e) => {
@@ -295,7 +295,7 @@ impl BackupService {
             .unwrap_or(false);
 
         let final_data = if is_encrypted {
-            let pwd = password.unwrap_or("mercearias-default-key");
+            let pwd = password.unwrap_or("giro-default-key");
             decrypt_data(&data, pwd)?
         } else {
             data

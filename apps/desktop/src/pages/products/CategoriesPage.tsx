@@ -17,11 +17,28 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { CATEGORY_COLORS, useCategories, useCreateCategory } from '@/hooks/useCategories';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  CATEGORY_COLORS,
+  useAllCategories,
+  useCategories,
+  useCreateCategory,
+  useDeactivateCategory,
+  useInactiveCategories,
+  useReactivateCategory,
+} from '@/hooks/useCategories';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, Edit, FolderTree, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Edit, FolderTree, Plus, Power, PowerOff } from 'lucide-react';
 import { useState, type FC } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+type StatusFilter = 'active' | 'inactive' | 'all';
 
 // ────────────────────────────────────────────────────────────────────────────
 // COMPONENT
@@ -29,12 +46,45 @@ import { useNavigate } from 'react-router-dom';
 
 export const CategoriesPage: FC = () => {
   const navigate = useNavigate();
-  const { data: categories = [], isLoading } = useCategories();
+
+  // Status filter
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('active');
+
+  // Queries based on filter
+  const { data: activeCategories = [], isLoading: loadingActive } = useCategories();
+  const { data: inactiveCategories = [], isLoading: loadingInactive } = useInactiveCategories();
+  const { data: allCategories = [], isLoading: loadingAll } = useAllCategories();
+
+  // Get categories based on filter
+  const categories =
+    statusFilter === 'active'
+      ? activeCategories
+      : statusFilter === 'inactive'
+      ? inactiveCategories
+      : allCategories;
+  const isLoading =
+    statusFilter === 'active'
+      ? loadingActive
+      : statusFilter === 'inactive'
+      ? loadingInactive
+      : loadingAll;
+
+  // Mutations
   const createCategory = useCreateCategory();
+  const deactivateCategory = useDeactivateCategory();
+  const reactivateCategory = useReactivateCategory();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [selectedColor, setSelectedColor] = useState(CATEGORY_COLORS[0]!.value);
+
+  // Confirmation dialog
+  const [confirmDialog, setConfirmDialog] = useState<{
+    open: boolean;
+    type: 'deactivate' | 'reactivate';
+    categoryId: string;
+    categoryName: string;
+  }>({ open: false, type: 'deactivate', categoryId: '', categoryName: '' });
 
   const handleCreate = async () => {
     if (!newCategoryName.trim()) return;
@@ -49,6 +99,15 @@ export const CategoriesPage: FC = () => {
     setIsDialogOpen(false);
   };
 
+  const handleConfirmAction = async () => {
+    if (confirmDialog.type === 'deactivate') {
+      await deactivateCategory.mutateAsync(confirmDialog.categoryId);
+    } else {
+      await reactivateCategory.mutateAsync(confirmDialog.categoryId);
+    }
+    setConfirmDialog({ ...confirmDialog, open: false });
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -60,6 +119,18 @@ export const CategoriesPage: FC = () => {
           <h1 className="text-3xl font-bold tracking-tight">Categorias</h1>
           <p className="text-muted-foreground">Organize seus produtos em categorias</p>
         </div>
+
+        {/* Status Filter */}
+        <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as StatusFilter)}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Filtrar por status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="active">Ativas</SelectItem>
+            <SelectItem value="inactive">Inativas</SelectItem>
+            <SelectItem value="all">Todas</SelectItem>
+          </SelectContent>
+        </Select>
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
@@ -148,7 +219,10 @@ export const CategoriesPage: FC = () => {
           </div>
         ) : (
           categories.map((category) => (
-            <Card key={category.id} className="group relative">
+            <Card
+              key={category.id}
+              className={cn('group relative', !category.isActive && 'opacity-60')}
+            >
               <div
                 className="absolute inset-x-0 top-0 h-1 rounded-t-lg"
                 style={{ backgroundColor: category.color || '#6b7280' }}
@@ -161,14 +235,49 @@ export const CategoriesPage: FC = () => {
                       style={{ backgroundColor: category.color || '#6b7280' }}
                     />
                     {category.name}
+                    {!category.isActive && (
+                      <Badge variant="secondary" className="ml-2 text-xs">
+                        Inativa
+                      </Badge>
+                    )}
                   </CardTitle>
                   <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                     <Button variant="ghost" size="icon-sm">
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon-sm" className="text-destructive">
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    {category.isActive ? (
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        className="text-destructive"
+                        onClick={() =>
+                          setConfirmDialog({
+                            open: true,
+                            type: 'deactivate',
+                            categoryId: category.id,
+                            categoryName: category.name,
+                          })
+                        }
+                      >
+                        <PowerOff className="h-4 w-4" />
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        className="text-green-600"
+                        onClick={() =>
+                          setConfirmDialog({
+                            open: true,
+                            type: 'reactivate',
+                            categoryId: category.id,
+                            categoryName: category.name,
+                          })
+                        }
+                      >
+                        <Power className="h-4 w-4" />
+                      </Button>
+                    )}
                   </div>
                 </div>
               </CardHeader>
@@ -182,6 +291,39 @@ export const CategoriesPage: FC = () => {
           ))
         )}
       </div>
+
+      {/* Confirmation Dialog */}
+      <Dialog
+        open={confirmDialog.open}
+        onOpenChange={(open) => setConfirmDialog({ ...confirmDialog, open })}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {confirmDialog.type === 'deactivate' ? 'Desativar Categoria' : 'Reativar Categoria'}
+            </DialogTitle>
+            <DialogDescription>
+              {confirmDialog.type === 'deactivate'
+                ? `Tem certeza que deseja desativar a categoria "${confirmDialog.categoryName}"? Os produtos desta categoria não serão afetados.`
+                : `Tem certeza que deseja reativar a categoria "${confirmDialog.categoryName}"?`}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setConfirmDialog({ ...confirmDialog, open: false })}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant={confirmDialog.type === 'deactivate' ? 'destructive' : 'default'}
+              onClick={handleConfirmAction}
+            >
+              {confirmDialog.type === 'deactivate' ? 'Desativar' : 'Reativar'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -17,6 +17,7 @@ import type {
   PaginatedResult,
   Product,
   ProductFilter,
+  ProductLot,
   Sale,
   SaleFilter,
   Setting,
@@ -62,6 +63,22 @@ export async function deleteProduct(id: string): Promise<void> {
   return tauriInvoke<void>('delete_product', { id });
 }
 
+export async function deactivateProduct(id: string): Promise<void> {
+  return tauriInvoke<void>('deactivate_product', { id });
+}
+
+export async function reactivateProduct(id: string): Promise<Product> {
+  return tauriInvoke<Product>('reactivate_product', { id });
+}
+
+export async function getAllProducts(includeInactive = false): Promise<Product[]> {
+  return tauriInvoke<Product[]>('get_all_products', { includeInactive });
+}
+
+export async function getInactiveProducts(): Promise<Product[]> {
+  return tauriInvoke<Product[]>('get_inactive_products');
+}
+
 // ────────────────────────────────────────────────────────────────────────────
 // CATEGORIES
 // ────────────────────────────────────────────────────────────────────────────
@@ -85,6 +102,22 @@ export async function updateCategory(id: string, input: Partial<Category>): Prom
 
 export async function deleteCategory(id: string): Promise<void> {
   return tauriInvoke<void>('delete_category', { id });
+}
+
+export async function deactivateCategory(id: string): Promise<void> {
+  return tauriInvoke<void>('deactivate_category', { id });
+}
+
+export async function reactivateCategory(id: string): Promise<Category> {
+  return tauriInvoke<Category>('reactivate_category', { id });
+}
+
+export async function getAllCategories(): Promise<Category[]> {
+  return tauriInvoke<Category[]>('get_all_categories');
+}
+
+export async function getInactiveCategories(): Promise<Category[]> {
+  return tauriInvoke<Category[]>('get_inactive_categories');
 }
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -183,6 +216,18 @@ export async function updateEmployee(id: string, input: Partial<Employee>): Prom
   return tauriInvoke<Employee>('update_employee', { id, input });
 }
 
+export async function deactivateEmployee(id: string): Promise<void> {
+  return tauriInvoke<void>('deactivate_employee', { id });
+}
+
+export async function reactivateEmployee(id: string): Promise<Employee> {
+  return tauriInvoke<Employee>('reactivate_employee', { id });
+}
+
+export async function getInactiveEmployees(): Promise<Employee[]> {
+  return tauriInvoke<Employee[]>('get_inactive_employees');
+}
+
 // ────────────────────────────────────────────────────────────────────────────
 // STOCK
 // ────────────────────────────────────────────────────────────────────────────
@@ -217,6 +262,10 @@ export async function adjustStock(
 
 export async function getLowStockProducts(): Promise<Product[]> {
   return tauriInvoke<Product[]>('get_low_stock_products');
+}
+
+export async function getExpiringLots(days: number): Promise<ProductLot[]> {
+  return tauriInvoke<ProductLot[]>('get_expiring_lots', { days });
 }
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -255,6 +304,30 @@ export async function createSupplier(
   input: Omit<Supplier, 'id' | 'createdAt' | 'updatedAt'>
 ): Promise<Supplier> {
   return tauriInvoke<Supplier>('create_supplier', { input });
+}
+
+export async function updateSupplier(id: string, input: Partial<Supplier>): Promise<Supplier> {
+  return tauriInvoke<Supplier>('update_supplier', { id, input });
+}
+
+export async function deleteSupplier(id: string): Promise<void> {
+  return tauriInvoke<void>('delete_supplier', { id });
+}
+
+export async function deactivateSupplier(id: string): Promise<void> {
+  return tauriInvoke<void>('deactivate_supplier', { id });
+}
+
+export async function reactivateSupplier(id: string): Promise<Supplier> {
+  return tauriInvoke<Supplier>('reactivate_supplier', { id });
+}
+
+export async function getAllSuppliers(): Promise<Supplier[]> {
+  return tauriInvoke<Supplier[]>('get_all_suppliers');
+}
+
+export async function getInactiveSuppliers(): Promise<Supplier[]> {
+  return tauriInvoke<Supplier[]>('get_inactive_suppliers');
 }
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -349,4 +422,35 @@ export async function getLastBackupDate(): Promise<string | null> {
 // Seeding
 export async function seedDatabase(): Promise<string> {
   return tauriInvoke<string>('seed_database');
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// PRICE HISTORY
+// ────────────────────────────────────────────────────────────────────────────
+
+export type PriceHistory = {
+  id: string;
+  productId: string;
+  oldPrice: number;
+  newPrice: number;
+  reason?: string;
+  employeeId?: string;
+  createdAt: string;
+};
+
+export type PriceHistoryWithProduct = PriceHistory & {
+  productName?: string;
+  employeeName?: string;
+};
+
+export async function getPriceHistoryByProduct(productId: string): Promise<PriceHistory[]> {
+  return tauriInvoke<PriceHistory[]>('get_price_history_by_product', { productId });
+}
+
+export async function getRecentPriceHistory(limit?: number): Promise<PriceHistoryWithProduct[]> {
+  return tauriInvoke<PriceHistoryWithProduct[]>('get_recent_price_history', { limit });
+}
+
+export async function getPriceHistoryById(id: string): Promise<PriceHistory | null> {
+  return tauriInvoke<PriceHistory | null>('get_price_history_by_id', { id });
 }

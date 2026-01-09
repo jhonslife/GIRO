@@ -15,19 +15,30 @@ export {
 export { PDV_SHORTCUTS, useKeyboard, usePDVKeyboard } from './use-keyboard';
 
 // Employees
-export { useCreateEmployee, useEmployees, useUpdateEmployee } from './useEmployees';
+export {
+  useCreateEmployee,
+  useDeactivateEmployee,
+  useEmployees,
+  useInactiveEmployees,
+  useReactivateEmployee,
+  useUpdateEmployee,
+} from './useEmployees';
 
 // Dashboard
 export { useDashboardStats } from './useDashboard';
 
 // Products
 export {
+  useAllProducts,
   useCreateProduct,
+  useDeactivateProduct,
   useDeleteProduct,
+  useInactiveProducts,
   useProduct,
   useProductByBarcode,
   useProductSearch,
   useProducts,
+  useReactivateProduct,
   useUpdateProduct,
 } from './use-products';
 
@@ -45,3 +56,9 @@ export * from './useStock';
 
 // Alerts
 export * from './useAlerts';
+
+// Suppliers
+export * from './useSuppliers';
+
+// Price History
+export * from './usePriceHistory';

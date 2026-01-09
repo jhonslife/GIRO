@@ -162,6 +162,43 @@ export function useDeactivateProduct() {
 }
 
 /**
+ * Reativa um produto que foi desativado
+ */
+export function useReactivateProduct() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => invoke<Product>('reactivate_product', { id }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['inactiveProducts'] });
+    },
+  });
+}
+
+/**
+ * Lista produtos inativos
+ */
+export function useInactiveProducts() {
+  return useQuery({
+    queryKey: ['inactiveProducts'],
+    queryFn: () => invoke<Product[]>('get_inactive_products'),
+    staleTime: 1000 * 60 * 5,
+  });
+}
+
+/**
+ * Lista todos os produtos (ativos e inativos)
+ */
+export function useAllProducts(includeInactive = false) {
+  return useQuery({
+    queryKey: ['products', 'all', includeInactive],
+    queryFn: () => invoke<Product[]>('get_all_products', { includeInactive }),
+    staleTime: 1000 * 60 * 5,
+  });
+}
+
+/**
  * Cria nova categoria
  */
 export function useCreateCategory() {

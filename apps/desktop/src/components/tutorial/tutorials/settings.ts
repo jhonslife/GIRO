@@ -14,7 +14,7 @@ export const settingsTutorial: Tutorial = {
       id: 'settings-intro',
       title: '⚙️ Personalize seu Sistema',
       description:
-        'Configure o Mercearias para funcionar perfeitamente com seu hardware e exibir as informações da sua loja nos cupons.',
+        'Configure o GIRO para funcionar perfeitamente com seu hardware e exibir as informações da sua loja nos cupons.',
       placement: 'center',
       route: '/settings',
     },

@@ -6,6 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import {
   addStockEntry,
   adjustStock,
+  getExpiringLots,
   getLowStockProducts,
   getStockMovements,
   getStockReport,
@@ -21,6 +22,7 @@ export const stockKeys = {
   all: ['stock'] as const,
   movements: (productId?: string) => [...stockKeys.all, 'movements', productId] as const,
   lowStock: () => [...stockKeys.all, 'lowStock'] as const,
+  expiringLots: (days: number) => [...stockKeys.all, 'expiringLots', days] as const,
   report: () => [...stockKeys.all, 'report'] as const,
 };
 
@@ -46,6 +48,19 @@ export function useLowStockProducts() {
   return useQuery({
     queryKey: stockKeys.lowStock(),
     queryFn: getLowStockProducts,
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: 10 * 60 * 1000,
+  });
+}
+
+/**
+ * Lotes próximos ao vencimento
+ * @param days - Número de dias para considerar como "próximo ao vencimento" (padrão: 30)
+ */
+export function useExpiringLots(days: number = 30) {
+  return useQuery({
+    queryKey: stockKeys.expiringLots(days),
+    queryFn: () => getExpiringLots(days),
     staleTime: 5 * 60 * 1000,
     refetchInterval: 10 * 60 * 1000,
   });

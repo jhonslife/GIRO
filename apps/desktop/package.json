@@ -1,7 +1,7 @@
 {
-  "name": "@mercearias/desktop",
-  "version": "0.1.0",
-  "description": "Aplicação desktop Mercearias - PDV completo para varejo",
+  "name": "@giro/desktop",
+  "version": "1.0.0",
+  "description": "GIRO - Sistema de Gestao Comercial | Desenvolvido por Arkheion",
   "private": true,
   "type": "module",
   "scripts": {

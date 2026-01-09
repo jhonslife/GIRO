@@ -19,6 +19,7 @@ export const createCategory = (overrides: Partial<Category> = {}): Category => {
     icon: 'shopping-basket',
     parentId: undefined,
     productCount: 0,
+    isActive: true,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     ...overrides,

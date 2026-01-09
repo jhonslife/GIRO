@@ -47,7 +47,7 @@ describe('LoginPage', () => {
   it('should render login page', () => {
     renderLoginPage();
 
-    expect(screen.getByText('Mercearias')).toBeInTheDocument();
+    expect(screen.getByText('GIRO')).toBeInTheDocument();
     expect(screen.getByText('Digite seu PIN para entrar')).toBeInTheDocument();
   });
 
@@ -55,7 +55,7 @@ describe('LoginPage', () => {
     renderLoginPage();
 
     // Count PIN display divs (empty circles)
-    const pinCard = screen.getByRole('heading', { name: 'Mercearias' }).closest('div');
+    const pinCard = screen.getByRole('heading', { name: 'GIRO' }).closest('div');
     expect(pinCard).toBeInTheDocument();
   });
 
@@ -215,6 +215,5 @@ describe('LoginPage', () => {
     renderLoginPage();
 
     expect(screen.getByText(/1234/)).toBeInTheDocument();
-    expect(screen.getByText(/0000/)).toBeInTheDocument();
   });
 });

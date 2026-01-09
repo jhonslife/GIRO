@@ -1,11 +1,13 @@
 'use client';
 
 import { Badge } from '@/components/ui/badge';
+import { invoke } from '@/lib/tauri';
 import { cn } from '@/lib/utils';
+import { useSettingsStore } from '@/stores/settings-store';
 import { HardDrive, Printer, Scale, Wifi, WifiOff } from 'lucide-react';
-import { type FC } from 'react';
+import { useEffect, useState, type FC } from 'react';
 
-// Status de hardware simulado (será integrado com backend)
+// Status de hardware
 interface HardwareStatus {
   printer: 'connected' | 'disconnected' | 'error';
   scale: 'connected' | 'disconnected' | 'error';
@@ -13,15 +15,80 @@ interface HardwareStatus {
   database: 'connected' | 'error';
 }
 
-// TODO: Integrar com Tauri commands reais
+interface ScannerServerInfo {
+  running: boolean;
+  ip: string;
+  port: number;
+  url: string;
+}
+
+/**
+ * Hook para obter status real do hardware via Tauri commands
+ */
 const useHardwareStatus = (): HardwareStatus => {
-  // Mock - será substituído por estado real
-  return {
-    printer: 'connected',
+  const { printer, scale } = useSettingsStore();
+  const [status, setStatus] = useState<HardwareStatus>({
+    printer: 'disconnected',
     scale: 'disconnected',
-    scanner: 'connected',
+    scanner: 'disconnected',
     database: 'connected',
-  };
+  });
+
+  useEffect(() => {
+    const checkHardwareStatus = async () => {
+      const newStatus: HardwareStatus = {
+        printer: 'disconnected',
+        scale: 'disconnected',
+        scanner: 'disconnected',
+        database: 'connected',
+      };
+
+      // Verificar impressora
+      if (printer.enabled) {
+        try {
+          await invoke('test_printer');
+          newStatus.printer = 'connected';
+        } catch {
+          newStatus.printer = 'error';
+        }
+      }
+
+      // Verificar balança
+      if (scale.enabled) {
+        try {
+          await invoke('read_weight');
+          newStatus.scale = 'connected';
+        } catch {
+          newStatus.scale = 'error';
+        }
+      }
+
+      // Verificar scanner server
+      try {
+        const scannerInfo = await invoke<ScannerServerInfo | null>('get_scanner_server_info');
+        if (scannerInfo?.running) {
+          newStatus.scanner = 'connected';
+        }
+      } catch {
+        // Scanner não está rodando
+      }
+
+      // Database sempre conectado (se chegou aqui, está funcionando)
+      newStatus.database = 'connected';
+
+      setStatus(newStatus);
+    };
+
+    // Verifica imediatamente
+    checkHardwareStatus();
+
+    // Verifica a cada 30 segundos
+    const interval = setInterval(checkHardwareStatus, 30000);
+
+    return () => clearInterval(interval);
+  }, [printer.enabled, scale.enabled]);
+
+  return status;
 };
 
 const StatusIndicator: FC<{

@@ -1,4 +1,4 @@
-//! Mercearias Desktop - Sistema de Gestão para Varejos
+//! GIRO Desktop - Sistema de Gestão para Varejos
 //!
 //! Módulos principais:
 //! - `commands`: Tauri commands para o frontend

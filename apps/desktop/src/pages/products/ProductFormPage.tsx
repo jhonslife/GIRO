@@ -3,6 +3,7 @@
  * @description Formulário completo para criar ou editar produto
  */
 
+import { PriceHistoryCard } from '@/components/shared/PriceHistoryCard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -102,7 +103,7 @@ export const ProductFormPage: FC = () => {
           description: 'O produto foi cadastrado com sucesso.',
         });
       }
-      navigate('/produtos');
+      navigate('/products');
     } catch {
       toast({
         title: 'Erro',
@@ -125,7 +126,7 @@ export const ProductFormPage: FC = () => {
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild>
-          <Link to="/produtos">
+          <Link to="/products">
             <ArrowLeft className="h-5 w-5" />
           </Link>
         </Button>
@@ -361,9 +362,12 @@ export const ProductFormPage: FC = () => {
               {isSubmitting ? 'Salvando...' : 'Salvar Produto'}
             </Button>
             <Button variant="outline" type="button" asChild>
-              <Link to="/produtos">Cancelar</Link>
+              <Link to="/products">Cancelar</Link>
             </Button>
           </div>
+
+          {/* Histórico de Preços (apenas em edição) */}
+          {isEditing && id && <PriceHistoryCard productId={id} />}
         </div>
       </form>
     </div>

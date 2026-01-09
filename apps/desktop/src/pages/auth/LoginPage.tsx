@@ -9,7 +9,7 @@ import { authenticateEmployee } from '@/lib/tauri';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth-store';
 import type { EmployeeRole } from '@/types';
-import { Lock, ShoppingCart } from 'lucide-react';
+import { Lock } from 'lucide-react';
 import { useEffect, useRef, useState, type FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -101,10 +101,10 @@ export const LoginPage: FC = () => {
     >
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground">
-            <ShoppingCart className="h-8 w-8" />
+          <div className="mx-auto mb-4">
+            <img src="/logo.png" alt="GIRO" className="h-16 w-16 rounded-xl" />
           </div>
-          <CardTitle className="text-2xl">Mercearias</CardTitle>
+          <CardTitle className="text-2xl">GIRO</CardTitle>
           <CardDescription>Digite seu PIN para entrar</CardDescription>
         </CardHeader>
 
@@ -167,10 +167,8 @@ export const LoginPage: FC = () => {
             )}
           </Button>
 
-          {/* Dicas */}
-          <p className="text-center text-xs text-muted-foreground">
-            PIN de teste: <strong>1234</strong> (Admin) ou <strong>0000</strong> (Operador)
-          </p>
+          {/* Versão do sistema */}
+          <p className="text-center text-xs text-muted-foreground">GIRO v1.0.0</p>
         </CardContent>
       </Card>
     </div>

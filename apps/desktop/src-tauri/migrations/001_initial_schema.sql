@@ -1,5 +1,5 @@
 -- Migration: 001_initial_schema
--- Description: Schema inicial completo do sistema Mercearias
+-- Description: Schema inicial completo do sistema GIRO
 -- Created: 2026-01-08
 
 -- ═══════════════════════════════════════════════════════════════════════════
@@ -281,9 +281,9 @@ CREATE INDEX idx_alerts_created ON alerts(created_at);
 INSERT OR IGNORE INTO categories (id, name, description, color, icon)
 VALUES ('default-category', 'Sem Categoria', 'Categoria padrão para produtos', '#94a3b8', 'package');
 
--- Usuário admin padrão (PIN: 0000)
+-- Usuário admin padrão (PIN: 1234 - hash SHA256)
 INSERT OR IGNORE INTO employees (id, name, pin, role)
-VALUES ('admin-default', 'Administrador', '0000', 'ADMIN');
+VALUES ('admin-default', 'Administrador', '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4', 'ADMIN');
 
 -- Configurações padrão
 INSERT OR IGNORE INTO settings (key, value, category) VALUES

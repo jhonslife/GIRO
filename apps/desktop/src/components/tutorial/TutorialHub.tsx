@@ -28,7 +28,7 @@ import {
   Warehouse,
   Zap,
 } from 'lucide-react';
-import { type FC, useMemo, useState } from 'react';
+import { useMemo, useState, type FC } from 'react';
 import { useTutorialStore } from './tutorial-store';
 import { getTutorialsByCategory, searchTutorials, tutorials } from './tutorials';
 import type { Tutorial, TutorialId } from './types';
@@ -231,7 +231,7 @@ export const TutorialHub: FC = () => {
           Central de Treinamentos
         </h1>
         <p className="text-gray-600 dark:text-gray-400 mt-2">
-          Aprenda a usar todas as funcionalidades do sistema Mercearias
+          Aprenda a usar todas as funcionalidades do sistema GIRO
         </p>
       </div>
 

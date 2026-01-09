@@ -7,12 +7,28 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   Table,
   TableBody,
@@ -21,15 +37,25 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useProducts } from '@/hooks/useProducts';
+import { useAllProducts, useDeactivateProduct, useReactivateProduct } from '@/hooks/use-products';
+import { useToast } from '@/hooks/use-toast';
 import { cn, formatCurrency } from '@/lib/utils';
-import { Copy, Edit, Filter, MoreHorizontal, Package, Plus, Search, Trash2 } from 'lucide-react';
-import { type FC, useEffect, useState } from 'react';
+import type { Product } from '@/types';
+import { Copy, Edit, MoreHorizontal, Package, Plus, Power, PowerOff, Search } from 'lucide-react';
+import { type FC, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+
+type StatusFilter = 'all' | 'active' | 'inactive';
 
 export const ProductsPage: FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('active');
+  const [productToDeactivate, setProductToDeactivate] = useState<Product | null>(null);
+
+  const { toast } = useToast();
+  const deactivateProduct = useDeactivateProduct();
+  const reactivateProduct = useReactivateProduct();
 
   // Debounce search query
   useEffect(() => {
@@ -39,11 +65,67 @@ export const ProductsPage: FC = () => {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  const { data: products, isLoading } = useProducts({
-    search: debouncedSearch,
-    // TODO: Implementar paginação
-    limit: 50,
-  });
+  // Busca todos os produtos (incluindo inativos se necessário)
+  const { data: allProducts, isLoading } = useAllProducts(statusFilter !== 'active');
+
+  // Filtra produtos baseado no status e busca
+  const products = useMemo(() => {
+    if (!allProducts) return [];
+
+    return allProducts.filter((product) => {
+      // Filtro de status
+      if (statusFilter === 'active' && !product.isActive) return false;
+      if (statusFilter === 'inactive' && product.isActive) return false;
+
+      // Filtro de busca
+      if (debouncedSearch) {
+        const searchLower = debouncedSearch.toLowerCase();
+        return (
+          product.name.toLowerCase().includes(searchLower) ||
+          product.internalCode.toLowerCase().includes(searchLower) ||
+          (product.barcode && product.barcode.includes(debouncedSearch))
+        );
+      }
+
+      return true;
+    });
+  }, [allProducts, statusFilter, debouncedSearch]);
+
+  const handleDeactivate = async () => {
+    if (!productToDeactivate) return;
+
+    try {
+      await deactivateProduct.mutateAsync(productToDeactivate.id);
+      toast({
+        title: 'Produto desativado',
+        description: `${productToDeactivate.name} foi desativado com sucesso.`,
+      });
+    } catch {
+      toast({
+        title: 'Erro',
+        description: 'Não foi possível desativar o produto.',
+        variant: 'destructive',
+      });
+    } finally {
+      setProductToDeactivate(null);
+    }
+  };
+
+  const handleReactivate = async (product: Product) => {
+    try {
+      await reactivateProduct.mutateAsync(product.id);
+      toast({
+        title: 'Produto reativado',
+        description: `${product.name} foi reativado com sucesso.`,
+      });
+    } catch {
+      toast({
+        title: 'Erro',
+        description: 'Não foi possível reativar o produto.',
+        variant: 'destructive',
+      });
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -79,10 +161,16 @@ export const ProductsPage: FC = () => {
                 className="pl-10"
               />
             </div>
-            <Button variant="outline">
-              <Filter className="mr-2 h-4 w-4" />
-              Filtros
-            </Button>
+            <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as StatusFilter)}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos</SelectItem>
+                <SelectItem value="active">Ativos</SelectItem>
+                <SelectItem value="inactive">Inativos</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </CardContent>
       </Card>
@@ -164,7 +252,7 @@ export const ProductsPage: FC = () => {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem asChild>
-                            <Link to={`/products/${product.id}/edit`}>
+                            <Link to={`/products/${product.id}`}>
                               <Edit className="mr-2 h-4 w-4" />
                               Editar
                             </Link>
@@ -173,10 +261,24 @@ export const ProductsPage: FC = () => {
                             <Copy className="mr-2 h-4 w-4" />
                             Duplicar
                           </DropdownMenuItem>
-                          <DropdownMenuItem className="text-destructive">
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Excluir
-                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          {product.isActive ? (
+                            <DropdownMenuItem
+                              className="text-destructive"
+                              onClick={() => setProductToDeactivate(product)}
+                            >
+                              <PowerOff className="mr-2 h-4 w-4" />
+                              Desativar
+                            </DropdownMenuItem>
+                          ) : (
+                            <DropdownMenuItem
+                              className="text-success"
+                              onClick={() => handleReactivate(product)}
+                            >
+                              <Power className="mr-2 h-4 w-4" />
+                              Reativar
+                            </DropdownMenuItem>
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -187,6 +289,28 @@ export const ProductsPage: FC = () => {
           </Table>
         </CardContent>
       </Card>
+
+      {/* Dialog de confirmação para desativar */}
+      <Dialog open={!!productToDeactivate} onOpenChange={() => setProductToDeactivate(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Desativar produto?</DialogTitle>
+            <DialogDescription>
+              O produto <strong>{productToDeactivate?.name}</strong> será desativado e não aparecerá
+              mais na busca do PDV. Você poderá reativá-lo a qualquer momento.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setProductToDeactivate(null)}>
+              Cancelar
+            </Button>
+            <Button variant="destructive" onClick={handleDeactivate}>
+              <PowerOff className="mr-2 h-4 w-4" />
+              Desativar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

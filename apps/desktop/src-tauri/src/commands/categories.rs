@@ -41,3 +41,35 @@ pub async fn delete_category(id: String, state: State<'_, AppState>) -> AppResul
     let repo = CategoryRepository::new(state.pool());
     repo.delete(&id).await
 }
+
+/// Desativa uma categoria (alias para delete)
+#[tauri::command]
+pub async fn deactivate_category(id: String, state: State<'_, AppState>) -> AppResult<()> {
+    let repo = CategoryRepository::new(state.pool());
+    repo.delete(&id).await
+}
+
+/// Reativa uma categoria desativada
+#[tauri::command]
+pub async fn reactivate_category(id: String, state: State<'_, AppState>) -> AppResult<Category> {
+    let repo = CategoryRepository::new(state.pool());
+    repo.reactivate(&id).await
+}
+
+/// Lista todas as categorias (ativas e inativas)
+#[tauri::command]
+pub async fn get_all_categories(include_inactive: bool, state: State<'_, AppState>) -> AppResult<Vec<Category>> {
+    let repo = CategoryRepository::new(state.pool());
+    if include_inactive {
+        repo.find_all().await
+    } else {
+        repo.find_all_active().await
+    }
+}
+
+/// Lista apenas categorias inativas
+#[tauri::command]
+pub async fn get_inactive_categories(state: State<'_, AppState>) -> AppResult<Vec<Category>> {
+    let repo = CategoryRepository::new(state.pool());
+    repo.find_inactive().await
+}

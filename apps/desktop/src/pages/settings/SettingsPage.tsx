@@ -16,12 +16,14 @@ import {
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { seedDatabase } from '@/lib/tauri';
+import { useToast } from '@/hooks/use-toast';
+import { seedDatabase, setSetting } from '@/lib/tauri';
 import { useSettingsStore } from '@/stores';
 import {
   Bell,
   Building2,
   Database,
+  Loader2,
   Monitor,
   Moon,
   Palette,
@@ -35,7 +37,10 @@ import {
 import { useState, type FC } from 'react';
 
 export const SettingsPage: FC = () => {
-  const { theme, setTheme, printer, scale, company } = useSettingsStore();
+  const { theme, setTheme, printer, setPrinter, scale, setScale, company, setCompany } =
+    useSettingsStore();
+  const { toast } = useToast();
+  const [isSaving, setIsSaving] = useState(false);
 
   // Local form state
   const [companyName, setCompanyName] = useState(company.name);
@@ -53,9 +58,58 @@ export const SettingsPage: FC = () => {
 
   // const [alertsEnabled, setAlertsEnabled] = useState(true); // Unused
 
-  const handleSave = () => {
-    // TODO: Salvar configurações via Tauri
-    console.log('Salvando configurações...');
+  const handleSave = async () => {
+    setIsSaving(true);
+
+    try {
+      // Atualiza store local (Zustand com persist)
+      setCompany({
+        name: companyName,
+        cnpj: companyDocument,
+        address: companyAddress,
+        phone: companyPhone,
+      });
+
+      setPrinter({
+        enabled: printerEnabled,
+        model: printerModel,
+        port: printerPort,
+      });
+
+      setScale({
+        enabled: scaleEnabled,
+        model: scaleModel,
+        port: scalePort,
+      });
+
+      // Persiste no banco de dados via Tauri
+      await Promise.all([
+        setSetting('company.name', companyName, 'string'),
+        setSetting('company.cnpj', companyDocument, 'string'),
+        setSetting('company.address', companyAddress, 'string'),
+        setSetting('company.phone', companyPhone, 'string'),
+        setSetting('printer.enabled', String(printerEnabled), 'boolean'),
+        setSetting('printer.model', printerModel, 'string'),
+        setSetting('printer.port', printerPort, 'string'),
+        setSetting('scale.enabled', String(scaleEnabled), 'boolean'),
+        setSetting('scale.model', scaleModel, 'string'),
+        setSetting('scale.port', scalePort, 'string'),
+      ]);
+
+      toast({
+        title: 'Configurações salvas',
+        description: 'Todas as configurações foram atualizadas com sucesso.',
+      });
+    } catch (error) {
+      console.error('Erro ao salvar configurações:', error);
+      toast({
+        title: 'Erro ao salvar',
+        description: 'Não foi possível salvar as configurações. Tente novamente.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -68,9 +122,18 @@ export const SettingsPage: FC = () => {
             Configure o sistema de acordo com suas necessidades
           </p>
         </div>
-        <Button onClick={handleSave}>
-          <Save className="mr-2 h-4 w-4" />
-          Salvar Alterações
+        <Button onClick={handleSave} disabled={isSaving}>
+          {isSaving ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Salvando...
+            </>
+          ) : (
+            <>
+              <Save className="mr-2 h-4 w-4" />
+              Salvar Alterações
+            </>
+          )}
         </Button>
       </div>
 

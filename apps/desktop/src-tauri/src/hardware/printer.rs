@@ -340,7 +340,7 @@ impl ThermalPrinter {
         
         self.style(TextStyle::default());
         self.feed(1);
-        self.line("Mercearias PDV");
+        self.line("GIRO PDV");
         self.line("Impressora configurada com sucesso!");
         self.feed(1);
         

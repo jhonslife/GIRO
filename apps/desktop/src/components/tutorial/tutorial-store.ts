@@ -359,7 +359,7 @@ export const useTutorialStore = create<TutorialStore>()(
       },
     }),
     {
-      name: 'mercearias-tutorials',
+      name: 'giro-tutorials',
       partialize: (state) => ({
         progress: state.progress,
         settings: state.settings,

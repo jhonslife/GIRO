@@ -1,31 +1,47 @@
-# Mercearias Desktop
+# GIRO
 
-Sistema de Ponto de Venda (PDV) para mercearias e pequenos comercios.
+Sistema de Gestao Comercial para Varejo
 
-![Tests](https://github.com/user/Mercearias/actions/workflows/ci.yml/badge.svg)
-[![codecov](https://codecov.io/gh/user/Mercearias/graph/badge.svg)](https://codecov.io/gh/user/Mercearias)
+**Desenvolvido por Arkheion**
+
+---
+
+## Sobre
+
+GIRO e um sistema completo de PDV (Ponto de Venda) e gestao comercial para pequenos e medios varejos brasileiros. Funciona 100% offline como aplicacao desktop nativa para Windows.
 
 ## Tecnologias
 
-- **Frontend:** React, TypeScript, Vite, TailwindCSS
-- **Backend:** Rust, Tauri, SQLite
-- **Testes:** Vitest, Playwright, Cargo Test
+| Camada | Tecnologia |
+|--------|------------|
+| Frontend | React, TypeScript, Vite, TailwindCSS |
+| Backend | Rust, Tauri, SQLite |
+| Testes | Vitest (254), Cargo Test (78), Playwright |
+
+## Modulos
+
+- PDV/Caixa
+- Produtos e Categorias
+- Estoque e Validade
+- Funcionarios
+- Controle de Caixa
+- Relatorios
+- Alertas
+- Sistema de Tutoriais
 
 ## Scripts
 
 ```bash
 # Desenvolvimento
 npm run dev
+npm run tauri:dev
 
 # Testes
-npm run test:run          # Vitest (250+ testes)
-npm run test:coverage     # Com cobertura
-cargo test                # Rust (78 testes)
-./scripts/run-e2e.sh      # E2E Playwright
+npm run test:run
+cargo test
 
 # Build
-npm run build
-cargo build --release
+npm run tauri:build
 ```
 
 ## Estrutura
@@ -33,30 +49,19 @@ cargo build --release
 ```
 apps/desktop/
 ├── src/                 # Frontend React
-│   ├── components/      # Componentes UI
-│   │   └── tutorial/    # Sistema de Tutoriais
-│   ├── hooks/           # React Query hooks
-│   ├── pages/           # Paginas da aplicacao
-│   └── stores/          # Zustand stores
 ├── src-tauri/           # Backend Rust
-│   ├── src/
-│   │   ├── repositories/  # Acesso a dados
-│   │   └── services/      # Logica de negocio
-│   └── migrations/        # SQLite migrations
-└── tests/               # Testes
-    ├── unit/
-    ├── integration/
-    └── e2e/
+└── tests/               # Testes E2E
 ```
 
-## Testes
+## Documentacao
 
-| Categoria | Testes |
-|-----------|--------|
-| Stores | 54 |
-| Hooks | 63 |
-| Components | 70+ |
-| Formatters | 51 |
-| Validators | 11 |
-| Integration | 12 |
-| Rust | 78 |
+- [Instalador Windows](docs/INSTALL_WIZARD.md)
+- [Termos de Servico](docs/legal/TERMS_OF_SERVICE.md)
+- [Politica de Privacidade](docs/legal/PRIVACY_POLICY.md)
+- [EULA](docs/legal/EULA.md)
+
+## Licenca
+
+Copyright 2026 Arkheion. Todos os direitos reservados.
+
+Consulte [LICENSE.md](docs/legal/LICENSE.md) para detalhes.
