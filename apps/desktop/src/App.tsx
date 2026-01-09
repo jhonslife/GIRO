@@ -1,8 +1,8 @@
 import { AppShell } from '@/components/layout';
 /* force refresh */
 import { useAuthStore } from '@/stores/auth-store';
-import { type FC } from 'react';
-import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
+import { type FC, useEffect } from 'react';
+import { Navigate, Outlet, Route, Routes, useNavigate } from 'react-router-dom';
 
 // Pages - usando named exports
 import { AlertsPage } from '@/pages/alerts';
@@ -15,6 +15,7 @@ import { CategoriesPage, ProductFormPage, ProductsPage } from '@/pages/products'
 import { ReportsPage, SalesReportPage } from '@/pages/reports';
 import { SettingsPage } from '@/pages/settings';
 import { ExpirationPage, StockEntryPage, StockPage } from '@/pages/stock';
+import { TutorialsPage } from '@/pages/tutorials';
 
 // Componente de rota protegida
 interface ProtectedRouteProps {
@@ -37,8 +38,26 @@ const ProtectedRoute: FC<ProtectedRouteProps> = ({ children, requiredRole }) => 
   return <>{children ?? <Outlet />}</>;
 };
 
+// Hook para atalho F1 - Ajuda
+const useHelpHotkey = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'F1') {
+        e.preventDefault();
+        navigate('/tutorials');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [navigate]);
+};
+
 const App: FC = () => {
   const { isAuthenticated } = useAuthStore();
+  useHelpHotkey();
 
   return (
     <Routes>
@@ -117,6 +136,9 @@ const App: FC = () => {
 
         {/* Alertas */}
         <Route path="alerts" element={<AlertsPage />} />
+
+        {/* Tutoriais / Ajuda */}
+        <Route path="tutorials" element={<TutorialsPage />} />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/pdv" replace />} />

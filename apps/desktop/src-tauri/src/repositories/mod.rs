@@ -11,10 +11,6 @@ pub mod stock_repository;
 pub mod supplier_repository;
 
 #[cfg(test)]
-mod alert_repository_test;
-#[cfg(test)]
-mod settings_repository_test;
-#[cfg(test)]
 mod stock_repository_test;
 
 pub use alert_repository::AlertRepository;

@@ -11,6 +11,7 @@ import {
   Boxes,
   ChevronLeft,
   ChevronRight,
+  HelpCircle,
   LayoutDashboard,
   Package,
   Settings,
@@ -19,33 +20,36 @@ import {
   Wallet,
 } from 'lucide-react';
 import { useState, type FC } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 
 interface NavItem {
   icon: typeof ShoppingCart;
   label: string;
   href: string;
   badge?: number;
+  tutorialId?: string;
 }
 
 const navItems: NavItem[] = [
-  { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
-  { icon: ShoppingCart, label: 'PDV', href: '/pdv' },
-  { icon: Package, label: 'Produtos', href: '/products' },
-  { icon: Boxes, label: 'Estoque', href: '/stock' },
-  { icon: Users, label: 'Funcionários', href: '/employees' },
-  { icon: Wallet, label: 'Caixa', href: '/cash' },
-  { icon: BarChart3, label: 'Relatórios', href: '/reports' },
-  { icon: Bell, label: 'Alertas', href: '/alerts' },
-  { icon: Settings, label: 'Configurações', href: '/settings' },
+  { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard', tutorialId: 'nav-dashboard' },
+  { icon: ShoppingCart, label: 'PDV', href: '/pdv', tutorialId: 'nav-pdv' },
+  { icon: Package, label: 'Produtos', href: '/products', tutorialId: 'nav-products' },
+  { icon: Boxes, label: 'Estoque', href: '/stock', tutorialId: 'nav-stock' },
+  { icon: Users, label: 'Funcionários', href: '/employees', tutorialId: 'nav-employees' },
+  { icon: Wallet, label: 'Caixa', href: '/cash', tutorialId: 'nav-cash' },
+  { icon: BarChart3, label: 'Relatórios', href: '/reports', tutorialId: 'nav-reports' },
+  { icon: Bell, label: 'Alertas', href: '/alerts', tutorialId: 'nav-alerts' },
+  { icon: Settings, label: 'Configurações', href: '/settings', tutorialId: 'nav-settings' },
 ];
 
 export const Sidebar: FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
     <aside
+      data-tutorial="sidebar"
       className={cn(
         'flex flex-col border-r bg-card transition-all duration-300',
         isCollapsed ? 'w-16' : 'w-64'
@@ -78,6 +82,7 @@ export const Sidebar: FC = () => {
             <NavLink
               key={item.href}
               to={item.href}
+              data-tutorial={item.tutorialId}
               className={cn(
                 'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
                 'hover:bg-accent hover:text-accent-foreground',
@@ -100,6 +105,21 @@ export const Sidebar: FC = () => {
           );
         })}
       </nav>
+
+      {/* Ajuda / Tutoriais */}
+      <div className="border-t p-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          data-tutorial="help-button"
+          onClick={() => navigate('/tutorials')}
+          className={cn('w-full justify-start', isCollapsed && 'px-2 justify-center')}
+          title="Central de Treinamentos (F1)"
+        >
+          <HelpCircle className="h-4 w-4" />
+          {!isCollapsed && <span className="ml-2">Ajuda</span>}
+        </Button>
+      </div>
 
       {/* Collapse Toggle */}
       <div className="border-t p-2">

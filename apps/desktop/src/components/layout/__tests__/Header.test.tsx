@@ -4,11 +4,21 @@
 
 import { Header } from '@/components/layout/Header';
 import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock dos stores
 const mockLogout = vi.fn();
 const mockSetTheme = vi.fn();
+const mockNavigate = vi.fn();
+
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
 
 vi.mock('@/stores/auth-store', () => ({
   useAuthStore: () => ({
@@ -25,37 +35,45 @@ vi.mock('@/stores/settings-store', () => ({
   }),
 }));
 
+const renderHeader = () => {
+  return render(
+    <MemoryRouter>
+      <Header />
+    </MemoryRouter>
+  );
+};
+
 describe('Header', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it('should render header', () => {
-    render(<Header />);
+    renderHeader();
 
     expect(screen.getByRole('banner')).toBeInTheDocument();
   });
 
   it('should show cash closed status when no session', () => {
-    render(<Header />);
+    renderHeader();
 
     expect(screen.getByText('Caixa Fechado')).toBeInTheDocument();
   });
 
   it('should display user name', () => {
-    render(<Header />);
+    renderHeader();
 
     expect(screen.getByText('Admin')).toBeInTheDocument();
   });
 
   it('should display user role', () => {
-    render(<Header />);
+    renderHeader();
 
     expect(screen.getByText('ADMIN')).toBeInTheDocument();
   });
 
   it('should render theme toggle button', () => {
-    render(<Header />);
+    renderHeader();
 
     // Theme button exists
     const buttons = screen.getAllByRole('button');
@@ -63,7 +81,7 @@ describe('Header', () => {
   });
 
   it('should render alerts button with badge', () => {
-    render(<Header />);
+    renderHeader();
 
     expect(screen.getByText('3')).toBeInTheDocument();
   });

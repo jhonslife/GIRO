@@ -17,10 +17,12 @@ import { useAuthStore } from '@/stores/auth-store';
 import { useSettingsStore } from '@/stores/settings-store';
 import { Bell, LogOut, Monitor, Moon, Sun, User } from 'lucide-react';
 import { type FC } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export const Header: FC = () => {
   const { currentUser, currentSession, logout } = useAuthStore();
   const { theme, setTheme } = useSettingsStore();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     if (currentSession) {
@@ -36,7 +38,7 @@ export const Header: FC = () => {
       {/* Header Content */}
       <div className="flex items-center gap-4">
         {currentSession ? (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2" data-tutorial="cash-indicator">
             <div className="h-2 w-2 rounded-full bg-success animate-pulse" />
             <span className="text-sm font-medium text-foreground">Caixa Aberto</span>
             <Badge variant="outline" className="ml-2">
@@ -44,7 +46,7 @@ export const Header: FC = () => {
             </Badge>
           </div>
         ) : (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2" data-tutorial="cash-indicator">
             <div className="h-2 w-2 rounded-full bg-muted-foreground" />
             <span className="text-sm text-muted-foreground">Caixa Fechado</span>
           </div>
@@ -79,7 +81,13 @@ export const Header: FC = () => {
         </DropdownMenu>
 
         {/* Alertas */}
-        <Button variant="ghost" size="icon" className="relative">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="relative"
+          data-tutorial="alerts-badge"
+          onClick={() => navigate('/alerts')}
+        >
           <Bell className="h-5 w-5" />
           {/* Badge de notificações */}
           <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] text-destructive-foreground">
@@ -90,7 +98,7 @@ export const Header: FC = () => {
         {/* Menu do Usuário */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="gap-2">
+            <Button variant="ghost" className="gap-2" data-tutorial="user-menu">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
                 <User className="h-4 w-4" />
               </div>
