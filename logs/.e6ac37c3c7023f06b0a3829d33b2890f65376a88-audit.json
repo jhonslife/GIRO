@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/home/jhonslife/GIRO/logs/.e6ac37c3c7023f06b0a3829d33b2890f65376a88-audit.json",
+    "files": [
+        {
+            "date": 1768079820496,
+            "name": "/home/jhonslife/GIRO/logs/mcp-puppeteer-2026-01-10.log",
+            "hash": "59abb5cba1f9144f101c6bce86b5b4286f16c9cfda5cace4e1cfa7811b23e761"
+        }
+    ],
+    "hashType": "sha256"
+}
