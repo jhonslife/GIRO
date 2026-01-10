@@ -5,21 +5,21 @@
 
 import { expect, test } from '@playwright/test';
 
+import { dismissTutorialIfPresent, loginWithPin } from './e2e-helpers';
+
 test.describe('Gerenciamento de Estoque E2E', () => {
   test.beforeEach(async ({ page }) => {
     // Login como admin
     await page.goto('/');
     await page.waitForLoadState('domcontentloaded');
 
-    const pinInput = page.locator('input[type="password"]').first();
-    await pinInput.fill('1234');
-
-    const loginButton = page.locator('button:has-text("Entrar")').first();
-    await loginButton.click();
-    await page.waitForURL(/\/(dashboard|stock)/, { timeout: 5000 });
+    // UI usa teclado numérico para PIN
+    await loginWithPin(page, '1234');
+    await dismissTutorialIfPresent(page);
 
     await page.goto('/stock');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
+    await dismissTutorialIfPresent(page);
   });
 
   test('deve exibir lista de estoque', async ({ page }) => {

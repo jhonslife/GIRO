@@ -1,12 +1,71 @@
-# 🔐 GIRO License Server - Guia de Setup
+# 🔐 GIRO License Server
 
-## 📋 Pré-requisitos
+> **Backend de Licenciamento do GIRO Desktop**  
+> Rust + Axum + PostgreSQL + Redis
+
+---
+
+## � Deploy Rápido
+
+**→ [📚 ÍNDICE COMPLETO DE DEPLOY](INDEX.md)** ⭐
+
+### 3 Formas de Deploy:
+
+1. **🌐 Via Dashboard** (recomendado) - [Guia Visual](DEPLOY-MANUAL.md)
+2. **⚡ Script Automático** - `./deploy-railway.sh`
+3. **🛠️ CLI Manual** - [Comandos](railway-commands.sh)
+
+---
+
+## 📚 Documentação
+
+### Core Docs
+
+- [📖 Visão Geral](docs/00-OVERVIEW.md)
+- [🏗️ Arquitetura](docs/01-ARQUITETURA.md)
+- [🗄️ Database Schema](docs/02-DATABASE-SCHEMA.md)
+
+### Deploy Docs
+
+- [📚 Índice Completo](INDEX.md) - **Comece aqui!**
+- [🚀 Deploy Manual](DEPLOY-MANUAL.md) - Passo a passo visual
+- [📖 Deploy Técnico](RAILWAY_DEPLOY.md) - Referência completa
+- [📊 Fluxogramas](DEPLOY-FLOWCHART.md) - Diagramas do processo
+- [🔧 Troubleshooting](TROUBLESHOOTING.md) - Solução de problemas
+- [✅ Status Atual](DEPLOY-STATUS.md) - O que está pronto
+
+---
+
+## 🚀 Deploy para Produção
+
+### Opção 1: Railway Dashboard (Recomendado)
+
+Siga o guia completo: [DEPLOY-MANUAL.md](DEPLOY-MANUAL.md)
+
+### Opção 2: Railway CLI
+
+```bash
+# Deploy automático
+./deploy-railway.sh
+
+# Deploy rápido (se já configurado)
+./deploy.sh
+```
+
+### Opção 3: GitHub Actions (CI/CD)
+
+O deploy automático está configurado para `main` branch.
+
+---
+
+## 📋 Pré-requisitos (Desenvolvimento)
 
 - Docker & Docker Compose
 - Rust 1.75+ (para desenvolvimento local)
 - SQLx CLI: `cargo install sqlx-cli --no-default-features --features postgres`
+- Railway CLI (opcional): `curl -fsSL https://railway.com/install.sh | sh`
 
-## 🚀 Quick Start
+## 🚀 Quick Start (Local)
 
 ### 1️⃣ Subir Infraestrutura
 

@@ -69,7 +69,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     wsPort: process.env.EXPO_PUBLIC_WS_PORT || '3847',
     mdnsServiceType: process.env.EXPO_PUBLIC_MDNS_SERVICE_TYPE || '_giro._tcp',
     eas: {
-      projectId: 'your-project-id',
+      projectId: '3e1403b0-3279-4597-b8ca-7e91a7af2b76',
     },
   },
 });
