@@ -49,8 +49,16 @@ async fn main() {
     tracing::info!("Hardware ID: {}", hardware_id);
 
     // License server configuration (from env or default)
+    // Em produção (release), usa o servidor da Railway. Em dev, usa localhost ou env var.
+    #[cfg(debug_assertions)]
+    let default_server_url = "http://localhost:3000";
+
+    #[cfg(not(debug_assertions))]
+    let default_server_url = "https://giro-license-server-production.up.railway.app/api/v1";
+
     let license_server_url = std::env::var("LICENSE_SERVER_URL")
-        .unwrap_or_else(|_| "http://localhost:3000".to_string());
+        .unwrap_or_else(|_| default_server_url.to_string());
+        
     let api_key = std::env::var("LICENSE_API_KEY").unwrap_or_else(|_| "dev-key".to_string());
 
     let app_state = AppState::new(
