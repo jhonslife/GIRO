@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { authenticateEmployee } from '@/lib/tauri';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth-store';
+import { useBusinessProfile } from '@/stores/useBusinessProfile';
 import type { EmployeeRole } from '@/types';
 import { Lock } from 'lucide-react';
 import { useEffect, useRef, useState, type FC } from 'react';
@@ -20,6 +21,7 @@ export const LoginPage: FC = () => {
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
   const { login } = useAuthStore();
+  const { isConfigured } = useBusinessProfile();
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -65,8 +67,14 @@ export const LoginPage: FC = () => {
           pin,
         });
 
-        // Redireciona para o dashboard
-        navigate('/');
+        // Redireciona baseado no status de configuração
+        if (!isConfigured) {
+          // Primeira vez - mostrar wizard de perfil
+          navigate('/wizard');
+        } else {
+          // Já configurado - ir para dashboard
+          navigate('/');
+        }
       } else {
         setError('PIN incorreto');
         setPin('');

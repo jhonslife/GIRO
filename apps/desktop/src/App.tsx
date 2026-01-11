@@ -1,7 +1,10 @@
+import { LicenseGuard } from '@/components/guards';
 import { AppShell } from '@/components/layout';
+import { BusinessProfileWizard } from '@/components/shared';
 import { UpdateChecker } from '@/components/UpdateChecker';
 /* force refresh */
 import { useAuthStore } from '@/stores/auth-store';
+import { useBusinessProfile } from '@/stores/useBusinessProfile';
 import { type FC, useEffect } from 'react';
 import { Navigate, Outlet, Route, Routes, useNavigate } from 'react-router-dom';
 
@@ -11,6 +14,7 @@ import { LoginPage } from '@/pages/auth';
 import { CashControlPage } from '@/pages/cash';
 import { DashboardPage } from '@/pages/dashboard';
 import { EmployeesPage } from '@/pages/employees';
+import { LicenseActivationPage } from '@/pages/license';
 import { ServiceOrdersPage, WarrantiesPage } from '@/pages/motoparts';
 import { PDVPage } from '@/pages/pdv';
 import { CategoriesPage, ProductFormPage, ProductsPage } from '@/pages/products';
@@ -41,6 +45,30 @@ const ProtectedRoute: FC<ProtectedRouteProps> = ({ children, requiredRole }) => 
   return <>{children ?? <Outlet />}</>;
 };
 
+// Componente para rota do wizard - redireciona se já configurado
+const WizardRoute: FC = () => {
+  const { isConfigured } = useBusinessProfile();
+
+  // Se já configurado, redirecionar para PDV
+  if (isConfigured) {
+    return <Navigate to="/pdv" replace />;
+  }
+
+  return <BusinessProfileWizard redirectTo="/pdv" />;
+};
+
+// Componente para rota raiz - verifica se perfil está configurado
+const RootRedirect: FC = () => {
+  const { isConfigured } = useBusinessProfile();
+
+  // Se não configurado, enviar para wizard
+  if (!isConfigured) {
+    return <Navigate to="/wizard" replace />;
+  }
+
+  return <Navigate to="/pdv" replace />;
+};
+
 // Hook para atalho F1 - Ajuda
 const useHelpHotkey = () => {
   const navigate = useNavigate();
@@ -66,22 +94,43 @@ const App: FC = () => {
     <>
       {isAuthenticated && <UpdateChecker />}
       <Routes>
-        {/* Rota de Login */}
+        {/* Rota de Ativação de Licença - ANTES de tudo */}
+        <Route path="/license" element={<LicenseActivationPage />} />
+
+        {/* Rota de Login - Protegida por licença */}
         <Route
           path="/login"
-          element={isAuthenticated ? <Navigate to="/pdv" replace /> : <LoginPage />}
+          element={
+            <LicenseGuard>
+              {isAuthenticated ? <Navigate to="/pdv" replace /> : <LoginPage />}
+            </LicenseGuard>
+          }
+        />
+
+        {/* Wizard de Configuração de Perfil (primeira execução) */}
+        <Route
+          path="/wizard"
+          element={
+            <LicenseGuard>
+              <ProtectedRoute>
+                <WizardRoute />
+              </ProtectedRoute>
+            </LicenseGuard>
+          }
         />
 
         {/* Layout com AppShell usando element wrapper */}
         <Route
           element={
-            <ProtectedRoute>
-              <AppShell />
-            </ProtectedRoute>
+            <LicenseGuard>
+              <ProtectedRoute>
+                <AppShell />
+              </ProtectedRoute>
+            </LicenseGuard>
           }
         >
-          {/* Dashboard */}
-          <Route index element={<Navigate to="/pdv" replace />} />
+          {/* Dashboard - Verifica se perfil está configurado */}
+          <Route index element={<RootRedirect />} />
           <Route path="dashboard" element={<DashboardPage />} />
 
           {/* Motopeças */}

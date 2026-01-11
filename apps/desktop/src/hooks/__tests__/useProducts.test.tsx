@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
 import { renderHook, waitFor } from '@testing-library/react';
 import React from 'react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useProducts } from '../useProducts';
 
 // Mock Tauri
@@ -26,6 +26,18 @@ const createWrapper = () => {
 describe('useProducts', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Simular ambiente Tauri para usar o mock do invoke
+    Object.defineProperty(window, '__TAURI__', {
+      value: {},
+      writable: true,
+      configurable: true,
+    });
+  });
+
+  afterEach(() => {
+    // Limpar simulação
+    // @ts-ignore
+    delete window.__TAURI__;
   });
 
   const invokeMock = invoke as unknown as ReturnType<typeof vi.fn>;

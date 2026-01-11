@@ -26,6 +26,7 @@ cargo tauri signer generate -w ~/.tauri/giro.key
 ```
 
 Isso irá gerar:
+
 - `~/.tauri/giro.key` - Chave privada (NUNCA COMMITAR!)
 - Output no terminal com a chave pública
 
@@ -51,9 +52,7 @@ Edite `apps/desktop/src-tauri/tauri.conf.json`:
   "plugins": {
     "updater": {
       "active": true,
-      "endpoints": [
-        "https://jhonslife.github.io/GIRO/updater/{{target}}/{{current_version}}"
-      ],
+      "endpoints": ["https://jhonslife.github.io/GIRO/updater/{{target}}/{{current_version}}"],
       "dialog": false,
       "pubkey": "COLE_SUA_CHAVE_PÚBLICA_AQUI"
     }
@@ -70,6 +69,7 @@ Edite `apps/desktop/src-tauri/tauri.conf.json`:
 3. Adicione os seguintes secrets:
 
 **Secret 1:**
+
 - Name: `TAURI_SIGNING_PRIVATE_KEY`
 - Value: Conteúdo completo do arquivo `~/.tauri/giro.key`
 
@@ -80,6 +80,7 @@ cat ~/.tauri/giro.key
 ```
 
 **Secret 2:**
+
 - Name: `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`
 - Value: A senha que você usou ao gerar a chave
 
@@ -148,11 +149,13 @@ git push origin v1.0.0
 ## 🔒 Segurança
 
 ⚠️ **NUNCA:**
+
 - Commite o arquivo `.key`
 - Compartilhe a chave privada
 - Exponha a senha em logs ou código
 
 ✅ **SEMPRE:**
+
 - Mantenha backup seguro da chave e senha
 - Use GitHub Secrets para dados sensíveis
 - Revogue e regenere chaves se comprometidas
@@ -160,14 +163,17 @@ git push origin v1.0.0
 ## 🆘 Troubleshooting
 
 ### Erro: "Invalid signature"
+
 - Verifique se a public key no tauri.conf.json está correta
 - Confirme que os GitHub Secrets estão configurados
 
 ### Erro: "Pages deployment failed"
+
 - Verifique se GitHub Pages está habilitado
 - Confirme que o source está em "GitHub Actions"
 
 ### Workflow não roda
+
 - Verifique se os secrets estão disponíveis para o repositório
 - Confirme que as permissões do workflow estão corretas
 

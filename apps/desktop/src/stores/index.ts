@@ -12,6 +12,7 @@ export {
   type EmployeeRole,
   type Permission,
 } from './auth-store';
+export * from './license-store';
 export * from './pdv-store';
 export * from './settings-store';
 export * from './useBusinessProfile';

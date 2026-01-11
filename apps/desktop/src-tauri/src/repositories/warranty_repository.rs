@@ -35,12 +35,12 @@ impl WarrantyRepository {
                 p.name as product_name,
                 wc.source_type,
                 CASE 
-                    WHEN wc.source_type = 'SALE' THEN 'Venda #' || (SELECT receipt_number FROM sales WHERE id IN (SELECT sale_id FROM sale_items WHERE id = wc.sale_item_id))
-                    WHEN wc.source_type = 'SERVICE_ORDER' THEN 'OS #' || (SELECT order_number FROM service_orders WHERE id IN (SELECT order_id FROM service_order_items WHERE id = wc.order_item_id))
+                    WHEN wc.source_type = 'SALE' THEN 'Venda #' || (SELECT daily_number FROM sales WHERE id IN (SELECT sale_id FROM sale_items WHERE id = wc.sale_item_id))
+                    WHEN wc.source_type = 'SERVICE_ORDER' THEN 'OS #' || (SELECT order_number FROM service_orders WHERE id IN (SELECT order_id FROM order_products WHERE id = wc.order_item_id))
                 END as source_number,
                 wc.status,
                 wc.description,
-                wc.created_at
+                CAST(wc.created_at AS TEXT) as "created_at!: String"
             FROM warranty_claims wc
             INNER JOIN customers c ON c.id = wc.customer_id
             LEFT JOIN products p ON p.id = wc.product_id
@@ -120,8 +120,8 @@ impl WarrantyRepository {
                 p.name as product_name,
                 wc.source_type,
                 CASE 
-                    WHEN wc.source_type = 'SALE' THEN 'Venda #' || (SELECT receipt_number FROM sales WHERE id IN (SELECT sale_id FROM sale_items WHERE id = wc.sale_item_id))
-                    WHEN wc.source_type = 'SERVICE_ORDER' THEN 'OS #' || (SELECT order_number FROM service_orders WHERE id IN (SELECT order_id FROM service_order_items WHERE id = wc.order_item_id))
+                    WHEN wc.source_type = 'SALE' THEN 'Venda #' || (SELECT daily_number FROM sales WHERE id IN (SELECT sale_id FROM sale_items WHERE id = wc.sale_item_id))
+                    WHEN wc.source_type = 'SERVICE_ORDER' THEN 'OS #' || (SELECT order_number FROM service_orders WHERE id IN (SELECT order_id FROM order_products WHERE id = wc.order_item_id))
                 END as source_number,
                 wc.status,
                 wc.description,
@@ -159,28 +159,48 @@ impl WarrantyRepository {
 
     /// Busca garantia por ID
     pub async fn find_by_id(&self, id: &str) -> AppResult<Option<WarrantyClaim>> {
-        let claim = sqlx::query_as!(
-            WarrantyClaim,
+        let result = sqlx::query!(
             r#"SELECT 
                 id, customer_id, source_type,
-                sale_item_id as "sale_item_id?",
-                order_item_id as "order_item_id?",
-                product_id as "product_id?",
+                sale_item_id,
+                order_item_id,
+                product_id,
                 description, reason, status,
-                resolution as "resolution?",
-                resolution_type as "resolution_type?",
-                resolved_by_id as "resolved_by_id?",
-                resolved_at as "resolved_at?",
-                refund_amount as "refund_amount?",
-                replacement_cost as "replacement_cost?",
-                created_at, updated_at
+                resolution,
+                resolution_type,
+                resolved_by_id,
+                CAST(resolved_at AS TEXT) as resolved_at,
+                refund_amount,
+                replacement_cost,
+                notes,
+                CAST(created_at AS TEXT) as "created_at!: String",
+                CAST(updated_at AS TEXT) as "updated_at!: String"
             FROM warranty_claims WHERE id = ?"#,
             id
         )
         .fetch_optional(&self.pool)
         .await?;
 
-        Ok(claim)
+        Ok(result.map(|r| WarrantyClaim {
+            id: r.id,
+            customer_id: r.customer_id,
+            source_type: r.source_type,
+            sale_item_id: r.sale_item_id,
+            order_item_id: r.order_item_id,
+            product_id: r.product_id,
+            description: r.description,
+            reason: r.reason,
+            status: r.status,
+            resolution: r.resolution,
+            resolution_type: r.resolution_type,
+            resolved_by_id: r.resolved_by_id,
+            resolved_at: r.resolved_at,
+            refund_amount: r.refund_amount,
+            replacement_cost: r.replacement_cost,
+            notes: r.notes,
+            created_at: r.created_at,
+            updated_at: r.updated_at,
+        }))
     }
 
     /// Busca garantia com detalhes
@@ -190,16 +210,19 @@ impl WarrantyRepository {
             SELECT
                 wc.id, wc.customer_id, wc.source_type, wc.sale_item_id, wc.order_item_id,
                 wc.product_id, wc.description, wc.reason, wc.status, wc.resolution,
-                wc.resolution_type, wc.resolved_by_id, wc.resolved_at,
-                wc.refund_amount, wc.replacement_cost, wc.created_at, wc.updated_at,
+                wc.resolution_type, wc.resolved_by_id, 
+                CAST(wc.resolved_at AS TEXT) as resolved_at,
+                wc.refund_amount, wc.replacement_cost, wc.notes, 
+                CAST(wc.created_at AS TEXT) as "created_at!: String", 
+                CAST(wc.updated_at AS TEXT) as "updated_at!: String",
                 c.name as customer_name,
                 c.phone as customer_phone,
                 p.name as product_name,
                 p.barcode as product_barcode,
                 e.name as resolved_by_name,
                 CASE 
-                    WHEN wc.source_type = 'SALE' THEN (SELECT receipt_number FROM sales WHERE id IN (SELECT sale_id FROM sale_items WHERE id = wc.sale_item_id))
-                    WHEN wc.source_type = 'SERVICE_ORDER' THEN (SELECT order_number FROM service_orders WHERE id IN (SELECT order_id FROM service_order_items WHERE id = wc.order_item_id))
+                    WHEN wc.source_type = 'SALE' THEN (SELECT daily_number FROM sales WHERE id IN (SELECT sale_id FROM sale_items WHERE id = wc.sale_item_id))
+                    WHEN wc.source_type = 'SERVICE_ORDER' THEN (SELECT order_number FROM service_orders WHERE id IN (SELECT order_id FROM order_products WHERE id = wc.order_item_id))
                 END as source_number
             FROM warranty_claims wc
             INNER JOIN customers c ON c.id = wc.customer_id
@@ -230,6 +253,7 @@ impl WarrantyRepository {
                     resolved_at: c.resolved_at,
                     refund_amount: c.refund_amount,
                     replacement_cost: c.replacement_cost,
+                    notes: c.notes,
                     created_at: c.created_at,
                     updated_at: c.updated_at,
                 },

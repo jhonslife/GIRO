@@ -61,8 +61,8 @@ export function UpdateChecker() {
             });
             break;
           case 'Progress': {
-            const total = event.data.contentLength ?? 0;
-            const current = event.data.downloaded;
+            const total = (event.data as any).contentLength ?? 0;
+            const current = (event.data as any).downloaded;
             const progress = total > 0 ? (current / total) * 100 : 0;
             setDownloadProgress(Math.round(progress));
             break;

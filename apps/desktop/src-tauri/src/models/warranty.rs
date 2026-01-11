@@ -107,6 +107,7 @@ pub struct WarrantyClaim {
     pub resolved_at: Option<String>,
     pub refund_amount: Option<f64>,
     pub replacement_cost: Option<f64>,
+    pub notes: Option<String>,
     pub created_at: String,
     pub updated_at: String,
 }

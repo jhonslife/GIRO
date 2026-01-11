@@ -21,6 +21,14 @@ vi.mock('@/stores/auth-store', () => ({
   }),
 }));
 
+// Mock do business profile (sempre configurado para testes)
+vi.mock('@/stores/useBusinessProfile', () => ({
+  useBusinessProfile: () => ({
+    isConfigured: true,
+    profile: { name: 'Test Business' },
+  }),
+}));
+
 // Mock do navigate
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {

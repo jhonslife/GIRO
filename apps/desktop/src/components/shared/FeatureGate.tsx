@@ -138,7 +138,7 @@ interface BusinessTypeGateProps {
   /**
    * Tipos de negócio que podem ver o conteúdo
    */
-  types: Array<'GROCERY' | 'MOTOPARTS' | 'PETSHOP' | 'GENERAL'>;
+  types: Array<'GROCERY' | 'MOTOPARTS' | 'GENERAL'>;
 
   children: ReactNode;
   fallback?: ReactNode;
@@ -191,8 +191,7 @@ export function useFeatureCheck() {
     /**
      * Verifica se o negócio é de um tipo específico
      */
-    isBusinessType: (type: 'GROCERY' | 'MOTOPARTS' | 'PETSHOP' | 'GENERAL') =>
-      businessType === type,
+    isBusinessType: (type: 'GROCERY' | 'MOTOPARTS' | 'GENERAL') => businessType === type,
 
     /**
      * Verifica múltiplas features (all)

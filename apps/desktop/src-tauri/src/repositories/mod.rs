@@ -15,8 +15,7 @@ pub mod settings_repository;
 pub mod stock_repository;
 pub mod supplier_repository;
 pub mod vehicle_repository;
-// DISABLED: warranty_claims table not created yet
-// pub mod warranty_repository;
+pub mod warranty_repository;
 
 #[cfg(test)]
 mod service_order_repository_test;
@@ -38,8 +37,7 @@ pub use settings_repository::SettingsRepository;
 pub use stock_repository::StockRepository;
 pub use supplier_repository::SupplierRepository;
 pub use vehicle_repository::VehicleRepository;
-// DISABLED: warranty_claims table not created yet
-// pub use warranty_repository::WarrantyRepository;
+pub use warranty_repository::WarrantyRepository;
 
 /// Gera um novo UUID
 pub fn new_id() -> String {

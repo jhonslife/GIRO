@@ -4,7 +4,6 @@
 // Permite que o mesmo sistema atenda diferentes tipos de negócio:
 // - GROCERY: Mercearias, mercadinhos, padarias
 // - MOTOPARTS: Motopeças, oficinas mecânicas
-// - PETSHOP: Pet shops (futuro)
 // - GENERAL: Varejo genérico
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -14,7 +13,6 @@
 export type BusinessType =
   | 'GROCERY' // Mercearia, mercadinho, padaria
   | 'MOTOPARTS' // Motopeças, autopeças, oficina mecânica
-  | 'PETSHOP' // Pet shop (futuro)
   | 'GENERAL'; // Varejo genérico
 
 /**
@@ -46,11 +44,6 @@ export interface BusinessFeatures {
   warranties: boolean; // Controle de garantias
   customerVehicles: boolean; // Veículos do cliente
   vehicleHistory: boolean; // Histórico por veículo
-
-  // Pet Shop (futuro)
-  petRegistry: boolean; // Cadastro de pets
-  grooming: boolean; // Banho e tosa
-  petScheduling: boolean; // Agendamento de serviços
 }
 
 /**
@@ -126,9 +119,6 @@ export const GROCERY_PROFILE: BusinessProfile = {
     warranties: false,
     customerVehicles: false,
     vehicleHistory: false,
-    petRegistry: false,
-    grooming: false,
-    petScheduling: false,
   },
   labels: {
     product: 'Produto',
@@ -182,9 +172,6 @@ export const MOTOPARTS_PROFILE: BusinessProfile = {
     expirationControl: false,
     weightedProducts: false,
     lotTracking: false,
-    petRegistry: false,
-    grooming: false,
-    petScheduling: false,
   },
   labels: {
     product: 'Peça',
@@ -213,60 +200,6 @@ export const MOTOPARTS_PROFILE: BusinessProfile = {
 };
 
 /**
- * Perfil: Pet Shop (futuro)
- */
-export const PETSHOP_PROFILE: BusinessProfile = {
-  type: 'PETSHOP',
-  name: 'Pet Shop',
-  description: 'Pet shops, clínicas veterinárias e banho/tosa',
-  icon: 'Dog',
-  features: {
-    // Core (sempre ativo)
-    pdv: true,
-    inventory: true,
-    employees: true,
-    cashControl: true,
-    reports: true,
-    backup: true,
-    // Específicas - Habilitadas
-    petRegistry: true,
-    grooming: true,
-    petScheduling: true,
-    expirationControl: true, // Para rações e medicamentos
-    // Específicas - Desabilitadas
-    weightedProducts: false,
-    lotTracking: false,
-    vehicleCompatibility: false,
-    serviceOrders: false,
-    warranties: false,
-    customerVehicles: false,
-    vehicleHistory: false,
-  },
-  labels: {
-    product: 'Produto',
-    products: 'Produtos',
-    customer: 'Tutor',
-    customers: 'Tutores',
-    sale: 'Atendimento',
-    sales: 'Atendimentos',
-    addProduct: 'Adicionar Produto',
-    newSale: 'Novo Atendimento',
-    barcode: 'Código de Barras',
-    category: 'Categoria',
-  },
-  defaultCategories: [
-    { name: 'Rações', icon: 'Bone', color: '#D97706' },
-    { name: 'Medicamentos', icon: 'Pill', color: '#EF4444' },
-    { name: 'Higiene', icon: 'Droplet', color: '#3B82F6' },
-    { name: 'Acessórios', icon: 'Tag', color: '#8B5CF6' },
-    { name: 'Brinquedos', icon: 'Smile', color: '#F59E0B' },
-    { name: 'Camas e Casas', icon: 'Home', color: '#22C55E' },
-    { name: 'Coleiras', icon: 'Circle', color: '#EC4899' },
-    { name: 'Serviços', icon: 'Scissors', color: '#06B6D4' },
-  ],
-};
-
-/**
  * Perfil: Varejo Genérico
  */
 export const GENERAL_PROFILE: BusinessProfile = {
@@ -291,9 +224,6 @@ export const GENERAL_PROFILE: BusinessProfile = {
     warranties: true,
     customerVehicles: true,
     vehicleHistory: true,
-    petRegistry: true,
-    grooming: true,
-    petScheduling: true,
   },
   labels: {
     product: 'Produto',
@@ -323,18 +253,13 @@ export const GENERAL_PROFILE: BusinessProfile = {
 export const BUSINESS_PROFILES: Record<BusinessType, BusinessProfile> = {
   GROCERY: GROCERY_PROFILE,
   MOTOPARTS: MOTOPARTS_PROFILE,
-  PETSHOP: PETSHOP_PROFILE,
   GENERAL: GENERAL_PROFILE,
 };
 
 /**
  * Lista de perfis para exibição no wizard
  */
-export const AVAILABLE_PROFILES: BusinessProfile[] = [
-  GROCERY_PROFILE,
-  MOTOPARTS_PROFILE,
-  // PETSHOP_PROFILE, // Descomentrar quando estiver pronto
-];
+export const AVAILABLE_PROFILES: BusinessProfile[] = [GROCERY_PROFILE, MOTOPARTS_PROFILE];
 
 /**
  * Perfil padrão

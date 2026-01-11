@@ -294,8 +294,8 @@ INSERT OR IGNORE INTO employees (id, name, pin, role)
 VALUES ('admin-default', 'Administrador', '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4', 'ADMIN');
 
 -- Configurações padrão
-INSERT OR IGNORE INTO settings (key, value, category) VALUES
-('company_name', 'Minha Mercearia', 'general'),
-('printer_enabled', 'false', 'printer'),
-('scale_enabled', 'false', 'scale'),
-('allow_negative_stock', 'false', 'pdv');
+INSERT OR IGNORE INTO settings (id, key, value, type, group_name) VALUES
+('setting-company', 'company_name', 'Minha Mercearia', 'STRING', 'general'),
+('setting-printer', 'printer_enabled', 'false', 'BOOLEAN', 'printer'),
+('setting-scale', 'scale_enabled', 'false', 'BOOLEAN', 'scale'),
+('setting-stock', 'allow_negative_stock', 'false', 'BOOLEAN', 'pdv');

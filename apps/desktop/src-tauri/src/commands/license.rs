@@ -6,6 +6,13 @@ use tauri::State;
 use crate::license::MetricsPayload;
 use crate::AppState;
 
+/// Get the hardware ID for this machine
+/// Used by frontend to display hardware info and for activation
+#[tauri::command]
+pub async fn get_hardware_id(state: State<'_, AppState>) -> Result<String, String> {
+    Ok(state.hardware_id.clone())
+}
+
 #[tauri::command]
 pub async fn activate_license(
     license_key: String,

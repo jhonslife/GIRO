@@ -739,6 +739,14 @@ export async function transmitOfflineNote(
 // LICENSE
 // ────────────────────────────────────────────────────────────────────────────
 
+/**
+ * Get the hardware ID for this machine
+ * Format: CPU:xxx|MB:xxx|MAC:xxx|DISK:xxx
+ */
+export async function getHardwareId(): Promise<string> {
+  return tauriInvoke<string>('get_hardware_id');
+}
+
 export async function activateLicense(licenseKey: string): Promise<LicenseInfo> {
   // Map 'licenseKey' (camelCase) to 'license_key' (snake_case) expected by Rust?
   // Rust: activate_license(license_key, state)

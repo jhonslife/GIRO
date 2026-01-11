@@ -50,11 +50,12 @@ async fn main() {
 
     // License server configuration (from env or default)
     // Em produção (release), usa o servidor da Railway. Em dev, usa localhost ou env var.
+    // IMPORTANTE: A URL base NÃO deve incluir /api/v1 - o LicenseClient adiciona isso
     #[cfg(debug_assertions)]
-    let default_server_url = "http://localhost:3000";
+    let default_server_url = "http://localhost:3001";
 
     #[cfg(not(debug_assertions))]
-    let default_server_url = "https://giro-license-server-production.up.railway.app/api/v1";
+    let default_server_url = "https://giro-license-server-production.up.railway.app";
 
     let license_server_url = std::env::var("LICENSE_SERVER_URL")
         .unwrap_or_else(|_| default_server_url.to_string());
@@ -262,20 +263,19 @@ async fn main() {
             commands::get_service_by_code,
             commands::create_service,
             commands::update_service,
-            // Garantias (Motopeças) - DISABLED: warranty_claims table not created yet
-            // commands::get_active_warranties,
-            // commands::get_warranties_paginated,
-            // commands::get_warranty_by_id,
-            // commands::get_warranty_details,
-            // commands::create_warranty_claim,
-            // commands::update_warranty_claim,
-            // commands::approve_warranty,
-            // commands::deny_warranty,
-            // commands::resolve_warranty,
-            // commands::get_warranties_by_customer,
-            // commands::get_warranties_by_product,
-            // commands::get_warranty_stats,
-
+            // Garantias (Motopeças)
+            commands::get_active_warranties,
+            commands::get_warranties_paginated,
+            commands::get_warranty_by_id,
+            commands::get_warranty_details,
+            commands::create_warranty_claim,
+            commands::update_warranty_claim,
+            commands::approve_warranty,
+            commands::deny_warranty,
+            commands::resolve_warranty,
+            commands::get_warranties_by_customer,
+            commands::get_warranties_by_product,
+            commands::get_warranty_stats,
             // Seeding
             commands::seed::seed_database,
             // NFC-e
@@ -284,6 +284,7 @@ async fn main() {
             nfce::commands::list_offline_notes,
             nfce::commands::transmit_offline_note,
             // License
+            commands::get_hardware_id,
             commands::activate_license,
             commands::validate_license,
             commands::sync_metrics,
@@ -293,36 +294,207 @@ async fn main() {
         .expect("Erro ao executar aplicação Tauri");
 }
 
-/// Generate hardware ID based on MAC address
+/// Generate hardware ID following server specification:
+/// Format: CPU:xxx|MB:xxx|MAC:xxx|DISK:xxx
+/// This creates a unique fingerprint for hardware binding
 fn generate_hardware_id() -> String {
-    use sha2::{Digest, Sha256};
+    let cpu_id = get_cpu_id();
+    let mb_serial = get_motherboard_serial();
+    let mac_address = get_primary_mac_address();
+    let disk_serial = get_disk_serial();
 
-    // Get MAC addresses
-    let interfaces = match local_ip_address::list_afinet_netifas() {
-        Ok(interfaces) => interfaces,
-        Err(_) => return "UNKNOWN-HARDWARE-ID".to_string(),
-    };
+    // Format: CPU:xxx|MB:xxx|MAC:xxx|DISK:xxx
+    format!(
+        "CPU:{}|MB:{}|MAC:{}|DISK:{}",
+        cpu_id, mb_serial, mac_address, disk_serial
+    )
+}
 
-    // Find first non-loopback interface
-    let mac_candidates: Vec<String> = interfaces
-        .iter()
-        .filter(|(name, _)| !name.starts_with("lo"))
-        .map(|(name, _)| name.clone())
-        .collect();
+/// Get CPU identifier
+fn get_cpu_id() -> String {
+    #[cfg(target_os = "linux")]
+    {
+        // Linux: Read from /proc/cpuinfo
+        if let Ok(content) = std::fs::read_to_string("/proc/cpuinfo") {
+            for line in content.lines() {
+                if line.starts_with("model name") || line.starts_with("Serial") {
+                    if let Some(value) = line.split(':').nth(1) {
+                        return value.trim().chars().take(32).collect();
+                    }
+                }
+            }
+        }
+    }
 
-    let identifier = if let Some(first) = mac_candidates.first() {
-        first.clone()
-    } else {
-        hostname::get()
-            .ok()
-            .and_then(|h| h.into_string().ok())
-            .unwrap_or_else(|| "unknown-host".to_string())
-    };
+    #[cfg(target_os = "windows")]
+    {
+        // Windows: Use WMIC
+        if let Ok(output) = std::process::Command::new("wmic")
+            .args(["cpu", "get", "ProcessorId"])
+            .output()
+        {
+            if let Ok(stdout) = String::from_utf8(output.stdout) {
+                let lines: Vec<&str> = stdout.lines().filter(|l| !l.trim().is_empty()).collect();
+                if lines.len() > 1 {
+                    return lines[1].trim().to_string();
+                }
+            }
+        }
+    }
 
-    // Hash for privacy
-    let mut hasher = Sha256::new();
-    hasher.update(identifier.as_bytes());
-    let result = hasher.finalize();
+    #[cfg(target_os = "macos")]
+    {
+        // macOS: Use sysctl
+        if let Ok(output) = std::process::Command::new("sysctl")
+            .args(["-n", "machdep.cpu.brand_string"])
+            .output()
+        {
+            if let Ok(stdout) = String::from_utf8(output.stdout) {
+                return stdout.trim().chars().take(32).collect();
+            }
+        }
+    }
 
-    format!("{:x}", result)
+    "UNKNOWN-CPU".to_string()
+}
+
+/// Get motherboard serial number
+fn get_motherboard_serial() -> String {
+    #[cfg(target_os = "linux")]
+    {
+        // Linux: Read from DMI
+        if let Ok(serial) = std::fs::read_to_string("/sys/class/dmi/id/board_serial") {
+            let serial = serial.trim();
+            if !serial.is_empty() && serial != "To Be Filled By O.E.M." {
+                return serial.to_string();
+            }
+        }
+        // Fallback to product_uuid
+        if let Ok(uuid) = std::fs::read_to_string("/sys/class/dmi/id/product_uuid") {
+            return uuid.trim().chars().take(36).collect();
+        }
+    }
+
+    #[cfg(target_os = "windows")]
+    {
+        if let Ok(output) = std::process::Command::new("wmic")
+            .args(["baseboard", "get", "serialnumber"])
+            .output()
+        {
+            if let Ok(stdout) = String::from_utf8(output.stdout) {
+                let lines: Vec<&str> = stdout.lines().filter(|l| !l.trim().is_empty()).collect();
+                if lines.len() > 1 {
+                    let serial = lines[1].trim();
+                    if !serial.is_empty() && serial != "To be filled by O.E.M." {
+                        return serial.to_string();
+                    }
+                }
+            }
+        }
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        if let Ok(output) = std::process::Command::new("ioreg")
+            .args(["-rd1", "-c", "IOPlatformExpertDevice"])
+            .output()
+        {
+            if let Ok(stdout) = String::from_utf8(output.stdout) {
+                for line in stdout.lines() {
+                    if line.contains("IOPlatformSerialNumber") {
+                        if let Some(serial) = line.split('"').nth(3) {
+                            return serial.to_string();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    "O.E.M.".to_string()
+}
+
+/// Get primary MAC address (physical, non-virtual)
+fn get_primary_mac_address() -> String {
+    // Use mac_address crate or fallback to interface names
+    if let Ok(interfaces) = local_ip_address::list_afinet_netifas() {
+        // Filter physical interfaces
+        let physical_interfaces: Vec<_> = interfaces
+            .iter()
+            .filter(|(name, _)| {
+                !name.starts_with("lo")
+                    && !name.starts_with("docker")
+                    && !name.starts_with("veth")
+                    && !name.starts_with("br-")
+                    && !name.contains("VMware")
+                    && !name.contains("VirtualBox")
+            })
+            .collect();
+
+        if let Some((name, ip)) = physical_interfaces.first() {
+            // Return a hash of interface name + IP for consistency
+            use sha2::{Digest, Sha256};
+            let mut hasher = Sha256::new();
+            hasher.update(format!("{}:{}", name, ip).as_bytes());
+            let result = hasher.finalize();
+            return format!("{:02X}-{:02X}-{:02X}-{:02X}-{:02X}-{:02X}",
+                result[0], result[1], result[2], result[3], result[4], result[5]);
+        }
+    }
+
+    "00-00-00-00-00-00".to_string()
+}
+
+/// Get primary disk serial number
+fn get_disk_serial() -> String {
+    #[cfg(target_os = "linux")]
+    {
+        // Linux: Read from /dev/disk/by-id
+        if let Ok(entries) = std::fs::read_dir("/dev/disk/by-id") {
+            for entry in entries.flatten() {
+                let name = entry.file_name().to_string_lossy().to_string();
+                if name.starts_with("ata-") || name.starts_with("nvme-") || name.starts_with("scsi-") {
+                    // Extract serial from name
+                    if let Some(serial) = name.split('_').last() {
+                        return serial.chars().take(20).collect();
+                    }
+                }
+            }
+        }
+    }
+
+    #[cfg(target_os = "windows")]
+    {
+        if let Ok(output) = std::process::Command::new("wmic")
+            .args(["diskdrive", "get", "serialnumber"])
+            .output()
+        {
+            if let Ok(stdout) = String::from_utf8(output.stdout) {
+                let lines: Vec<&str> = stdout.lines().filter(|l| !l.trim().is_empty()).collect();
+                if lines.len() > 1 {
+                    return lines[1].trim().to_string();
+                }
+            }
+        }
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        if let Ok(output) = std::process::Command::new("diskutil")
+            .args(["info", "disk0"])
+            .output()
+        {
+            if let Ok(stdout) = String::from_utf8(output.stdout) {
+                for line in stdout.lines() {
+                    if line.contains("Volume UUID") || line.contains("Disk / Partition UUID") {
+                        if let Some(uuid) = line.split(':').nth(1) {
+                            return uuid.trim().to_string();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    "UNKNOWN-DISK".to_string()
 }

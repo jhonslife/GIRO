@@ -80,7 +80,6 @@ function ProfileCard({ profile, isSelected, isComingSoon, onSelect }: ProfileCar
           {profile.features.weightedProducts && <FeatureBadge label="Balança" />}
           {profile.features.vehicleCompatibility && <FeatureBadge label="Veículos" />}
           {profile.features.serviceOrders && <FeatureBadge label="OS" />}
-          {profile.features.petRegistry && <FeatureBadge label="Pets" />}
         </div>
       </CardContent>
     </Card>
@@ -185,54 +184,6 @@ export function BusinessProfileWizard({
               onSelect={() => setSelectedType(profile.type)}
             />
           ))}
-
-          {/* Pet Shop (Coming Soon) */}
-          <ProfileCard
-            profile={{
-              type: 'PETSHOP',
-              name: 'Pet Shop',
-              description: 'Pet shops, clínicas veterinárias e banho/tosa',
-              icon: 'Dog',
-              features: {
-                pdv: true,
-                inventory: true,
-                employees: true,
-                cashControl: true,
-                reports: true,
-                backup: true,
-
-                expirationControl: false,
-                weightedProducts: false,
-                lotTracking: false,
-
-                vehicleCompatibility: false,
-                serviceOrders: false,
-                warranties: false,
-                customerVehicles: false,
-                vehicleHistory: false,
-
-                petRegistry: true,
-                grooming: false,
-                petScheduling: false,
-              },
-              labels: {
-                product: 'Produto',
-                products: 'Produtos',
-                customer: 'Cliente',
-                customers: 'Clientes',
-                sale: 'Venda',
-                sales: 'Vendas',
-                addProduct: 'Adicionar Produto',
-                newSale: 'Nova Venda',
-                barcode: 'Código de Barras',
-                category: 'Categoria',
-              },
-              defaultCategories: [],
-            }}
-            isSelected={false}
-            isComingSoon
-            onSelect={() => {}}
-          />
         </div>
 
         {/* Selected Profile Details */}

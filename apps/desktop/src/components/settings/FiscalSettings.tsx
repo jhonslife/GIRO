@@ -11,9 +11,11 @@ import {
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { useSettingsStore } from '@/stores/settings-store';
+import { invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-dialog';
-import { FileCode, ShieldCheck } from 'lucide-react';
+import { CheckCircle2, FileCode, Loader2, ShieldCheck, Wifi, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 export const FiscalSettings = () => {
   const { fiscal, setFiscalConfig } = useSettingsStore();
@@ -27,6 +29,10 @@ export const FiscalSettings = () => {
   const [csc, setCsc] = useState(fiscal.csc);
   const [certPath, setCertPath] = useState(fiscal.certPath);
   const [certPassword, setCertPassword] = useState(fiscal.certPassword);
+
+  // Estado do teste de conexão
+  const [testingConnection, setTestingConnection] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
   // Update local state when store changes
   useEffect(() => {
@@ -81,6 +87,46 @@ export const FiscalSettings = () => {
       }
     } catch (err) {
       console.error('Falha ao selecionar arquivo', err);
+    }
+  };
+
+  // Testar conexão com a SEFAZ
+  const handleTestConnection = async () => {
+    setTestingConnection(true);
+    setConnectionStatus('idle');
+
+    try {
+      // UF padrão - em produção deveria vir das configurações da empresa
+      const uf = fiscal.emitterUf || 'SP';
+
+      const response = await invoke<{
+        active: boolean;
+        statusCode: string;
+        statusMessage: string;
+        environment: string;
+      }>('check_sefaz_status', {
+        uf,
+        environment: parseInt(environment),
+      });
+
+      if (response.active) {
+        setConnectionStatus('success');
+        toast.success('Conexão estabelecida!', {
+          description: `SEFAZ ${uf} operacional (${response.environment})`,
+        });
+      } else {
+        setConnectionStatus('error');
+        toast.error('SEFAZ com problemas', {
+          description: `${response.statusCode}: ${response.statusMessage}`,
+        });
+      }
+    } catch (err) {
+      setConnectionStatus('error');
+      toast.error('Falha na conexão', {
+        description: String(err),
+      });
+    } finally {
+      setTestingConnection(false);
     }
   };
 
@@ -181,6 +227,41 @@ export const FiscalSettings = () => {
                   />
                 </div>
               </div>
+            </div>
+
+            {/* Botão Testar Conexão */}
+            <div className="flex items-center gap-4 pt-4 border-t">
+              <Button
+                variant="outline"
+                onClick={handleTestConnection}
+                disabled={testingConnection}
+                className="gap-2"
+              >
+                {testingConnection ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Testando...
+                  </>
+                ) : connectionStatus === 'success' ? (
+                  <>
+                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                    Conectado
+                  </>
+                ) : connectionStatus === 'error' ? (
+                  <>
+                    <XCircle className="h-4 w-4 text-red-500" />
+                    Testar Novamente
+                  </>
+                ) : (
+                  <>
+                    <Wifi className="h-4 w-4" />
+                    Testar Conexão SEFAZ
+                  </>
+                )}
+              </Button>
+              <span className="text-sm text-muted-foreground">
+                Verifica se a SEFAZ está disponível para emissão
+              </span>
             </div>
 
             <div className="flex items-center gap-2 p-3 bg-yellow-500/10 text-yellow-600 rounded-md text-sm">
