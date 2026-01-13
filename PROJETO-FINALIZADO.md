@@ -146,10 +146,8 @@
 ```bash
 cd apps/desktop
 npm run test:e2e
-```
-
-**Ações:**
-
+```text
+## Ações:
 - [ ] Configurar Playwright para rodar com Tauri
 - [ ] Executar os 60+ testes criados
 - [ ] Documentar falhas encontradas
@@ -159,10 +157,8 @@ npm run test:e2e
 
 ```bash
 npm run test:run -- tests/integration
-```
-
-**Ações:**
-
+```text
+## Ações: (cont.)
 - [ ] Corrigir 7 testes em `sale.flow.test.ts`
 - [ ] Corrigir 1 teste em `cash.flow.test.ts`
 - [ ] Melhorar mocks do Tauri
@@ -172,28 +168,22 @@ npm run test:run -- tests/integration
 
 ```bash
 npm run test:coverage
-```
-
-**Ações:**
-
+```text
+## Ações: (cont.)
 - [ ] Adicionar testes para components
 - [ ] Testes Rust com `cargo test`
 - [ ] Benchmarks de performance
 - [ ] Gerar relatório final
 
 ### 4. Implementar CI/CD
-
-**Ações:**
-
+## Ações: (cont.)
 - [ ] Criar workflow GitHub Actions
 - [ ] Build automático em PR
 - [ ] Testes automáticos
 - [ ] Deploy de releases
 
 ### 5. Criar Instaladores
-
-**Ações:**
-
+## Ações: (cont.)
 - [ ] Instalador NSIS (Windows)
 - [ ] AppImage (Linux)
 - [ ] Debian package
@@ -314,7 +304,7 @@ npm run test:coverage
 ✅ Scripts de automação  
 ✅ Estrutura bem organizada
 
-### Qualidade
+### Qualidade (cont.)
 
 ✅ Código limpo e bem comentado  
 ✅ Separação clara de responsabilidades  
@@ -325,9 +315,7 @@ npm run test:coverage
 ---
 
 ## 🎯 PRÓXIMA AÇÃO
-
-**AGORA:**
-
+## AGORA:
 ```bash
 # 1. Executar testes atuais
 cd apps/desktop
@@ -343,8 +331,7 @@ npm run test:run
 
 # 4. Executar E2E
 npm run test:e2e
-```
-
+```text
 ---
 
 ## 📞 CONTATO

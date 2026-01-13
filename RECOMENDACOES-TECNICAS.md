@@ -14,13 +14,10 @@
 **Prioridade:** Alta  
 **Impacto:** Performance e UX  
 **Esforço:** 2-3 dias
-
-**Problema:**  
+## Problema:
 Listagens de produtos, vendas e movimentações podem crescer significativamente  
 ao longo do tempo. Sem paginação, a UI pode ficar lenta com muitos registros.
-
-**Solução:**
-
+## Solução:
 ```rust
 // Backend - ProductRepository
 pub async fn find_paginated(
@@ -47,10 +44,8 @@ pub async fn find_paginated(
         total_pages: (total.0 as f64 / page_size as f64).ceil() as i32,
     })
 }
-```
-
-**Benefícios:**
-
+```text
+## Benefícios:
 - ✅ Melhor performance em listagens grandes
 - ✅ UX mais responsiva
 - ✅ Menor consumo de memória
@@ -62,16 +57,13 @@ pub async fn find_paginated(
 **Prioridade:** Média  
 **Impacto:** Manutenibilidade  
 **Esforço:** 1 semana
-
-**Problema:**  
+## Problema: (cont.)
 Atualmente, lógica de negócio está nos Tauri Commands. Isso dificulta:
 
 - Testes unitários
 - Reuso de lógica
 - Separação de responsabilidades
-
-**Solução:**
-
+## Solução: (cont.)
 ```rust
 // services/sale_service.rs
 pub struct SaleService {
@@ -144,10 +136,8 @@ pub async fn create_sale(
     let sale = service.create_sale(data).await?;
     Ok(sale)
 }
-```
-
-**Benefícios:**
-
+```text
+## Benefícios: (cont.)
 - ✅ Código mais testável
 - ✅ Lógica reutilizável
 - ✅ Separação de responsabilidades
@@ -162,9 +152,7 @@ pub async fn create_sale(
 **Esforço:** 1-2 semanas
 
 **Meta:** 80% de cobertura em Services e Repositories
-
-**Exemplo:**
-
+## Exemplo:
 ```rust
 #[cfg(test)]
 mod tests {
@@ -220,8 +208,7 @@ mod tests {
         );
     }
 }
-```
-
+```text
 **Framework:** [tokio-test](https://docs.rs/tokio-test/)  
 **Cobertura:** [cargo-tarpaulin](https://github.com/xd009642/tarpaulin)
 
@@ -270,8 +257,7 @@ impl CacheManager {
         Ok(categories)
     }
 }
-```
-
+```text
 ---
 
 ### 5. Vacuum e Analyze Periódicos ⭐
@@ -279,12 +265,9 @@ impl CacheManager {
 **Prioridade:** Baixa  
 **Impacto:** Performance a longo prazo  
 **Esforço:** 1 dia
-
-**Problema:**  
+## Problema: (cont.)
 SQLite pode fragmentar com muitas operações de escrita/deleção.
-
-**Solução:**
-
+## Solução: (cont.)
 ```rust
 // services/maintenance_service.rs
 pub struct MaintenanceService {
@@ -315,8 +298,7 @@ impl MaintenanceService {
 }
 
 // Executar semanalmente ou em horário de baixa atividade
-```
-
+```text
 **Agendar:** Executar automaticamente às 03:00 (se PC ligado)
 
 ---
@@ -351,10 +333,8 @@ SELECT p.* FROM products p
 JOIN products_fts fts ON p.rowid = fts.rowid
 WHERE products_fts MATCH 'coca cola'
 ORDER BY rank;
-```
-
-**Benefícios:**
-
+```text
+## Benefícios: (cont.)
 - ✅ Busca muito mais rápida (10-100x)
 - ✅ Ranking de relevância
 - ✅ Suporte a frases exatas
@@ -368,12 +348,9 @@ ORDER BY rank;
 **Prioridade:** Alta (pré-release)  
 **Impacto:** Segurança  
 **Esforço:** 1 dia
-
-**Problema:**  
+## Problema: (cont.)
 Logs podem conter informações sensíveis (PINs, senhas, dados pessoais)
-
-**Solução:**
-
+## Solução: (cont.)
 ```rust
 // utils/sanitizer.rs
 pub fn sanitize_employee(emp: &Employee) -> SafeEmployee {
@@ -388,8 +365,7 @@ pub fn sanitize_employee(emp: &Employee) -> SafeEmployee {
 
 // Logs
 tracing::info!("Funcionário autenticado: {:?}", sanitize_employee(&employee));
-```
-
+```text
 ---
 
 ### 8. Limitar Taxa de Tentativas de Login ⭐⭐
@@ -429,8 +405,7 @@ impl RateLimiter {
         true // Permitido
     }
 }
-```
-
+```text
 ---
 
 ## 📊 Recomendações de Monitoramento
@@ -467,8 +442,7 @@ pub async fn search(&self, term: &str, limit: i32) -> AppResult<Vec<Product>> {
 
     Ok(result)
 }
-```
-
+```text
 ---
 
 ## 🗄️ Recomendações de Banco de Dados
@@ -478,12 +452,9 @@ pub async fn search(&self, term: &str, limit: i32) -> AppResult<Vec<Product>> {
 **Prioridade:** Média  
 **Impacto:** Disaster Recovery  
 **Esforço:** 3-5 dias
-
-**Problema:**  
+## Problema: (cont.)
 Atualmente, apenas backup completo. Para bancos grandes, pode ser lento.
-
-**Solução:**
-
+## Solução: (cont.)
 ```rust
 pub async fn incremental_backup(&self) -> AppResult<()> {
     // Usando WAL, copiar apenas WAL file
@@ -504,8 +475,7 @@ pub async fn incremental_backup(&self) -> AppResult<()> {
 
     Ok(())
 }
-```
-
+```text
 ---
 
 ### 11. Constraints de Validação ⭐⭐
@@ -533,8 +503,7 @@ model Sale {
   @@check("change >= 0", name: "non_negative_change")
   @@check("subtotal >= 0", name: "positive_subtotal")
 }
-```
-
+```text
 ---
 
 ## 📝 Priorização das Recomendações

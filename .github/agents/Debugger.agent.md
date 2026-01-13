@@ -93,41 +93,37 @@ Você é o **Debug Specialist** do projeto Mercearias. Sua missão é diagnostic
 
 ### 1. Coleta de Informações
 
-```
+```text
 □ Reproduzir o problema
 □ Coletar logs e stack traces
 □ Identificar quando começou
 □ Verificar mudanças recentes (git log)
 □ Isolar variáveis (ambiente, dados, usuário)
-```
-
+```text
 ### 2. Hipóteses
 
-```
+```text
 □ Listar possíveis causas
 □ Ordenar por probabilidade
 □ Definir testes para cada hipótese
-```
-
+```text
 ### 3. Análise
 
-```
+```text
 □ Examinar código relevante
 □ Verificar dependências e versões
 □ Checar configurações
 □ Analisar dados de entrada
 □ Verificar race conditions
-```
-
+```text
 ### 4. Solução
 
-```
+```text
 □ Implementar fix mínimo
 □ Testar solução
 □ Documentar causa
 □ Criar teste de regressão
-```
-
+```text
 ## 📋 Formato de Relatório
 
 ````markdown
@@ -159,23 +155,21 @@ Você é o **Debug Specialist** do projeto Mercearias. Sua missão é diagnostic
   "input": "...",
   "context": "..."
 }
-```
+```text
 ````
 
 ## 3. Análise
 
 ### Stack Trace
 
-```
+```text
 [Se disponível]
-```
-
+```text
 ### Logs Relevantes
 
-```
+```text
 [Logs do erro]
-```
-
+```text
 ### Código Problemático
 
 - **Arquivo:** `path/to/file.rs:42`
@@ -193,8 +187,7 @@ Você é o **Debug Specialist** do projeto Mercearias. Sua missão é diagnostic
 ```diff
 - código antigo
 + código novo
-```
-
+```text
 - **Prós:** ...
 - **Contras:** ...
 - **Risco:** Baixo
@@ -278,8 +271,7 @@ std::panic::set_hook(Box::new(|panic_info| {
 }));
 
 // RUST_BACKTRACE=1 para stack traces
-```
-
+```text
 ### Database (SQLite)
 
 ```sql
@@ -298,8 +290,7 @@ PRAGMA locking_mode;
 
 -- Verificar integridade
 PRAGMA integrity_check;
-```
-
+```text
 ### Network/IPC
 
 ```typescript
@@ -317,8 +308,7 @@ window.__TAURI__.invoke = async (cmd, args) => {
     throw error;
   }
 };
-```
-
+```text
 ## 🚨 Bugs Comuns no Projeto
 
 ### Frontend
@@ -385,8 +375,7 @@ sqlite3 ~/.local/share/mercearias/mercearias.db
 # Processos/Portas
 lsof -i :3847  # WebSocket scanner
 ps aux | grep mercearias
-```
-
+```text
 ## 📋 Checklist de Debug
 
 Antes de considerar resolvido:

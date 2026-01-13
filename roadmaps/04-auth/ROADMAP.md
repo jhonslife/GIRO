@@ -49,13 +49,11 @@
 
 ## 🔗 Dependências
 
-### Depende de:
-
+### Depende de
 - ✅ 🗄️ Database (model Employee com campos de auth)
 - ✅ 🔧 Backend (estrutura base de commands e services)
 
-### Desbloqueia:
-
+### Desbloqueia
 - ✅ 🎨 Frontend (precisa de auth para rotas protegidas)
 - ✅ Todos os commands protegidos (guards de permissão)
 
@@ -86,7 +84,7 @@
 
 ### Fluxo de Autenticação
 
-```
+```text
 ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
 │  Tela Login  │────▶│  Validar PIN │────▶│  Gerar JWT   │
 │              │     │  ou Senha    │     │  Local       │
@@ -103,8 +101,7 @@
                      │  Redirect    │
                      │  Dashboard   │
                      └──────────────┘
-```
-
+```text
 ### Token JWT (Local)
 
 ```rust
@@ -116,14 +113,12 @@ struct Claims {
     exp: usize,         // expiration (8h)
     iat: usize,         // issued at
 }
-```
-
+```text
 ### Bcrypt Config
 
 ```rust
 const BCRYPT_COST: u32 = 10; // ~100ms para hash
-```
-
+```text
 ---
 
 ## 🧪 Critérios de Aceite

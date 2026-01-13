@@ -8,51 +8,39 @@
 ## 🎯 Objetivos Alcançados
 
 ### ✅ 1. Teste de Abertura de Caixa - CORRIGIDO
-
-**Problema original:**
-
+## Problema original:
 ```typescript
 // ❌ ANTES - Seletor ambíguo
 expect(page.getByText('Caixa Fechado')).toBeVisible();
 // Erro: 2 elementos encontrados (strict mode violation)
-```
-
-**Solução aplicada:**
-
+```text
+## Solução aplicada:
 ```typescript
 // ✅ DEPOIS - Seletor específico
 expect(page.getByRole('main').getByText('Caixa Fechado', { exact: true })).toBeVisible();
-```
-
-**Resultado:**
-
+```text
+## Resultado:
 ```bash
 ✓ deve abrir sessão de caixa (4.7s) ✅
 1 passed (6.4s)
-```
-
+```text
 **Arquivo:** [cash-session.spec.ts](apps/desktop/tests/e2e/cash-session.spec.ts#L27)
 
 ---
 
 ### ✅ 2. Bug Rust Corrigido - Clone Trait
-
-**Problema:**
-
+## Problema:
 ```rust
 error[E0277]: the trait bound `LicenseClient: Clone` is not satisfied
-```
-
-**Solução:**
-
+```text
+## Solução:
 ```rust
 #[derive(Clone)]  // ✅ Adicionado
 pub struct LicenseClient {
     config: LicenseClientConfig,
     client: reqwest::Client,
 }
-```
-
+```text
 **Arquivo:** [client.rs](apps/desktop/src-tauri/src/license/client.rs#L96)
 
 ---
@@ -86,8 +74,7 @@ warning: unused import: `LicenseClient`
  --> src/commands/license.rs:6:22
 
 Compiling [=======================> ] 776/777: giro_lib(test)
-```
-
+```text
 **Próximo passo:** Executar `cargo test --lib` completo para ver resultados
 
 ---
@@ -143,9 +130,7 @@ Compiling [=======================> ] 776/777: giro_lib(test)
 ### 1. apps/desktop/tests/e2e/cash-session.spec.ts
 
 **Linha 27-62:** Reescrito teste com melhor especificidade
-
-**Principais alterações:**
-
+## Principais alterações:
 - Removido `waitForTimeout` fixos
 - Adicionado `waitForLoadState('networkidle')`
 - Usado `getByRole('main')` para evitar ambiguidade
@@ -165,8 +150,7 @@ Compiling [=======================> ] 776/777: giro_lib(test)
 /// License client
 + #[derive(Clone)]
 pub struct LicenseClient {
-```
-
+```text
 **Impacto:** Permite clone do client em AppState
 
 ---
@@ -257,8 +241,7 @@ page.getByText('Texto');
 
 // ✅ Preferir
 page.getByRole('main').getByText('Texto', { exact: true });
-```
-
+```text
 ---
 
 ### 2. Waits em E2E
@@ -274,8 +257,7 @@ await page.waitForTimeout(2000);
 // ✅ Preferir
 await page.waitForLoadState('networkidle');
 await expect(element).toBeVisible({ timeout: 5000 });
-```
-
+```text
 ---
 
 ### 3. Traits Rust
@@ -287,18 +269,13 @@ await expect(element).toBeVisible({ timeout: 5000 });
 ```rust
 #[derive(Clone)]
 pub struct MyStruct { }
-```
-
+```text
 ---
 
 ## 🏆 Resultado Final
 
 ### Pendência Crítica
-
-**Status:** ✅ **RESOLVIDO**
-
-**O único teste E2E falhando foi corrigido e agora passa com sucesso.**
-
+## Status:** ✅ **RESOLVIDO## O único teste E2E falhando foi corrigido e agora passa com sucesso.
 ---
 
 ### Bloqueadores para Release
@@ -326,17 +303,13 @@ pub struct MyStruct { }
 ## 📊 Comparação: Documentado vs Real
 
 ### Antes da Auditoria
-
-**Documentos diziam:**
-
+## Documentos diziam:
 - ❌ Testes E2E não implementados
 - ❌ Testes Rust não implementados
 - ❌ 1 teste crítico falhando
 
 ### Depois da Auditoria
-
-**Realidade descoberta:**
-
+## Realidade descoberta:
 - ✅ 74 testes E2E implementados (4x mais que documentado!)
 - ✅ 20+ módulos Rust com testes
 - ✅ Teste crítico corrigido em 30 minutos
@@ -357,18 +330,14 @@ pub struct MyStruct { }
 6. ✅ Geração de 4 relatórios detalhados
 
 ### Situação Atual
-
-**O projeto está em excelente estado:**
-
+## O projeto está em excelente estado:
 - ✅ Código 95% completo
 - ✅ Bugs críticos corrigidos
 - ✅ Testes existem e funcionam
 - ⏸️ Falta executar suíte completa
 
 ### Próximo Passo Imediato
-
-**Executar suíte completa de testes E2E (5-10min)**
-
+## Executar suíte completa de testes E2E (5-10min)
 Após isso, o projeto estará pronto para release candidate.
 
 ---

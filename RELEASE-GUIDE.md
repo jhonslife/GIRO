@@ -72,8 +72,7 @@ npm run build
 
 # Build do Tauri (desenvolvimento)
 npm run tauri build -- --debug
-```
-
+```text
 ### 2. Build de Produção
 
 ```bash
@@ -84,21 +83,19 @@ rm -rf dist
 # Build otimizado
 npm run tauri build
 
-# Saída estará em:
+# Saída estará em
 # src-tauri/target/release/bundle/
-```
-
+```text
 ### 3. Instalador Windows
 
 ```bash
 # Executar no Windows ou Wine
 npm run tauri build -- --target x86_64-pc-windows-msvc
 
-# Gera:
+# Gera
 # - .msi installer
 # - .exe standalone
-```
-
+```text
 ### 4. Build Linux
 
 ```bash
@@ -107,8 +104,7 @@ npm run tauri build -- --target x86_64-unknown-linux-gnu
 
 # Debian package
 npm run tauri build -- --bundles deb
-```
-
+```text
 ---
 
 ## 🧪 Executar Testes
@@ -126,8 +122,7 @@ npm run test:coverage
 
 # Em modo watch
 npm test
-```
-
+```text
 ### Testes E2E
 
 ```bash
@@ -142,8 +137,7 @@ npm run test:e2e:ui
 
 # Específico
 npx playwright test tests/e2e/auth.spec.ts
-```
-
+```text
 ### Testes Rust
 
 ```bash
@@ -157,13 +151,12 @@ cargo test -- --nocapture
 
 # Teste específico
 cargo test test_create_product
-```
-
+```text
 ---
 
 ## 📦 Estrutura do Release
 
-```
+```text
 mercearias-0.1.0/
 ├── mercearias_0.1.0_amd64.deb        # Debian/Ubuntu
 ├── mercearias_0.1.0_amd64.AppImage   # Linux universal
@@ -172,8 +165,7 @@ mercearias-0.1.0/
 ├── CHANGELOG.md
 ├── LICENSE
 └── README.md
-```
-
+```text
 ---
 
 ## 🎯 Recursos Incluídos
@@ -336,28 +328,26 @@ sudo apt-get install -f
 
 # Executar
 mercearias
-```
-
+```text
 ### Linux (AppImage)
 
 ```bash
-# Download
+# Download (cont.)
 wget https://releases.mercearias.app/v0.1.0/mercearias_0.1.0_amd64.AppImage
 
 # Dar permissão
 chmod +x mercearias_0.1.0_amd64.AppImage
 
-# Executar
+# Executar (cont.)
 ./mercearias_0.1.0_amd64.AppImage
-```
-
+```text
 ---
 
 ## 📍 Localização dos Dados
 
 ### Linux
 
-```
+```text
 ~/.local/share/Mercearias/
 ├── mercearias.db          # Database principal
 ├── mercearias.db-wal      # Write-Ahead Log
@@ -367,18 +357,16 @@ chmod +x mercearias_0.1.0_amd64.AppImage
 └── logs/                  # Logs da aplicação
     ├── app.log
     └── errors.log
-```
+```text
+### Windows (cont.)
 
-### Windows
-
-```
+```text
 C:\Users\{usuario}\AppData\Local\Mercearias\
 ├── mercearias.db
 ├── mercearias.db-wal
 ├── backups\
 └── logs\
-```
-
+```text
 ---
 
 ## 🔄 Atualização

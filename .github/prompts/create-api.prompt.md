@@ -17,13 +17,12 @@ Crie uma API Route completa do Next.js (App Router) seguindo os padrões da Arkh
 
 ## Estrutura
 
-```
+```text
 src/app/api/[resource]/
 ├── route.ts              # Métodos sem parâmetro (GET all, POST)
 └── [id]/
     └── route.ts          # Métodos com parâmetro (GET one, PUT, DELETE)
-```
-
+```text
 ## Template Base
 
 ```typescript
@@ -123,8 +122,7 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-```
-
+```text
 ## Checklist
 
 - [ ] Validação com Zod
@@ -144,8 +142,7 @@ export async function POST(request: NextRequest) {
   "data": { ... },
   "message": "Recurso criado com sucesso"
 }
-```
-
+```text
 ### Lista com Paginação
 ```json
 {
@@ -157,8 +154,7 @@ export async function POST(request: NextRequest) {
     "pages": 10
   }
 }
-```
-
+```text
 ### Erro de Validação
 ```json
 {
@@ -169,12 +165,11 @@ export async function POST(request: NextRequest) {
     }
   }
 }
-```
-
+```text
 ### Erro Genérico
 ```json
 {
   "error": "Not found",
   "message": "Recurso não encontrado"
 }
-```
+```text

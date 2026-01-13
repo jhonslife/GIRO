@@ -25,8 +25,7 @@ Realizei uma auditoria completa do backend e banco de dados, encontrando e corri
 ```diff
 - SELECT ... FROM Product WHERE is_active = 1 ...
 + SELECT ... FROM products WHERE is_active = 1 ...
-```
-
+```text
 ---
 
 ### 2. Nome de Tabela Incorreto em `find_out_of_stock()`
@@ -40,8 +39,7 @@ Realizei uma auditoria completa do backend e banco de dados, encontrando e corri
 ```diff
 - SELECT ... FROM Product WHERE is_active = 1 AND current_stock <= 0 ...
 + SELECT ... FROM products WHERE is_active = 1 AND current_stock <= 0 ...
-```
-
+```text
 ---
 
 ### 3. Nome de Tabela Incorreto em `get_next_internal_code()`
@@ -55,8 +53,7 @@ Realizei uma auditoria completa do backend e banco de dados, encontrando e corri
 ```diff
 - SELECT COUNT(*) FROM Product
 + SELECT COUNT(*) FROM products
-```
-
+```text
 ---
 
 ### 4. Nome de Tabela Incorreto em Seed (Totais de Caixa)
@@ -70,8 +67,7 @@ Realizei uma auditoria completa do backend e banco de dados, encontrando e corri
 ```diff
 - SELECT COALESCE(SUM(total), 0) FROM Sale WHERE ...
 + SELECT COALESCE(SUM(total), 0) FROM sales WHERE ...
-```
-
+```text
 ---
 
 ### 5. Clippy Warning - Operador de Atribuição
@@ -85,8 +81,7 @@ Realizei uma auditoria completa do backend e banco de dados, encontrando e corri
 ```diff
 - current_date = current_date + Duration::days(1);
 + current_date += Duration::days(1);
-```
-
+```text
 ---
 
 ## 📄 Documentação Criada (4 arquivos)
@@ -152,9 +147,7 @@ Realizei uma auditoria completa do backend e banco de dados, encontrando e corri
 ## 🎯 Status Final
 
 ### ✅ **APROVADO PARA RELEASE 1.0.0-rc1**
-
-**Todos os critérios de release foram atendidos:**
-
+## Todos os critérios de release foram atendidos:
 1. ✅ Zero bugs críticos
 2. ✅ Zero warnings de compilação
 3. ✅ 100% dos repositórios funcionais
@@ -167,7 +160,7 @@ Realizei uma auditoria completa do backend e banco de dados, encontrando e corri
 
 ## 📦 Arquivos Modificados
 
-```
+```text
 apps/desktop/src-tauri/src/
 ├── repositories/
 │   └── product_repository.rs (3 correções)
@@ -181,8 +174,7 @@ apps/desktop/src-tauri/src/
 ├── RECOMENDACOES-TECNICAS.md (novo)
 └── roadmaps/
     └── STATUS.md (atualizado)
-```
-
+```text
 ---
 
 ## 🚀 Próximos Passos
@@ -228,8 +220,7 @@ Documentação:
 - CHECKLIST-FINAL-RELEASE.md (checklist de release)
 - SUMARIO-AUDITORIA.md (sumário executivo)
 - RECOMENDACOES-TECNICAS.md (11 recomendações Sprint 7-8)"
-```
-
+```text
 ---
 
 _Auditoria completa realizada pelo Agente Database - 8 de Janeiro de 2026_

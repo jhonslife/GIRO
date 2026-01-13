@@ -59,22 +59,20 @@ DevOps:
   CI/CD: GitHub Actions
   Installer: NSIS (Windows)
   Backup: Google Drive API
-```
-
+```text
 ---
 
 ## 🔄 Workflow Recomendado
 
 ### Fluxo de Desenvolvimento
 
-```
+```text
 📋 Planejador → 🗄️ Database → 🦀 Rust → ⚛️ Frontend → 🧪 QA
                                   ↓
                             🔌 Hardware
                                   ↓
                             🏪 PDV
-```
-
+```text
 ### Fluxo Típico de Feature
 
 1. **@Planejador** → Análise e plano de implementação
@@ -97,7 +95,7 @@ Os agentes possuem **handoffs** configurados para facilitar transições:
 
 ## 💬 Exemplos de Uso
 
-```
+```text
 @Planejador crie um plano para implementar o módulo de sangria de caixa
 
 @Database adicione campo de observações na tabela de vendas
@@ -115,8 +113,7 @@ Os agentes possuem **handoffs** configurados para facilitar transições:
 @QA escreva testes para o fluxo de venda completo
 
 @Debugger a impressão de cupom está travando
-```
-
+```text
 ---
 
 ## 📚 Documentação Relacionada
@@ -195,8 +192,7 @@ handoffs:
     prompt: Continue a partir daqui.
     send: false
 ---
-```
-
+```text
 3. Adicione instruções em Markdown no corpo
 4. O agente aparecerá automaticamente no dropdown
 

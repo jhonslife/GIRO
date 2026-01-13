@@ -43,8 +43,7 @@ async fn test_create_service_order() {
     assert_eq!(os.status, ServiceOrderStatus::Open);
     assert_eq!(os.total_amount, 0.0);
 }
-```
-
+```text
 ### ServiceOrderForm.tsx (Specs)
 
 - **Campos Obrigatórios**: Cliente, Veículo, Relato.

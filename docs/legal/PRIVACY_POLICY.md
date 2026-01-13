@@ -154,8 +154,7 @@ Podemos atualizar esta Politica periodicamente. Alteracoes significativas serao 
 ---
 
 ## 10. ENCARREGADO DE DADOS (DPO)
-
-**Encarregado de Protecao de Dados:**  
+## Encarregado de Protecao de Dados:
 Email: dpo@arkheion.com.br
 
 ---
@@ -163,20 +162,17 @@ Email: dpo@arkheion.com.br
 ## 11. AUTORIDADE NACIONAL
 
 Voce pode apresentar reclamacoes a:
-
-**Autoridade Nacional de Protecao de Dados (ANPD)**  
+## Autoridade Nacional de Protecao de Dados (ANPD)
 Site: https://www.gov.br/anpd
 
 ---
 
 ## CONTATO
-
-**Arkheion**  
+## Arkheion
 Email: privacidade@arkheion.com.br  
 Telefone: (11) XXXX-XXXX  
 Site: https://giro.arkheion.com.br
 
 ---
-
-*Ultima Atualizacao: 8 de Janeiro de 2026*  
-*Copyright 2026 Arkheion. Todos os direitos reservados.*
+## Ultima Atualizacao: 8 de Janeiro de 2026
+## Copyright 2026 Arkheion. Todos os direitos reservados.

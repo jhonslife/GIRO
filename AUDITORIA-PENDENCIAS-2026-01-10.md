@@ -42,13 +42,11 @@
 
 **Status:** ⬜ Não executado  
 **Arquivo:** `PROJETO-FINALIZADO.md` L153-156  
-**Ação:**
-
+## Ação:
 ```bash
 cd apps/desktop
 npm run test:e2e
-```
-
+```text
 **Critério de Sucesso:** > 80% dos testes passando
 
 ---
@@ -59,13 +57,11 @@ npm run test:e2e
 **Arquivo:** `TESTE-E2E-STATUS.md` L28-40  
 **Problema:** State management nos stores
 
-```
+```text
 - sale.flow.test.ts (7 testes)
 - cash.flow.test.ts (1 teste)
-```
-
-**Ações:**
-
+```text
+## Ações:
 - [ ] Resetar stores antes de cada teste
 - [ ] Melhorar mocks do Tauri
 - [ ] Usar `act()` para atualizações de state
@@ -76,13 +72,11 @@ npm run test:e2e
 
 **Status:** ⬜ Não iniciado  
 **Arquivo:** `PROJETO-FINALIZADO.md` L180  
-**Ação:**
-
+## Ação: (cont.)
 ```bash
 cd apps/desktop/src-tauri
 cargo test
-```
-
+```text
 **Observação:** Já existem módulos `#[cfg(test)]` em 20+ arquivos Rust
 
 ---
@@ -92,9 +86,7 @@ cargo test
 **Status:** ⬜ Não medido  
 **Arquivo:** `PROJETO-FINALIZADO.md` L179-182  
 **Target:** > 80%
-
-**Ações:**
-
+## Ações: (cont.)
 - [ ] Rodar `npm run test:coverage`
 - [ ] Adicionar testes para components
 - [ ] Gerar relatório final
@@ -107,9 +99,7 @@ cargo test
 
 **Status:** ⬜ Não implementado  
 **Arquivo:** `PROJETO-FINALIZADO.md` L188-191
-
-**Ações:**
-
+## Ações: (cont.)
 - [ ] Criar `.github/workflows/test.yml`
 - [ ] Criar `.github/workflows/build.yml`
 - [ ] Build automático em PR
@@ -121,9 +111,7 @@ cargo test
 
 **Status:** ⬜ Parcial  
 **Arquivo:** `PROJETO-FINALIZADO.md` L197-198
-
-**Ações:**
-
+## Ações: (cont.)
 - [ ] Instalador NSIS (Windows) - **já funciona com tauri build**
 - [ ] AppImage (Linux) - **já funciona com tauri build**
 - [ ] Assinatura de código (opcional)
@@ -193,48 +181,39 @@ Estas funcionalidades são para o módulo **Motopeças** (não Mercearias):
 
 **Problema:** Diz que testes E2E não existem  
 **Realidade:** 59 testes E2E existem em `tests/e2e/`
-
-**Correção:**
-
+## Correção:
 ```diff
 - #### Testes E2E (0/0)
 - Os testes Playwright não estão sendo executados
 + #### Testes E2E (59/59 - Implementados)
 + Testes Playwright criados e prontos para execução
-```
-
+```text
 ---
 
 #### 2. PROJETO-FINALIZADO.md
 
 **Problema:** Checkboxes desmarcados para itens já implementados  
 **Realidade:** Testes E2E existem
-
-**Correção:**
-
+## Correção: (cont.)
 ```diff
 - - [ ] Configurar Playwright para rodar com Tauri
 - - [ ] Executar os 60+ testes criados
 + - [x] Configurar Playwright para rodar com Tauri
 + - [x] Criar 59 testes E2E (Implementado)
 + - [ ] Executar os testes e validar (Próximo passo)
-```
-
+```text
 ---
 
 #### 3. CHECKLIST-FINAL-RELEASE.md
 
 **Atualizar:** Progresso de testes
-
-**Correção:**
-
+## Correção: (cont.)
 ```diff
 ### 6. Testing (Agente #6) 🔄
 - - [x] **Testes E2E implementados** (85%)
 + - [x] **Testes E2E implementados** (100% - 59 testes)
 + - [ ] **Testes E2E executados** (0% - Pendente)
-```
-
+```text
 ---
 
 ## 🎯 Plano de Ação Prioritário
@@ -242,21 +221,15 @@ Estas funcionalidades são para o módulo **Motopeças** (não Mercearias):
 ### Sprint Atual: Finalização de Testes
 
 #### Semana 1 (10-16 Jan)
-
-**Dia 1-2: Executar e Corrigir Testes**
-
+## Dia 1-2: Executar e Corrigir Testes
 - [ ] Executar `npm run test:e2e` no desktop
 - [ ] Documentar resultados
 - [ ] Corrigir testes de integração (sale.flow, cash.flow)
-
-**Dia 3-4: Testes Rust e Cobertura**
-
+## Dia 3-4: Testes Rust e Cobertura
 - [ ] Executar `cargo test` no backend
 - [ ] Medir cobertura frontend (`npm run test:coverage`)
 - [ ] Identificar gaps de cobertura
-
-**Dia 5: Documentação**
-
+## Dia 5: Documentação
 - [ ] Atualizar documentos com resultados
 - [ ] Marcar checkboxes corretos
 - [ ] Criar relatório final de QA
@@ -264,9 +237,7 @@ Estas funcionalidades são para o módulo **Motopeças** (não Mercearias):
 ---
 
 ### Sprint Seguinte: CI/CD e Release
-
-**Objetivos:**
-
+## Objetivos:
 - [ ] Implementar GitHub Actions
 - [ ] Criar builds automáticos
 - [ ] Testar instaladores em Windows e Linux
@@ -330,24 +301,17 @@ Estas funcionalidades são para o módulo **Motopeças** (não Mercearias):
 ---
 
 ## ✅ Conclusão
-
-**Estado Real do Projeto:**
-
+## Estado Real do Projeto:
 - ✅ **Código:** 95% completo e funcional
 - ⚠️ **Testes:** 85% implementados, precisam execução
 - ✅ **Documentação:** 90% completa, precisa sync
-
-**Próximo Passo Crítico:**
+## Próximo Passo Crítico:
 🔴 **EXECUTAR TESTES E2E E VALIDAR QUALIDADE**
-
-**Bloqueadores para Release:**
-
+## Bloqueadores para Release:
 1. Testes E2E não executados
 2. 8 testes de integração falhando
 3. Cobertura não medida
-
-**Tempo Estimado para Release:**
-
+## Tempo Estimado para Release:
 - **Otimista:** 3-5 dias (se testes passarem)
 - **Realista:** 1-2 semanas (com correções)
 

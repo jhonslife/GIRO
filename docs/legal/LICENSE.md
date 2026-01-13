@@ -1,7 +1,5 @@
 # GIRO - Licenca Comercial
-
-**Copyright (c) 2026 Arkheion**
-
+## Copyright (c) 2026 Arkheion
 Todos os direitos reservados.
 
 ---
@@ -45,11 +43,9 @@ Em nenhum caso a Arkheion sera responsavel por danos decorrentes do uso ou incap
 ## CONTATO
 
 Para licenciamento comercial, entre em contato:
-
-**Arkheion**  
+## Arkheion
 Email: licenciamento@arkheion.com.br  
 Site: https://giro.arkheion.com.br
 
 ---
-
-*Copyright 2026 Arkheion. Todos os direitos reservados.*
+## Copyright 2026 Arkheion. Todos os direitos reservados.

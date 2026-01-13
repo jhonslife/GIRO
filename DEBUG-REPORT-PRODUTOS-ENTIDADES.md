@@ -43,35 +43,25 @@
 | `commands/price_history.rs`                | Comandos Tauri para histórico de preços                                 |
 
 #### Comandos Tauri Registrados
-
-**Products:**
-
+## Products:
 - `deactivate_product`
 - `reactivate_product`
 - `get_all_products`
 - `get_inactive_products`
-
-**Categories:**
-
+## Categories:
 - `deactivate_category`
 - `reactivate_category`
 - `get_all_categories`
 - `get_inactive_categories`
-
-**Suppliers:**
-
+## Suppliers:
 - `deactivate_supplier`
 - `reactivate_supplier`
 - `get_all_suppliers`
 - `get_inactive_suppliers`
-
-**Employees:**
-
+## Employees:
 - `reactivate_employee`
 - `get_inactive_employees`
-
-**Price History:**
-
+## Price History:
 - `get_price_history_by_product`
 - `get_recent_price_history`
 - `get_price_history_by_id`
@@ -104,8 +94,7 @@ getInactiveSuppliers()
 getPriceHistoryByProduct(productId)
 getRecentPriceHistory(limit?)
 getPriceHistoryById(id)
-```
-
+```text
 #### Hooks Atualizados/Criados
 
 | Arquivo              | Hooks Adicionados                                                                             |
@@ -136,8 +125,7 @@ const { data: history } = usePriceHistoryByProduct(productId);
 
 // Últimas alterações de preço (com nome do produto)
 const { data: recent } = useRecentPriceHistory(50);
-```
-
+```text
 ## 5. Verificação
 
 ### Backend
@@ -145,16 +133,14 @@ const { data: recent } = useRecentPriceHistory(50);
 ```bash
 cd apps/desktop/src-tauri && cargo check
 # ✅ Compiled successfully
-```
-
+```text
 ### Frontend
 
 ```bash
 cd apps/desktop && pnpm run typecheck
 # ⚠️ Erros pré-existentes não relacionados às mudanças
 # ✅ Novos hooks sem erros
-```
-
+```text
 ## 6. Arquivos Modificados
 
 ### Novos Arquivos

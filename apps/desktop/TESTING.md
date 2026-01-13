@@ -6,7 +6,7 @@ Este documento descreve a estratégia de testes unitários e de integração do 
 
 ## 🏗️ Estrutura de Testes
 
-```
+```text
 apps/desktop/
 ├── src/
 │   ├── hooks/__tests__/         # Testes de hooks React Query
@@ -19,8 +19,7 @@ apps/desktop/
 │   └── e2e/                      # Testes E2E Playwright
 └── src-tauri/
     └── src/repositories/         # Testes Rust inline (_test.rs)
-```
-
+```text
 ## 🎯 Metas de Cobertura
 
 | Módulo        | Meta | Prioridade |
@@ -51,8 +50,7 @@ pnpm test:coverage
 pnpm test:e2e
 pnpm test:e2e:ui
 pnpm test:e2e:debug
-```
-
+```text
 ### Backend (Rust/Cargo)
 
 ```bash
@@ -67,8 +65,7 @@ cargo test -- --nocapture
 
 # Com cobertura (requer cargo-llvm-cov)
 cargo llvm-cov --html
-```
-
+```text
 ## 📝 Padrões de Teste
 
 ### Frontend - Hooks React Query
@@ -110,8 +107,7 @@ describe('useExample', () => {
     expect(result.current.data).toEqual({ id: '1', name: 'Test' });
   });
 });
-```
-
+```text
 ### Frontend - Stores Zustand
 
 ```typescript
@@ -132,8 +128,7 @@ describe('Example Store', () => {
     expect(state.value).toBe('test');
   });
 });
-```
-
+```text
 ### Backend - Rust Repositories
 
 ```rust
@@ -165,8 +160,7 @@ mod tests {
         assert_eq!(item.name, "Test");
     }
 }
-```
-
+```text
 ## 🎭 Mocking
 
 ### Frontend - Tauri Commands
@@ -179,8 +173,7 @@ vi.mock('@tauri-apps/api/core', () => ({
 // Em cada teste
 const { invoke } = await import('@tauri-apps/api/core');
 (invoke as any).mockResolvedValue({ data: 'mocked' });
-```
-
+```text
 ### Frontend - React Query
 
 ```typescript
@@ -189,16 +182,14 @@ vi.mock('@/lib/tauri', () => ({
   createProduct: vi.fn(),
   // ...
 }));
-```
-
+```text
 ## 📊 Cobertura Atual
 
 ### Frontend
 
 ```bash
 pnpm test:coverage
-```
-
+```text
 Resultados esperados:
 
 - **Hooks**: 85%+
@@ -210,8 +201,7 @@ Resultados esperados:
 ```bash
 cargo llvm-cov --html
 open target/llvm-cov/html/index.html
-```
-
+```text
 Resultados esperados:
 
 - **Repositories**: 90%+
@@ -246,7 +236,7 @@ Resultados esperados:
 
 ## 🐛 Debug de Testes
 
-### Frontend
+### Frontend (cont.)
 
 ```bash
 # Ver output detalhado
@@ -257,9 +247,8 @@ pnpm test -- ProductSearch
 
 # UI interativa
 pnpm test:ui
-```
-
-### Backend
+```text
+### Backend (cont.)
 
 ```bash
 # Output completo
@@ -270,8 +259,7 @@ cargo test test_create_product
 
 # Com trace
 RUST_LOG=debug cargo test
-```
-
+```text
 ## 📚 Referências
 
 - [Vitest Docs](https://vitest.dev/)

@@ -7,7 +7,7 @@
 
 ## 📦 Arquitetura Implementada
 
-```
+```text
 apps/desktop/src-tauri/src/
 ├── lib.rs                    ✅ AppState, módulos exportados
 ├── main.rs                   ✅ Entry point Tauri
@@ -65,8 +65,7 @@ apps/desktop/src-tauri/src/
     ├── scale.rs              ✅ Toledo/Filizola/Elgin (531 linhas)
     ├── scanner.rs            ✅ USB HID + WebSocket (492 linhas)
     └── drawer.rs             ✅ Gaveta via impressora (175 linhas)
-```
-
+```text
 ---
 
 ## 🎯 Funcionalidades Implementadas
@@ -176,8 +175,7 @@ npm run tauri:dev
 
 # Build completo
 npm run tauri:build
-```
-
+```text
 ---
 
 ## 📝 Notas Técnicas

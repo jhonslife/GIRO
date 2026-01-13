@@ -95,25 +95,17 @@ Realizei uma **auditoria técnica completa** do backend e banco de dados do proj
 - [x] Documentação completa
 - [x] Build Windows funcional
 - [x] **Instalador NSIS gerado** (GIRO_1.0.0_x64-setup.exe - 7,0 MB)
-
-**Status:** ✅ **TODOS ATENDIDOS + INSTALADOR PRONTO**
-
+## Status:** ✅ **TODOS ATENDIDOS + INSTALADOR PRONTO
 ### 📦 Build Windows Concluído (10/01/2026 23:20)
-
-**Arquivo gerado:**
-
+## Arquivo gerado:
 - `src-tauri/target/x86_64-pc-windows-gnu/release/bundle/nsis/GIRO_1.0.0_x64-setup.exe` (7,0 MB)
-
-**Processo:**
-
+## Processo:
 1. ✅ SQLx offline cache gerado (62 queries)
 2. ✅ Cross-compilation Linux → Windows com MinGW-w64
 3. ✅ Frontend Vite otimizado para produção
 4. ✅ Backend Rust compilado para x86_64-pc-windows-gnu
 5. ✅ Bundle NSIS criado com assets e DLLs incluídas
-
-**Próximos passos:**
-
+## Próximos passos:
 - [ ] Testar instalador em VM Windows
 - [ ] Validar integração com hardware em Windows
 - [ ] Verificar persistência de dados após instalação
@@ -124,9 +116,7 @@ Realizei uma **auditoria técnica completa** do backend e banco de dados do proj
 - [ ] Build Linux testado → Sprint 6
 - [ ] Assinatura de código → Sprint 6
 - [ ] Analytics de uso → Sprint 8
-
-**Status:** ⏸️ **Planejado pós-release**
-
+## Status:** ⏸️ **Planejado pós-release
 ---
 
 ## 📊 Métricas de Qualidade
@@ -155,9 +145,7 @@ Realizei uma **auditoria técnica completa** do backend e banco de dados do proj
 ## 🚀 Decisão Final
 
 ### ✅ **APROVADO PARA RELEASE 1.0.0-rc1**
-
-**Justificativa Técnica:**
-
+## Justificativa Técnica:
 1. ✅ **Zero bugs críticos** após correções
 2. ✅ **Zero warnings** de compilação
 3. ✅ **100% dos repositórios** funcionais
@@ -183,17 +171,13 @@ Realizei uma **auditoria técnica completa** do backend e banco de dados do proj
 - [ ] Release notes
 
 ### Sprint 7 (Pós-Release)
-
-**Prioridade Alta:**
-
+## Prioridade Alta:
 - [ ] Implementar paginação em listagens
 - [ ] Testes unitários (80% coverage)
 - [ ] Refatorar Commands para Services
 - [ ] Rate limiting de login
 - [ ] Constraints de validação
-
-**Prioridade Média:**
-
+## Prioridade Média:
 - [ ] Cache em memória
 - [ ] Full-Text Search (FTS5)
 - [ ] Backup incremental
@@ -244,7 +228,7 @@ Detalhes completos em **RECOMENDACOES-TECNICAS.md**.
 
 ### Arquitetura
 
-```
+```text
 Frontend (React)
     ↓ invoke()
 Tauri IPC
@@ -254,8 +238,7 @@ Backend (Rust)
 SQLx (Type-safe)
     ↓ SQL
 SQLite (WAL Mode)
-```
-
+```text
 **Status:** ✅ Fluxo completo funcionando
 
 ---
@@ -263,9 +246,7 @@ SQLite (WAL Mode)
 ## 🏆 Conclusão
 
 O projeto **Mercearias Desktop** passou por uma auditoria técnica completa e foi **aprovado para release**.
-
-**Principais conquistas:**
-
+## Principais conquistas:
 - ✅ 5 bugs críticos encontrados e corrigidos
 - ✅ Zero warnings de compilação
 - ✅ 100% dos repositórios validados

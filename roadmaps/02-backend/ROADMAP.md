@@ -81,12 +81,10 @@
 
 ## 🔗 Dependências
 
-### Depende de:
-
+### Depende de
 - ✅ 🗄️ Database (concluído)
 
-### Desbloqueia:
-
+### Desbloqueia
 - ✅ 🎨 Frontend (APIs prontas e funcionando)
 - ✅ 🔌 Integrations (pode integrar com hardware)
 - ✅ 🧪 Testing (código pronto para testes)
@@ -107,8 +105,7 @@ async fn get_products(
     let products = state.product_service.list(filters).await?;
     Ok(products)
 }
-```
-
+```text
 ### Tratamento de Erros
 
 ```rust
@@ -119,8 +116,7 @@ pub enum ApiError {
     Database(String),
     Hardware(String),
 }
-```
-
+```text
 ### Padrão de Response
 
 ```rust
@@ -130,8 +126,7 @@ pub struct ApiResponse<T> {
     pub data: Option<T>,
     pub error: Option<String>,
 }
-```
-
+```text
 ---
 
 ## 🧪 Critérios de Aceite

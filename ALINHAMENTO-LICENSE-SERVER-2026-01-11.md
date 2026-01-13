@@ -3,15 +3,13 @@
 **Data**: 11 de Janeiro de 2026  
 **Versão GIRO**: 1.0.0  
 **Versão License Server**: 0.1.0  
-**Status**: 🟢 **100% ALINHADO**
-
+## Status**: 🟢 **100% ALINHADO
 ---
 
 ## 📋 Resumo Executivo
 
 O GIRO Desktop está **completamente alinhado** com o servidor de licenças em produção no Railway. Todos os DTOs, validações e formatos de dados estão compatíveis.
-
-**Correção Principal Aplicada:**
+## Correção Principal Aplicada:
 - ✅ Hardware ID agora é hasheado com SHA256 antes de envio (64 caracteres hex)
 
 ---
@@ -25,16 +23,14 @@ O GIRO Desktop está **completamente alinhado** com o servidor de licenças em p
 // GIRO enviava formato bruto:
 "CPU:Intel Core i7|MB:ASRock-123|MAC:00-11-22-33-44-55|DISK:WD-12345"
 // Problema: Não tinha 64 caracteres, falhava validação do servidor
-```
-
+```text
 #### ✅ DEPOIS (Compatível)
 ```rust
 // GIRO agora hasheia com SHA256:
 "a1b2c3d4e5f6789012345678901234567890123456789012345678901234567890"
 // ✓ 64 caracteres hex exatos
 // ✓ Passa validação #[validate(length(equal = 64))]
-```
-
+```text
 **Código Atualizado** ([main.rs#L300-L320](../../apps/desktop/src-tauri/src/main.rs#L300-L320)):
 ```rust
 fn generate_hardware_id() -> String {
@@ -57,8 +53,7 @@ fn generate_hardware_id() -> String {
     let result = hasher.finalize();
     hex::encode(result) // ✅ 64 caracteres hex
 }
-```
-
+```text
 ---
 
 ### 2. DTOs - Ativação de Licença
@@ -72,8 +67,7 @@ pub struct ActivateLicenseRequest {
     pub os_version: Option<String>,
     pub cpu_info: Option<String>,
 }
-```
-
+```text
 #### Cliente GIRO: ActivateRequest
 ```rust
 struct ActivateRequest {
@@ -82,10 +76,8 @@ struct ActivateRequest {
     os_version: Option<String>,   // ✅ "Linux x86_64"
     cpu_info: Option<String>,     // ✅ None
 }
-```
-
-**Status**: ✅ **Compatível**
-
+```text
+## Status**: ✅ **Compatível
 ---
 
 ### 3. DTOs - Validação de Licença
@@ -98,8 +90,7 @@ pub struct ValidateLicenseRequest {
     pub hardware_id: String,
     pub client_time: DateTime<Utc>,
 }
-```
-
+```text
 #### Cliente GIRO: ValidateRequest
 ```rust
 struct ValidateRequest {
@@ -107,10 +98,8 @@ struct ValidateRequest {
     hardware_id: String,        // ✅ SHA256 (64 chars)
     client_time: DateTime<Utc>, // ✅ Utc::now()
 }
-```
-
-**Status**: ✅ **Compatível**
-
+```text
+## Status**: ✅ **Compatível (cont.)
 ---
 
 ### 4. DTOs - Respostas do Servidor
@@ -124,8 +113,7 @@ pub struct ValidateLicenseResponse {
     pub days_remaining: Option<i64>,
     pub message: String,
 }
-```
-
+```text
 #### ValidateResponse (Cliente GIRO)
 ```rust
 struct ValidateResponse {
@@ -135,10 +123,8 @@ struct ValidateResponse {
     days_remaining: Option<i64>,         // ✅
     message: String,                      // ✅
 }
-```
-
-**Status**: ✅ **100% Compatível**
-
+```text
+## Status**: ✅ **100% Compatível
 ---
 
 ### 5. Enum LicenseStatus
@@ -152,8 +138,7 @@ pub enum LicenseStatus {
     Suspended,
     Revoked,
 }
-```
-
+```text
 #### Cliente GIRO
 ```rust
 pub enum LicenseStatus {
@@ -162,8 +147,7 @@ pub enum LicenseStatus {
     Expired,
     Cancelled, // ⚠️ Equivalente a Revoked no servidor
 }
-```
-
+```text
 **Status**: ✅ **Compatível** (Cancelled é tratado como Revoked)  
 **Nota**: Falta `Pending`, mas não afeta validação pois só recebe `Active|Expired|Suspended|Revoked`.
 
@@ -179,8 +163,7 @@ pub enum PlanType {
     Annual,       // R$ 999,00
     Lifetime,     // R$ 2.499,00 ⭐ NOVO
 }
-```
-
+```text
 #### Features do Plano Lifetime
 - ✅ **5 anos** de validação online
 - ✅ **2 anos** de suporte e atualizações
@@ -194,10 +177,9 @@ pub enum PlanType {
 ### 7. URLs e Endpoints
 
 #### Servidor em Produção (Railway)
-```
+```text
 BASE: https://giro-license-server-production.up.railway.app
-```
-
+```text
 #### Endpoints Verificados
 | Endpoint | Status | Resposta |
 |----------|--------|----------|
@@ -215,10 +197,8 @@ let default_server_url = "https://giro-license-server-production.up.railway.app"
 // Desenvolvimento (debug build)
 #[cfg(debug_assertions)]
 let default_server_url = "http://localhost:3001";
-```
-
-**Status**: ✅ **Configurado corretamente**
-
+```text
+## Status**: ✅ **Configurado corretamente
 ---
 
 ## 🔒 Validações de Segurança
@@ -256,8 +236,7 @@ curl -X POST https://giro-license-server-production.up.railway.app/api/v1/licens
   -H "Content-Type: application/json" \
   -d '{"license_key":"GIRO-TEST","hardware_id":"a1b2c3...64chars","client_time":"2026-01-11T12:00:00Z"}'
 # Response: OK (aceita 64 caracteres)
-```
-
+```text
 ---
 
 ## 🚀 Compilação e Testes
@@ -267,14 +246,12 @@ curl -X POST https://giro-license-server-production.up.railway.app/api/v1/licens
 cd apps/desktop/src-tauri
 cargo check
 # ✅ Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.51s
-```
-
+```text
 ### Testes Unitários
 ```bash
 # ✅ 311 tests passing (garantias, vendas, produtos, etc)
 cargo test
-```
-
+```text
 ---
 
 ## 📝 Checklist de Alinhamento
@@ -320,9 +297,7 @@ cargo test
 ---
 
 ## 🏆 Conclusão
-
-**Status Final**: 🟢 **100% ALINHADO E FUNCIONAL**
-
+## Status Final**: 🟢 **100% ALINHADO E FUNCIONAL
 O GIRO Desktop está pronto para:
 - ✅ Ativar licenças no servidor de produção
 - ✅ Validar licenças periodicamente

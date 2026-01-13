@@ -100,11 +100,10 @@ State: Zustand 4.5+
 Server State: TanStack Query 5.0+
 Forms: React Hook Form 7.50+ + Zod 3.22+
 Router: React Router 6+
-```
-
+```text
 ## 📁 Estrutura de Arquivos
 
-```
+```text
 apps/desktop/src/
 ├── components/
 │   ├── ui/                 # Shadcn components
@@ -149,8 +148,7 @@ apps/desktop/src/
 │   └── validators.ts
 ├── types/                  # TypeScript types
 └── styles/                 # Global CSS
-```
-
+```text
 ## 📐 Padrões de Código
 
 ### Componente React
@@ -191,8 +189,7 @@ export const ProductCard: FC<ProductCardProps> = ({ product, onSelect, className
     </div>
   );
 };
-```
-
+```text
 ### Custom Hook com TanStack Query
 
 ```tsx
@@ -225,8 +222,7 @@ export function useProductByBarcode(barcode: string | null) {
     enabled: !!barcode,
   });
 }
-```
-
+```text
 ### Zustand Store
 
 ```tsx
@@ -300,8 +296,7 @@ export const usePDVStore = create<PDVStore>()((set, get) => ({
     return subtotal() - discount;
   },
 }));
-```
-
+```text
 ### Form com React Hook Form + Zod
 
 ```tsx
@@ -356,8 +351,7 @@ export function ProductForm({ onSubmit }: { onSubmit: (data: ProductFormData) =>
     </form>
   );
 }
-```
-
+```text
 ## 🎨 Design System
 
 ### Cores (TailwindCSS)
@@ -372,8 +366,7 @@ export function ProductForm({ onSubmit }: { onSubmit: (data: ProductFormData) =>
 --destructive: Erros e cancelamentos
 --muted: Textos secundários
 --accent: Hover e destaques
-```
-
+```text
 ### Componentes Shadcn/UI
 
 Usar componentes de `@/components/ui/`:

@@ -64,32 +64,24 @@
 
 **Teste:** `deve abrir sessão de caixa`  
 **Duração:** 5.5s  
-**Erro:**
-
-```
+## Erro:
+```text
 Error: expect(received).toBeTruthy()
 Received: false
 
   at cash-session.spec.ts:71:29
-```
-
-**Código do Teste (L69-71):**
-
+```text
+## Código do Teste (L69-71):
 ```typescript
 // Se não encontrar status, pelo menos verificar que não há erro
 expect(statusVisible).toBeTruthy();
-```
-
+```text
 **Screenshot:** `test-results/cash-session-Sessão-de-Caixa-E2E-deve-abrir-sessão-de-caixa-chromium/test-failed-1.png`
-
-**Análise:**
-
+## Análise:
 - O teste espera encontrar um elemento de status visível após abrir a sessão
 - O elemento não está sendo renderizado ou tem um seletor incorreto
 - Pode ser timing issue (elemento ainda não apareceu)
-
-**Ação Corretiva:**
-
+## Ação Corretiva:
 1. Verificar seletor do elemento de status
 2. Adicionar `waitFor` para aguardar elemento aparecer
 3. Revisar lógica de renderização condicional do status
@@ -102,16 +94,13 @@ expect(statusVisible).toBeTruthy();
 
 **Teste:** `deve impedir fechamento sem permissão`  
 **Duração:** 1.4s  
-**Erro:**
-
-```
+## Erro: (cont.)
+```text
 Test was interrupted.
 Error: page.waitForTimeout: Test ended.
   at cash-session.spec.ts:24:16
-```
-
-**Análise:**
-
+```text
+## Análise: (cont.)
 - Teste foi interrompido manualmente (Ctrl+C)
 - Estava aguardando timeout de 2s no beforeEach
 

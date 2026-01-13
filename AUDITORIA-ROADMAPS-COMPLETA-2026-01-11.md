@@ -23,9 +23,7 @@
 | **08-Mobile-Integration** | ✅ Completo | 17/17 (100%) | ✅ Código alinhado |
 | **09-NFe-NFCe** | ✅ Completo | Fases 1-6 | ✅ Backend pronto |
 | **10-Motopeças** | ⚠️ Parcial | ~85% | ⚠️ Warranty desabilitado |
-
-**Total Geral: ~97% dos roadmaps implementados no código**
-
+## Total Geral: ~97% dos roadmaps implementados no código
 ---
 
 ## 🗄️ 01 - Database
@@ -53,7 +51,7 @@
 
 ## 🔧 02 - Backend
 
-### Status: ✅ 100% Concluído
+### Status: ✅ 100% Concluído (cont.)
 
 | Componente | Roadmap | Código | Status |
 |------------|---------|--------|--------|
@@ -64,7 +62,7 @@
 
 ### Estrutura Implementada
 
-```
+```text
 src-tauri/src/
 ├── commands/      (22 arquivos - 90+ comandos)
 │   ├── products.rs, categories.rs, sales.rs
@@ -78,8 +76,7 @@ src-tauri/src/
 ├── services/      (mobile, backup, etc)
 ├── nfce/          (8 módulos - NFC-e completo)
 └── hardware/      (impressora, balança, scanner)
-```
-
+```text
 ### Pendências Identificadas
 - ⚠️ `warranties.rs` comentado no `mod.rs` (tabela não criada no runtime)
 - Services ainda inline nos commands (refatoração futura)
@@ -88,7 +85,7 @@ src-tauri/src/
 
 ## 🎨 03 - Frontend
 
-### Status: ✅ 100% Concluído
+### Status: ✅ 100% Concluído (cont.)
 
 | Componente | Roadmap | Código | Status |
 |------------|---------|--------|--------|
@@ -99,7 +96,7 @@ src-tauri/src/
 
 ### Páginas Implementadas
 
-```
+```text
 src/pages/
 ├── auth/       LoginPage
 ├── dashboard/  DashboardPage
@@ -115,11 +112,10 @@ src/pages/
 ├── motoparts/  ServiceOrdersPage, WarrantiesPage
 ├── tutorials/  TutorialsPage
 └── license/    LicenseActivationPage
-```
-
+```text
 ### Componentes Motopeças
 
-```
+```text
 src/components/motoparts/
 ├── VehicleSelector.tsx
 ├── CustomerSearch.tsx
@@ -133,13 +129,12 @@ src/components/motoparts/
 ├── WarrantyForm.tsx
 ├── WarrantyManager.tsx
 └── MotopartsDashboard.tsx
-```
-
+```text
 ---
 
 ## 🔐 04 - Auth
 
-### Status: ✅ 100% Concluído
+### Status: ✅ 100% Concluído (cont.)
 
 | Feature | Roadmap | Código | Status |
 |---------|---------|--------|--------|
@@ -159,7 +154,7 @@ src/components/motoparts/
 
 ## 🔌 05 - Integrations
 
-### Status: ✅ 100% Concluído
+### Status: ✅ 100% Concluído (cont.)
 
 | Hardware | Roadmap | Código | Status |
 |----------|---------|--------|--------|
@@ -171,15 +166,14 @@ src/components/motoparts/
 
 ### Estrutura Hardware
 
-```
+```text
 src-tauri/src/hardware/
 ├── mod.rs
 ├── printer.rs      (ESC/POS completo)
 ├── scale.rs        (Toledo, Filizola)
 ├── scanner.rs      (USB HID + WebSocket)
 └── cash_drawer.rs  (via impressora)
-```
-
+```text
 ---
 
 ## 🧪 06 - Testing
@@ -197,7 +191,7 @@ src-tauri/src/hardware/
 
 ### Arquivos de Teste E2E
 
-```
+```text
 tests/e2e/
 ├── auth.spec.ts          (4 testes)
 ├── cash-session.spec.ts  (9 testes)
@@ -208,8 +202,7 @@ tests/e2e/
 ├── sale-advanced.spec.ts (8 testes)
 ├── sale.spec.ts          (2 testes)
 └── stock.spec.ts         (5 testes)
-```
-
+```text
 ### ⚠️ Gaps Identificados
 1. Testes E2E não foram executados em produção
 2. 7 testes de integração falhando (state management)
@@ -232,7 +225,7 @@ tests/e2e/
 | Release Workflow | ✅ | ⬜ Não criado | ❌ |
 | Assinatura Código | Opcional | ⬜ | ⬜ |
 
-### ⚠️ Gaps Identificados
+### ⚠️ Gaps Identificados (cont.)
 1. `.github/workflows/` não existe
 2. CI/CD precisa ser implementado
 3. Instaladores funcionam via `tauri build` mas não testados
@@ -241,7 +234,7 @@ tests/e2e/
 
 ## 🎨 08 - Design
 
-### Status: ✅ 100% Concluído
+### Status: ✅ 100% Concluído (cont.)
 
 | Item | Roadmap | Código | Status |
 |------|---------|--------|--------|
@@ -256,7 +249,7 @@ tests/e2e/
 
 ## 📱 08 - Mobile Integration
 
-### Status: ✅ 100% Concluído
+### Status: ✅ 100% Concluído (cont.)
 
 | Task | Roadmap | Código | Status |
 |------|---------|--------|--------|
@@ -286,7 +279,7 @@ tests/e2e/
 
 ### Estrutura NFC-e
 
-```
+```text
 src-tauri/src/nfce/
 ├── access_key.rs    (44 dígitos, mod-11)
 ├── certificate.rs   (Load PFX, XMLDSig)
@@ -298,11 +291,9 @@ src-tauri/src/nfce/
 ├── contingency.rs   (EPEC/offline)
 ├── signer.rs        (Assinatura digital)
 └── commands.rs      (Tauri commands)
-```
-
-**Total: 34 testes, ~2.500 linhas de código**
-
-### ⚠️ Gaps Identificados
+```text
+## Total: 34 testes, ~2.500 linhas de código
+### ⚠️ Gaps Identificados (cont.)
 1. UI de configuração NFC-e não implementada
 2. Wizard de configuração fiscal pendente
 3. Integração PDV → NFC-e automática não conectada
@@ -334,16 +325,13 @@ src-tauri/src/nfce/
 ```rust
 // DISABLED: warranty_claims table not created yet
 // pub mod warranties;
-```
-
+```text
 **Causa:** Tabela `warranty_claims` existe na migration mas não está sendo criada no runtime do SQLite.
-
-**Arquivos afetados:**
+## Arquivos afetados:
 - `commands/warranties.rs` (223 linhas - completo mas desabilitado)
 - `repositories/warranty_repository.rs` (existe mas desabilitado)
 - `models/warranty.rs` (existe e exportado)
-
-**Solução Necessária:**
+## Solução Necessária:
 1. Verificar se migration `005_motoparts_schema.sql` inclui warranty_claims
 2. Ou executar `fix_schema.sql` manualmente
 3. Reabilitar exports no `mod.rs`
@@ -426,23 +414,19 @@ src-tauri/src/nfce/
 ## ✅ Conclusão
 
 O projeto GIRO está **~97% completo** em relação aos roadmaps documentados. A arquitetura é sólida, o código está bem organizado, e as funcionalidades core estão todas implementadas.
-
-**Principais conquistas:**
+## Principais conquistas:
 - Backend Rust robusto com 90+ commands
 - Frontend React completo com 25+ páginas
 - Multi-segmento funcional (Mercearia + Motopeças)
 - NFC-e backend production-ready
 - Hardware integration completa
 - Mobile integration completa
-
-**Pontos de atenção:**
+## Pontos de atenção:
 - Garantias desabilitadas por problema de migration
 - CI/CD não implementado
 - Testes não executados em escala
 - UI NFC-e mínima
-
-**Veredicto:** ✅ **Pronto para testes beta após correção das garantias**
-
+## Veredicto:** ✅ **Pronto para testes beta após correção das garantias
 ---
 
 _Auditoria realizada por GitHub Copilot - 11 de Janeiro de 2026_

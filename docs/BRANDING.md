@@ -8,8 +8,7 @@
 ## 1. Nome
 
 ### Primario
-**GIRO**
-
+## GIRO
 ### Completo
 GIRO - Sistema de Gestao Comercial
 
@@ -95,7 +94,7 @@ Minimo de 16px de margem ao redor do logo.
 ### Biblioteca
 Lucide React (lucide.dev)
 
-### Tamanhos
+### Tamanhos (cont.)
 - sm: 16px
 - md: 20px (padrao)
 - lg: 24px
@@ -141,18 +140,15 @@ Lucide React (lucide.dev)
 ## 9. Assinatura
 
 ### Footer/Rodape
-```
+```text
 GIRO v1.0.0 | Desenvolvido por Arkheion
 Copyright 2026 Arkheion. Todos os direitos reservados.
-```
-
+```text
 ### Instalador
-```
+```text
 GIRO - Sistema de Gestao Comercial
 Desenvolvido com ♥ por Arkheion
-```
-
+```text
 ---
-
-*Documento de Branding - GIRO*  
-*Copyright 2026 Arkheion*
+## Documento de Branding - GIRO
+## Copyright 2026 Arkheion

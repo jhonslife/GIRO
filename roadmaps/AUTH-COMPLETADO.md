@@ -9,16 +9,12 @@
 ## 🎉 O QUE FOI FEITO
 
 ### 1. ✅ Database Seed com Funcionários
-
-**Executado:**
-
+## Executado:
 ```bash
 cd packages/database
 npm run db:seed
-```
-
-**Funcionários Criados:**
-
+```text
+## Funcionários Criados:
 | Nome              | PIN  | Senha      | Role    | Email                    |
 | ----------------- | ---- | ---------- | ------- | ------------------------ |
 | Administrador     | 1234 | admin123   | ADMIN   | admin@mercearias.local   |
@@ -32,18 +28,14 @@ npm run db:seed
 ### 2. ✅ Backend - Hash de PIN Implementado
 
 **Arquivo:** `apps/desktop/src-tauri/src/repositories/employee_repository.rs`
-
-**Antes:**
-
+## Antes:
 ```rust
 pub async fn authenticate_pin(&self, pin: &str) -> AppResult<Option<Employee>> {
     // In production, compare hashed PIN
     self.find_by_pin(pin).await  // ❌ Comparava PIN em texto plano
 }
-```
-
-**Depois:**
-
+```text
+## Depois:
 ```rust
 pub async fn authenticate_pin(&self, pin: &str) -> AppResult<Option<Employee>> {
     // Hash PIN com SHA256 (compatível com seed)
@@ -57,14 +49,11 @@ fn hash_pin(pin: &str) -> String {
     hasher.update(pin.as_bytes());
     format!("{:x}", hasher.finalize())
 }
-```
-
-**Dependência Adicionada:**
-
+```text
+## Dependência Adicionada:
 ```rust
 use sha2::{Digest, Sha256};
-```
-
+```text
 ✅ **Backend compila sem erros!**
 
 ---
@@ -72,9 +61,7 @@ use sha2::{Digest, Sha256};
 ### 3. ✅ Frontend - Já Conectado ao Backend Real
 
 **Arquivo:** `apps/desktop/src/pages/auth/LoginPage.tsx`
-
-**Código Atual:**
-
+## Código Atual:
 ```tsx
 import { authenticateEmployee } from '@/lib/tauri';
 
@@ -104,15 +91,14 @@ const handleLogin = async () => {
     setIsLoading(false);
   }
 };
-```
-
+```text
 ✅ **Não há mais mock! Frontend já usa comando real!**
 
 ---
 
 ## 🔐 Fluxo de Autenticação Completo
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                    FLUXO DE AUTENTICAÇÃO                        │
 └─────────────────────────────────────────────────────────────────┘
@@ -144,8 +130,7 @@ const handleLogin = async () => {
 
 8. Redireciona para dashboard:
    └─ navigate('/')
-```
-
+```text
 ---
 
 ## 🧪 Como Testar
@@ -155,8 +140,7 @@ const handleLogin = async () => {
 ```bash
 cd apps/desktop
 npm run tauri:dev
-```
-
+```text
 ### Passo 2: Tela de Login
 
 - App abrirá na tela de login
@@ -164,27 +148,19 @@ npm run tauri:dev
 - 6 círculos para visualizar PIN
 
 ### Passo 3: Testar PINs
-
-**Admin (acesso total):**
-
+## Admin (acesso total):
 - PIN: `1234`
 - Deve logar como "Administrador"
 - Role: ADMIN
-
-**Operador (caixa):**
-
+## Operador (caixa):
 - PIN: `0000`
 - Deve logar como "Operador de Caixa"
 - Role: CASHIER
-
-**Gerente:**
-
+## Gerente:
 - PIN: `9999`
 - Deve logar como "Gerente"
 - Role: MANAGER
-
-**PIN inválido:**
-
+## PIN inválido:
 - PIN: `1111`
 - Deve mostrar erro "PIN incorreto"
 
@@ -222,8 +198,7 @@ Após logar, testar:
 function hashPin(pin: string): string {
   return createHash('sha256').update(pin).digest('hex');
 }
-```
-
+```text
 ```rust
 // Backend (Rust)
 fn hash_pin(pin: &str) -> String {
@@ -231,8 +206,7 @@ fn hash_pin(pin: &str) -> String {
     hasher.update(pin.as_bytes());
     format!("{:x}", hasher.finalize())
 }
-```
-
+```text
 **Resultado:** PINs nunca são armazenados em texto plano!
 
 ### ✅ SafeEmployee (sem senhas)
@@ -245,8 +219,7 @@ pub struct SafeEmployee {
     // ❌ Sem pin
     // ❌ Sem password
 }
-```
-
+```text
 Frontend **nunca** recebe PIN ou senha!
 
 ### ✅ RBAC (Role-Based Access Control)
@@ -266,8 +239,7 @@ const discountLimits = {
   MANAGER: 20, // 20%
   ADMIN: 100, // 100%
 };
-```
-
+```text
 ### ✅ Protected Routes
 
 ```tsx
@@ -279,8 +251,7 @@ const discountLimits = {
     </ProtectedRoute>
   }
 />
-```
-
+```text
 Apenas ADMIN acessa configurações!
 
 ### ✅ Persistência Segura
@@ -297,8 +268,7 @@ const useAuthStore = create<AuthState>()(
     }
   )
 );
-```
-
+```text
 ---
 
 ## 📊 Progresso do Auth
@@ -347,8 +317,7 @@ impl EmployeeRepository {
         // Se OK: autenticar
     }
 }
-```
-
+```text
 ### 2. Timeout de Sessão (30 min)
 
 Auto-logout após inatividade:
@@ -376,8 +345,7 @@ export function useIdleTimeout(timeout = 15 * 60 * 1000) {
     };
   }, [logout, timeout]);
 }
-```
-
+```text
 ### 3. Validação de PIN Forte (15 min)
 
 Exigir PIN complexo:
@@ -396,16 +364,13 @@ fn validate_pin(pin: &str) -> Result<(), String> {
     }
     Ok(())
 }
-```
-
+```text
 ---
 
 ## 🎊 Conclusão
 
 ### ✅ Sistema de Autenticação 86.7% Completo!
-
-**O que funciona agora:**
-
+## O que funciona agora:
 1. ✅ Login com PIN hasheado (SHA256)
 2. ✅ 3 funcionários de teste no banco
 3. ✅ Frontend conectado ao backend real
@@ -414,15 +379,11 @@ fn validate_pin(pin: &str) -> Result<(), String> {
 6. ✅ Limites de desconto por role
 7. ✅ SafeEmployee (sem senhas no frontend)
 8. ✅ Persistência no localStorage
-
-**Pronto para:**
-
+## Pronto para:
 - ✅ Testes em desenvolvimento
 - ✅ Demonstrações
 - ✅ Validação de funcionalidades
-
-**Para produção falta:**
-
+## Para produção falta:
 - ⚠️ Rate limiting (3 tentativas)
 - ⚠️ Timeout de sessão (15 min)
 - ⚠️ Validação de PIN forte

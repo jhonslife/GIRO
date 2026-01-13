@@ -91,9 +91,7 @@ Criei **5 documentos completos** para você:
 ## 🎯 Decisão Final
 
 ### ✅ Sistema APROVADO para Release
-
-**Justificativa:**
-
+## Justificativa:
 1. ✅ Todos os 5 bugs encontrados foram corrigidos
 2. ✅ Backend e Database 100% completos
 3. ✅ Performance excelente (~10ms nas queries)
@@ -130,22 +128,19 @@ Documentação:
 - CHECKLIST-FINAL-RELEASE.md (checklist de release)
 - SUMARIO-AUDITORIA.md (sumário executivo)
 - RECOMENDACOES-TECNICAS.md (11 recomendações Sprint 7-8)"
-```
-
+```text
 ### Opção 2: Executar Testes E2E
 
 ```bash
 cd apps/desktop
 pnpm e2e
-```
-
+```text
 ### Opção 3: Gerar Build
 
 ```bash
 cd apps/desktop
 pnpm tauri build
-```
-
+```text
 ---
 
 ## 🚀 Próximos Passos Recomendados
@@ -170,15 +165,11 @@ Todas as recomendações estão detalhadas em **RECOMENDACOES-TECNICAS.md**.
 ---
 
 ## 📂 Arquivos Criados/Modificados
-
-**Arquivos Corrigidos (5):**
-
+## Arquivos Corrigidos (5):
 - `apps/desktop/src-tauri/src/repositories/product_repository.rs`
 - `apps/desktop/src-tauri/src/commands/seed.rs`
 - `roadmaps/STATUS.md`
-
-**Documentação Nova (5):**
-
+## Documentação Nova (5):
 - `AUDITORIA-DATABASE-BACKEND.md`
 - `CHECKLIST-FINAL-RELEASE.md`
 - `SUMARIO-AUDITORIA.md`

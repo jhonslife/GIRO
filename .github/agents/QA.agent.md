@@ -106,11 +106,10 @@ Mocking: mockall
 # Cobertura
 Frontend: Istanbul via Vitest
 Backend: cargo-llvm-cov
-```
-
+```text
 ## 📁 Estrutura de Testes
 
-```
+```text
 apps/desktop/
 ├── src/
 │   └── __tests__/           # Testes unitários frontend
@@ -128,8 +127,7 @@ apps/desktop/
         │   └── products_test.rs  # Testes em módulo
         └── services/
             └── sale_service_test.rs
-```
-
+```text
 ## 📐 Padrões de Teste
 
 ### Vitest (Frontend)
@@ -203,8 +201,7 @@ describe('ProductSearch', () => {
     });
   });
 });
-```
-
+```text
 ### Teste de Hook
 
 ```typescript
@@ -245,8 +242,7 @@ describe('useProducts', () => {
     });
   });
 });
-```
-
+```text
 ### Teste de Store (Zustand)
 
 ```typescript
@@ -306,8 +302,7 @@ describe('PDV Store', () => {
     expect(store.total()).toBe(89.6);
   });
 });
-```
-
+```text
 ### Teste Rust (Backend)
 
 ```rust
@@ -392,8 +387,7 @@ mod tests {
         assert!(matches!(result.unwrap_err(), AppError::DuplicateBarcode));
     }
 }
-```
-
+```text
 ### Teste E2E (Playwright)
 
 ```typescript
@@ -483,8 +477,7 @@ test.describe('PDV - Fluxo de Venda', () => {
     await expect(page.getByText('Feijão 1kg')).toBeVisible();
   });
 });
-```
-
+```text
 ## 📊 Cobertura de Código
 
 ### Metas
@@ -501,7 +494,7 @@ test.describe('PDV - Fluxo de Venda', () => {
 ### Comandos
 
 ```bash
-# Frontend
+# Frontend (cont.)
 pnpm test              # Rodar testes
 pnpm test:coverage     # Com cobertura
 pnpm test:ui           # Interface Vitest
@@ -514,8 +507,7 @@ cargo llvm-cov         # Com cobertura
 pnpm e2e               # Headless
 pnpm e2e:ui            # Com UI
 pnpm e2e:debug         # Debug mode
-```
-
+```text
 ## 📋 Checklist de Testes
 
 ### Antes de PR

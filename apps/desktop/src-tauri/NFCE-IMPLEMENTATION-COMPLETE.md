@@ -22,9 +22,7 @@ O módulo NFC-e foi **completamente implementado** com código de produção rea
 ## 🏗️ Módulos Implementados
 
 ### 1. ✅ `certificate.rs` - Certificados Digitais A1
-
-**Funcionalidades:**
-
+## Funcionalidades:
 - Carregamento de certificados .pfx com senha
 - Extração de CNPJ do subject do certificado
 - Validação de validade (not_before/not_after)
@@ -41,9 +39,7 @@ O módulo NFC-e foi **completamente implementado** com código de produção rea
 ---
 
 ### 2. ✅ `access_key.rs` - Chave de Acesso 44 dígitos
-
-**Funcionalidades:**
-
+## Funcionalidades: (cont.)
 - Geração de chave de acesso com estrutura:
   - UF (2) + AAMM (4) + CNPJ (14) + Modelo (2) + Série (3) + Número (9) + Tipo Emissão (1) + Código Numérico (8) + DV (1)
 - Validação completa (tamanho, caracteres, módulo 11)
@@ -65,9 +61,7 @@ O módulo NFC-e foi **completamente implementado** com código de produção rea
 ---
 
 ### 3. ✅ `endpoints.rs` - URLs WebServices SEFAZ
-
-**Funcionalidades:**
-
+## Funcionalidades: (cont.)
 - URLs de autorização por UF e ambiente
 - URLs de consulta de status
 - URLs de consulta de protocolo
@@ -86,9 +80,7 @@ O módulo NFC-e foi **completamente implementado** com código de produção rea
 ---
 
 ### 4. ✅ `xml_builder.rs` - Geração de XML NFC-e
-
-**Funcionalidades:**
-
+## Funcionalidades: (cont.)
 - Construção completa do XML conforme layout 4.00
 - Estruturas de dados:
   - `NfceData` - Dados completos da nota (emitente, destinatário, itens, totais, pagamento)
@@ -116,9 +108,7 @@ O módulo NFC-e foi **completamente implementado** com código de produção rea
 ---
 
 ### 5. ✅ `signer.rs` - Assinatura Digital XMLDSig
-
-**Funcionalidades:**
-
+## Funcionalidades: (cont.)
 - XMLDSig com Exclusive Canonicalization (c14n)
 - Assinatura RSA-SHA1 conforme padrão SEFAZ
 - Cálculo de digest SHA1 em base64
@@ -141,9 +131,7 @@ O módulo NFC-e foi **completamente implementado** com código de produção rea
 ---
 
 ### 6. ✅ `webservice.rs` - Cliente SOAP para SEFAZ
-
-**Funcionalidades:**
-
+## Funcionalidades: (cont.)
 - Cliente HTTP com `reqwest`
 - Envelopes SOAP 1.2 conforme SEFAZ:
   - Autorização de NFC-e
@@ -168,9 +156,7 @@ O módulo NFC-e foi **completamente implementado** com código de produção rea
 ---
 
 ### 7. ✅ `qrcode.rs` - Geração de QR Code
-
-**Funcionalidades:**
-
+## Funcionalidades: (cont.)
 - URL QR Code conforme NT 2019.001:
   - chNFe, nVersao, tpAmb, dhEmi, vNF, digVal, cIdToken, cHashQRCode
 - Hash SHA1 do formato: `chNFe|cIdToken|CSC`
@@ -196,9 +182,7 @@ O módulo NFC-e foi **completamente implementado** com código de produção rea
 ---
 
 ### 8. ✅ `danfe.rs` - Impressão DANFE NFC-e
-
-**Funcionalidades:**
-
+## Funcionalidades: (cont.)
 - Geração de comandos ESC/POS para impressoras térmicas 80mm
 - Seções do DANFE:
   - Cabeçalho (nome, CNPJ, IE, endereço)
@@ -252,8 +236,7 @@ regex = "1.10"                                              # Canonicalização
 encoding_rs = "0.8"                                         # Encoding
 sha1 = "0.10"                                               # Hash SHA1
 hex = "0.4"                                                 # Conversão hexadecimal
-```
-
+```text
 ---
 
 ## 📊 Estatísticas de Testes
@@ -334,8 +317,7 @@ let escpos = DanfePrinter::generate_escpos(&danfe_data)?;
 
 // 9. Enviar para impressora
 // printer.write_all(&escpos)?;
-```
-
+```text
 ---
 
 ## ✅ Checklist de Implementação
@@ -388,8 +370,7 @@ fn print_danfe(
 ) -> Result<(), String> {
     // ...
 }
-```
-
+```text
 ### 2. Persistência
 
 - Salvar XMLs assinados no banco (audit log)

@@ -9,7 +9,9 @@ tools:
     'edit',
     'search',
     'web',
+    'agent',
     'copilot-container-tools/*',
+    'pylance-mcp-server/*',
     'filesystem/*',
     'memory/*',
     'postgres/*',
@@ -17,7 +19,6 @@ tools:
     'puppeteer/*',
     'sequential-thinking/*',
     'github/*',
-    'agent',
     'cweijan.vscode-database-client2/dbclient-getDatabases',
     'cweijan.vscode-database-client2/dbclient-getTables',
     'cweijan.vscode-database-client2/dbclient-executeQuery',
@@ -60,6 +61,16 @@ tools:
     'prisma.prisma/prisma-studio',
     'prisma.prisma/prisma-platform-login',
     'prisma.prisma/prisma-postgres-create-database',
+    'vscjava.vscode-java-debug/debugJavaApplication',
+    'vscjava.vscode-java-debug/setJavaBreakpoint',
+    'vscjava.vscode-java-debug/debugStepOperation',
+    'vscjava.vscode-java-debug/getDebugVariables',
+    'vscjava.vscode-java-debug/getDebugStackTrace',
+    'vscjava.vscode-java-debug/evaluateDebugExpression',
+    'vscjava.vscode-java-debug/getDebugThreads',
+    'vscjava.vscode-java-debug/removeJavaBreakpoints',
+    'vscjava.vscode-java-debug/stopDebugSession',
+    'vscjava.vscode-java-debug/getDebugSessionInfo',
     'todo',
   ]
 model: Claude Sonnet 4
@@ -98,11 +109,10 @@ Database: SQLx 0.7+ com SQLite
 Async: Tokio 1.35+
 Serialização: Serde 1.0+
 Hardware: serialport 4.3+
-```
-
+```text
 ## 📁 Estrutura de Arquivos
 
-```
+```text
 apps/desktop/src-tauri/src/
 ├── main.rs                  # Entry point
 ├── lib.rs                   # Exports
@@ -136,8 +146,7 @@ apps/desktop/src-tauri/src/
 ├── models/                  # Domain models
 ├── database/                # DB connection pool
 └── config/                  # App configuration
-```
-
+```text
 ## 📐 Padrões de Código
 
 ### Tauri Command
@@ -175,8 +184,7 @@ pub async fn create_product(
         .await
         .map_err(|e| e.to_string())
 }
-```
-
+```text
 ### Repository Pattern
 
 ```rust
@@ -226,8 +234,7 @@ impl ProductRepository {
         Ok(())
     }
 }
-```
-
+```text
 ### Service Layer
 
 ```rust
@@ -267,8 +274,7 @@ impl ProductService {
         self.repo.create(input, internal_code, profit_margin).await
     }
 }
-```
-
+```text
 ### Error Handling
 
 ```rust
@@ -298,8 +304,7 @@ impl From<AppError> for String {
         error.to_string()
     }
 }
-```
-
+```text
 ## 🔧 Convenções
 
 ### Nomes

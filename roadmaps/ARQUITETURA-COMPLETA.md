@@ -7,7 +7,7 @@
 
 ## 🎯 Visão Geral - O que Temos vs O que Falta
 
-```
+```text
 ╔═══════════════════════════════════════════════════════════════════════════════════════╗
 ║                              ECOSSISTEMA GIRO - STATUS                                 ║
 ╠═══════════════════════════════════════════════════════════════════════════════════════╣
@@ -69,8 +69,7 @@
 ║   └─────────────────────────────────────────────────────────────────────────────────┘ ║
 ║                                                                                        ║
 ╚═══════════════════════════════════════════════════════════════════════════════════════╝
-```
-
+```text
 ---
 
 ## 📊 Status por Componente
@@ -92,7 +91,7 @@
 
 ### ❌ Fluxo ATUAL (Manual)
 
-```
+```text
 Cliente encontra GIRO
         │
         ▼
@@ -115,9 +114,8 @@ Cliente baixa de onde???? (GitHub?)
         │
         ▼
 Cliente instala e ativa
-```
-
-**Problemas:**
+```text
+## Problemas:
 - ❌ Sem landing page profissional
 - ❌ Processo 100% manual
 - ❌ Sem área do cliente
@@ -129,7 +127,7 @@ Cliente instala e ativa
 
 ### ✅ Fluxo IDEAL (Automatizado)
 
-```
+```text
 Cliente encontra via Google/Indicação
         │
         ▼
@@ -208,14 +206,13 @@ Cliente encontra via Google/Indicação
 │  • Primeiro produto               │
 │  • Primeira venda                 │
 └───────────────────────────────────┘
-```
-
+```text
 ---
 
 ## 📋 O que Falta Desenvolver
 
 ### Prioridade 1: Landing Page + Checkout
-```
+```text
 giro-website/                      # NOVO PROJETO
 ├── app/
 │   ├── page.tsx                   # Landing page
@@ -229,18 +226,16 @@ giro-website/                      # NOVO PROJETO
 ├── components/
 └── lib/
     └── mercadopago.ts
-```
-
+```text
 ### Prioridade 2: Área do Cliente
-```
+```text
 giro-website/app/cliente/          # Área logada
 ├── page.tsx                       # Dashboard
 ├── licencas/                      # Minhas licenças
 ├── pagamentos/                    # Histórico
 ├── suporte/                       # Tickets
 └── perfil/                        # Meus dados
-```
-
+```text
 ### Prioridade 3: Integrações
 - [ ] Webhook Mercado Pago → License Server
 - [ ] Email transacional (SendGrid/Resend)
@@ -290,9 +285,7 @@ npm install mercadopago @auth/core
 mkdir -p app/{cadastro,checkout,sucesso,download,cliente}
 mkdir -p components/{sections,ui,3d}
 mkdir -p lib public/{screenshots,videos}
-```
-
+```text
 ---
 
 > 📍 **Arquivo principal**: `/home/jhonslife/GIRO/roadmaps/LANDING-PAGE-PROFISSIONAL.md`
-

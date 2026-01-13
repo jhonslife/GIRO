@@ -16,8 +16,7 @@ npm run dev
 
 # Aguardar compilação do Rust + Vite
 # App abrirá automaticamente em ~30-60 segundos
-```
-
+```text
 ---
 
 ## 👤 Credenciais de Teste
@@ -38,9 +37,7 @@ npm run dev
 2. Digite PIN: `1234` (Admin)
 3. Clique em **Entrar**
 4. ✅ Deve redirecionar para Dashboard
-
-**Atalhos:**
-
+## Atalhos:
 - Teclado numérico funciona
 - `Enter` para confirmar
 - `Esc` para limpar
@@ -79,10 +76,8 @@ npm run dev
 8. Confirme a venda
 9. ✅ Venda deve aparecer no histórico
 10. ✅ Estoque deve ser decrementado
-
-**Produtos disponíveis:**
-
-```
+## Produtos disponíveis:
+```text
 MRC-00001 - Refrigerante Cola 2L    - R$ 9,99  (50 un)
 MRC-00002 - Água Mineral 500ml      - R$ 2,50  (100 un)
 MRC-00003 - Suco de Laranja 1L      - R$ 7,90  (30 un)
@@ -91,15 +86,12 @@ MRC-00006 - Iogurte Natural 170g    - R$ 3,49  (25 un)
 MRC-00008 - Pão de Forma 500g       - R$ 7,99  (15 un)
 MRC-00009 - Arroz Tipo 1 5kg        - R$ 24,90 (20 un)
 MRC-00010 - Feijão Carioca 1kg      - R$ 8,99  (35 un)
-```
-
-**Produtos pesáveis (balança):**
-
-```
+```text
+## Produtos pesáveis (balança):
+```text
 MRC-00005 - Queijo Mussarela        - R$ 45,90/kg
 MRC-00007 - Pão Francês             - R$ 18,90/kg
-```
-
+```text
 ---
 
 ### 4️⃣ **Consultar Vendas** (2 min)
@@ -239,8 +231,7 @@ killall mercearias-desktop
 # Recompilar
 cd ~/Mercearias/apps/desktop
 npm run dev
-```
-
+```text
 ### Banco não encontrado
 
 ```bash
@@ -249,16 +240,14 @@ ls -lh ~/.local/share/Mercearias/
 
 # Se não existir, copiar novamente
 cp ~/Mercearias/packages/database/prisma/mercearias.db ~/.local/share/Mercearias/
-```
-
+```text
 ### Erro de autenticação
 
 ```bash
 # Verificar se o seed foi executado
 cd ~/Mercearias/packages/database
 npm run db:seed
-```
-
+```text
 ### Frontend não conecta ao backend
 
 - Verifique console do browser (F12)

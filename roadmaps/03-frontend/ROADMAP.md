@@ -110,8 +110,7 @@
 
 O frontend foi desenvolvido com **mocks e interfaces prontas** para integração futura com o backend Rust/Tauri.
 
-### Desbloqueia:
-
+### Desbloqueia
 - 🧪 Testing (pode começar testes E2E nas páginas)
 - 🔧 Backend (tem as interfaces claras do que precisa implementar
 - 🧪 Testing (precisa das páginas para E2E)
@@ -122,7 +121,7 @@ O frontend foi desenvolvido com **mocks e interfaces prontas** para integração
 
 ### Estrutura de Pastas
 
-```
+```text
 src/
 ├── components/
 │   ├── ui/          # Shadcn components
@@ -137,8 +136,7 @@ src/
 ├── stores/
 ├── lib/
 └── types/
-```
-
+```text
 ### Hooks Customizados
 
 ```typescript
@@ -149,8 +147,7 @@ function useProducts(filters: ProductFilters) {
     queryFn: () => invoke('get_products', { filters }),
   });
 }
-```
-
+```text
 ### Store Pattern
 
 ```typescript
@@ -161,8 +158,7 @@ interface PDVState {
   removeItem: (itemId: string) => void;
   clear: () => void;
 }
-```
-
+```text
 ---
 
 ## 🧪 Critérios de Aceite

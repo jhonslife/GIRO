@@ -43,7 +43,7 @@ Verificar se todas as funcionalidades do GIRO Mobile têm suporte correspondente
 
 ### WebSocket Scanner (`src-tauri/src/hardware/scanner.rs`)
 
-```
+```text
 Porta: 3847 ✅
 Protocolo: WebSocket ✅
 
@@ -57,26 +57,24 @@ Respostas:
 - Connected { session_id }               → Conexão OK
 - Ack { code, product_name }             → Scan recebido + nome do produto
 - Error { message }                      → Erro
-```
-
+```text
 ### Comandos Tauri (internos do app)
 
-```
+```text
 authenticate_by_pin(pin) → SafeEmployee
 get_product_by_barcode(barcode) → Product
 search_products(query) → Vec<Product>
 create_stock_movement(input) → StockMovement
 get_employees() → Vec<SafeEmployee>
 get_categories() → Vec<Category>
-```
-
+```text
 ---
 
 ## 📱 O que o Mobile espera
 
 ### WebSocket Protocol
 
-```
+```text
 Porta: 3847 ✅
 Formato: JSON ✅
 
@@ -98,19 +96,17 @@ Actions esperadas:
 - inventory.start ❌ NÃO EXISTE
 - inventory.count ❌ NÃO EXISTE
 - inventory.finish ❌ NÃO EXISTE
-```
-
+```text
 ### mDNS Discovery
 
-```
+```text
 Service Type: _giro._tcp
 Domain: local.
 Port: 3847
 
 O Mobile procura por esse serviço para descobrir o Desktop automaticamente.
 ❌ O DESKTOP NÃO FAZ BROADCAST mDNS
-```
-
+```text
 ---
 
 ## 🛠️ Plano de Ação Recomendado

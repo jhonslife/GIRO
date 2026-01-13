@@ -132,15 +132,11 @@ A Arkheion pode alterar este EULA a qualquer momento. Voce sera notificado de al
 ---
 
 ## CONTATO
-
-**Arkheion**  
+## Arkheion
 Email: contato@arkheion.com.br  
 Site: https://giro.arkheion.com.br
 
 ---
-
-**AO CLICAR EM "ACEITO" OU INSTALAR O SOFTWARE, VOCE CONFIRMA QUE LEU, ENTENDEU E CONCORDA COM TODOS OS TERMOS DESTE EULA.**
-
+## AO CLICAR EM "ACEITO" OU INSTALAR O SOFTWARE, VOCE CONFIRMA QUE LEU, ENTENDEU E CONCORDA COM TODOS OS TERMOS DESTE EULA.
 ---
-
-*Copyright 2026 Arkheion. Todos os direitos reservados.*
+## Copyright 2026 Arkheion. Todos os direitos reservados.

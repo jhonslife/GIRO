@@ -18,7 +18,7 @@
 
 ## 📊 Diagrama ER
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────────────────┐
 │                                  MERCEARIAS DATABASE                                     │
 │                                    Entity Relationship                                   │
@@ -105,8 +105,7 @@
                            │ createdAt        │       │ employeeId   FK  │
                            └──────────────────┘       │ createdAt        │
                                                       └──────────────────┘
-```
-
+```text
 ---
 
 ## 📝 Schema Prisma
@@ -777,8 +776,7 @@ model AuditLog {
   @@index([action])
   @@index([createdAt])
 }
-```
-
+```text
 ---
 
 ## 📊 Índices e Performance
@@ -824,8 +822,7 @@ CREATE TABLE CategoryStockSummary (
     expiringCount INTEGER,
     updatedAt     TEXT
 );
-```
-
+```text
 ---
 
 ## 📏 Convenções
@@ -876,8 +873,7 @@ prisma/migrations/
 ├── 20260107000000_init/
 │   └── migration.sql
 └── migration_lock.toml
-```
-
+```text
 ---
 
 ## 🌱 Seeds
@@ -950,8 +946,7 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
-```
-
+```text
 ---
 
 _Documento gerado seguindo metodologia "Architect First, Code Later" - Arkheion Corp_

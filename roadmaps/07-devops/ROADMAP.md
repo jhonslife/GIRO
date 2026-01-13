@@ -69,14 +69,12 @@
 
 ## 🔗 Dependências
 
-### Depende de:
-
+### Depende de
 - 🧪 Testing (testes devem passar para deploy)
 - 🔧 Backend (código compilável)
 - 🎨 Frontend (código buildável)
 
-### Bloqueia:
-
+### Bloqueia
 - 📦 Distribuição (nada sai sem CI/CD)
 - 👥 Usuários finais (instalador é requisito)
 
@@ -153,8 +151,7 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-```
-
+```text
 ### GitHub Actions - Release
 
 ```yaml
@@ -196,8 +193,7 @@ jobs:
           releaseBody: 'Veja o CHANGELOG para detalhes.'
           releaseDraft: false
           prerelease: false
-```
-
+```text
 ### Tauri Config - Instalador
 
 ```json
@@ -229,8 +225,7 @@ jobs:
     }
   }
 }
-```
-
+```text
 ### NSIS Config
 
 ```json
@@ -246,8 +241,7 @@ jobs:
     "displayLanguageSelector": false
   }
 }
-```
-
+```text
 ### Sentry Integration
 
 ```typescript
@@ -271,8 +265,7 @@ if (import.meta.env.PROD) {
     },
   });
 }
-```
-
+```text
 ---
 
 ## 🧪 Critérios de Aceite
@@ -300,7 +293,7 @@ if (import.meta.env.PROD) {
 
 ## 📁 Estrutura de Arquivos DevOps
 
-```
+```text
 .github/
 ├── workflows/
 │   ├── ci.yml              # Lint, test em PRs
@@ -315,8 +308,7 @@ scripts/
 ├── build-icons.sh          # Gera ícones em vários tamanhos
 ├── sign-windows.ps1        # Assinatura de código (opcional)
 └── generate-changelog.sh   # Changelog automático
-```
-
+```text
 ---
 
 _Roadmap do Agente DevOps - Arkheion Corp_

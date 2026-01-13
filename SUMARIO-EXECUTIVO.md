@@ -34,9 +34,7 @@ O projeto **Mercearias Desktop** é um sistema PDV (Ponto de Venda) completo des
 - **7 services** de negócio implementados
 - Sistema de erros unificado
 - Compilação sem erros ✅
-
-**Principais Funcionalidades:**
-
+## Principais Funcionalidades:
 - Produtos, categorias, fornecedores
 - Vendas com múltiplos itens e pagamentos
 - Sessões de caixa (abertura, sangria, suprimento, fechamento)
@@ -84,9 +82,7 @@ O projeto **Mercearias Desktop** é um sistema PDV (Ponto de Venda) completo des
 ## 🔄 O QUE ESTÁ EM PROGRESSO
 
 ### 7. 🧪 Testing (20/24 tasks - 83%)
-
-**✅ Implementado:**
-
+## ✅ Implementado:
 - 45 testes unitários passando (100%)
 - 13 testes de integração criados
 - 8 arquivos E2E com 60+ testes criados:
@@ -98,30 +94,22 @@ O projeto **Mercearias Desktop** é um sistema PDV (Ponto de Venda) completo des
   - `stock.spec.ts` (8 testes)
   - `hardware.spec.ts` (10 testes)
   - `reports.spec.ts` (8 testes)
-
-**⚠️ Problemas Identificados:**
-
+## ⚠️ Problemas Identificados:
 - 7 testes de integração falhando (state management)
 - Testes E2E ainda não executados (configuração Playwright/Tauri pendente)
-
-**📋 Pendente:**
-
+## 📋 Pendente:
 - Corrigir testes de integração
 - Configurar Playwright para Tauri
 - Executar testes E2E completos
 - Alcançar cobertura >80%
 
 ### 8. 🚀 DevOps (20/25 tasks - 80%)
-
-**✅ Implementado:**
-
+## ✅ Implementado: (cont.)
 - Vite + Tauri configurados
 - Build scripts funcionais
 - ESLint e TypeScript config
 - Estrutura de monorepo
-
-**📋 Pendente:**
-
+## 📋 Pendente: (cont.)
 - CI/CD GitHub Actions
 - Instalador NSIS (Windows)
 - Auto-update
@@ -282,16 +270,14 @@ O projeto **Mercearias Desktop** é um sistema PDV (Ponto de Venda) completo des
 
 ## 🎓 LIÇÕES APRENDIDAS
 
-### O que funcionou bem:
-
+### O que funcionou bem
 ✅ Separação clara de responsabilidades (Backend/Frontend)  
 ✅ Tauri 2.0 como escolha de framework  
 ✅ Uso de Zustand para state management  
 ✅ Estrutura de testes bem organizada  
 ✅ Documentação incremental desde o início
 
-### Pontos de melhoria:
-
+### Pontos de melhoria
 ⚠️ Testes de integração deveriam ter sido criados antes  
 ⚠️ Mock do Tauri deveria estar no setup inicial  
 ⚠️ CI/CD deveria ter sido configurado no Sprint 1
@@ -301,16 +287,12 @@ O projeto **Mercearias Desktop** é um sistema PDV (Ponto de Venda) completo des
 ## 🏁 CONCLUSÃO
 
 O projeto **Mercearias Desktop** está **93.6% completo** e **pronto para a fase final de testes**.
-
-**Principais conquistas:**
-
+## Principais conquistas:
 - ✅ Backend robusto e performático
 - ✅ Frontend completo e responsivo
 - ✅ Integrações de hardware funcionais
 - ✅ 60+ testes E2E criados
-
-**Próximos passos críticos:**
-
+## Próximos passos críticos:
 1. Executar e validar testes E2E (Prioridade #1)
 2. Corrigir bugs encontrados
 3. Implementar CI/CD
@@ -321,8 +303,7 @@ O projeto **Mercearias Desktop** está **93.6% completo** e **pronto para a fase
 ---
 
 ## 📞 Contato
-
-**Arkheion Corp**  
+## Arkheion Corp
 Email: dev@arkheion.com  
 GitHub: @jhonslife  
 Projeto: Mercearias Desktop PDV

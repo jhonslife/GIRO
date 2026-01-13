@@ -8,7 +8,7 @@
 
 ## 📁 Estrutura
 
-```
+```text
 tests/
 ├── unit/                    ✅ 45 testes passando
 │   ├── utils/
@@ -39,8 +39,7 @@ tests/
 │   └── (criar factories aqui)
 │
 └── setup.ts                 ✅ Configurado
-```
-
+```text
 ---
 
 ## 🚀 Como Executar
@@ -50,8 +49,7 @@ tests/
 ```bash
 # Do diretório raiz do projeto
 ./scripts/run-tests.sh
-```
-
+```text
 O script oferece menu com opções:
 
 1. Todos os testes
@@ -84,8 +82,7 @@ npm run test:e2e:ui
 
 # E2E em modo debug
 npm run test:e2e:debug
-```
-
+```text
 ### Testes Específicos
 
 ```bash
@@ -100,8 +97,7 @@ npx playwright test tests/e2e/auth.spec.ts
 
 # E2E com um navegador específico
 npx playwright test --project=tauri-webkit
-```
-
+```text
 ---
 
 ## 📊 Status dos Testes
@@ -166,8 +162,7 @@ export default defineConfig({
     },
   },
 });
-```
-
+```text
 ### Playwright (E2E)
 
 **Arquivo:** `playwright.config.ts`
@@ -185,40 +180,30 @@ export default defineConfig({
     },
   ],
 });
-```
-
+```text
 ---
 
 ## 🐛 Problemas Conhecidos
 
 ### 1. Testes de Integração Falhando
-
-**Erro:**
-
-```
+## Erro:
+```text
 expected undefined to be 20
-```
-
+```text
 **Causa:** Store Zustand não está sendo inicializado corretamente.
-
-**Fix:**
-
+## Fix:
 ```typescript
 // tests/setup.ts
 beforeEach(() => {
   usePDVStore.getState().reset();
   useAuthStore.getState().logout();
 });
-```
-
+```text
 ### 2. E2E não roda pelo Vitest
-
-**Erro:**
-
-```
+## Erro: (cont.)
+```text
 Playwright Test did not expect test.describe() to be called here
-```
-
+```text
 **Fix:** Testes E2E devem rodar com `npx playwright test`, não com Vitest.
 
 ### 3. Mocks do Tauri Incompletos
@@ -236,8 +221,7 @@ vi.mock('@tauri-apps/api/core', () => ({
     return mocks[cmd]?.(args) || Promise.resolve(null);
   }),
 }));
-```
-
+```text
 ---
 
 ## 📝 Criando Novos Testes
@@ -255,8 +239,7 @@ describe('myFunction', () => {
     expect(result).toBe('expected');
   });
 });
-```
-
+```text
 ### Teste de Integração
 
 ```typescript
@@ -275,8 +258,7 @@ describe('My Flow', () => {
     expect(useMyStore.getState().value).toBe(expected);
   });
 });
-```
-
+```text
 ### Teste E2E
 
 ```typescript
@@ -293,8 +275,7 @@ test.describe('My Feature', () => {
     await expect(page.locator('.result')).toBeVisible();
   });
 });
-```
-
+```text
 ---
 
 ## 🎯 Metas de Cobertura
@@ -334,28 +315,24 @@ test.describe('My Feature', () => {
 # Reinstalar dependências
 rm -rf node_modules
 npm install
-```
-
+```text
 ### Playwright browsers não instalados
 
 ```bash
 npx playwright install
-```
-
+```text
 ### Testes lentos
 
 ```bash
 # Executar em paralelo
 npm run test:run -- --reporter=verbose --poolOptions.threads.maxThreads=4
-```
-
+```text
 ### Database bloqueado
 
 ```bash
 # Remover lock
 rm ~/.local/share/Mercearias/mercearias.db-wal
-```
-
+```text
 ---
 
 ## 📞 Suporte

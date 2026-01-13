@@ -67,7 +67,7 @@ O módulo de motopeças transforma o GIRO de um sistema exclusivo para mercearia
 
 ## 🏗️ Arquitetura
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                      FRONTEND (React)                        │
 ├─────────────────────────────────────────────────────────────┤
@@ -98,15 +98,14 @@ O módulo de motopeças transforma o GIRO de um sistema exclusivo para mercearia
 │  vehicle_years        services            warranty_claims   │
 │  product_compatibilities                                     │
 └─────────────────────────────────────────────────────────────┘
-```
-
+```text
 ---
 
 ## 🦀 Backend Rust
 
 ### 📁 Estrutura de Arquivos
 
-```
+```text
 src-tauri/src/
 ├── models/
 │   ├── vehicle.rs           (VehicleBrand, Model, Year, ProductCompatibility)
@@ -120,8 +119,7 @@ src-tauri/src/
     ├── vehicles.rs          (17 commands)
     ├── customers.rs         (14 commands)
     └── service_orders.rs    (22 commands)
-```
-
+```text
 ### 🔑 Models Principais
 
 #### Vehicle
@@ -158,8 +156,7 @@ pub struct ProductCompatibility {
     pub product_id: String,
     pub vehicle_year_id: String,
 }
-```
-
+```text
 #### Customer
 
 ```rust
@@ -184,8 +181,7 @@ pub struct CustomerVehicle {
     pub nickname: Option<String>,
     pub is_active: bool,
 }
-```
-
+```text
 #### ServiceOrder
 
 ```rust
@@ -252,8 +248,7 @@ pub struct Service {
     pub default_warranty_days: i32,
     pub is_active: bool,
 }
-```
-
+```text
 ### 📡 Tauri Commands
 
 #### Vehicles (17 commands)
@@ -279,8 +274,7 @@ add_product_compatibility(product_id, vehicle_year_id)
 remove_product_compatibility(compatibility_id)
 save_product_compatibilities(product_id, vehicle_year_ids[])
 get_products_by_vehicle(vehicle_year_id)
-```
-
+```text
 #### Customers (14 commands)
 
 ```rust
@@ -300,8 +294,7 @@ get_customer_vehicle_by_id(id)
 create_customer_vehicle(CustomerVehicle)
 update_customer_vehicle(id, CustomerVehicle)
 update_vehicle_km(vehicle_id, km)
-```
-
+```text
 #### Service Orders (22 commands)
 
 ```rust
@@ -332,15 +325,14 @@ get_service_by_id(id)
 get_service_by_code(code)
 create_service(code, name, default_price, ...)
 update_service(id, ...)
-```
-
+```text
 ---
 
 ## ⚛️ Frontend React
 
 ### 📁 Estrutura de Componentes
 
-```
+```text
 src/
 ├── components/motoparts/
 │   ├── VehicleSelector.tsx          (400 linhas)
@@ -354,8 +346,7 @@ src/
 │   └── useServiceOrders.ts         (500 linhas)
 └── stores/
     └── useBusinessProfile.ts        (150 linhas)
-```
-
+```text
 ### 🪝 Hooks Principais
 
 #### useVehicles
@@ -375,8 +366,7 @@ const {
   getCompleteVehicle,
   reset,
 } = useVehicles();
-```
-
+```text
 #### useProductCompatibility
 
 ```typescript
@@ -388,8 +378,7 @@ const {
   saveCompatibilities,
   refetch,
 } = useProductCompatibility(productId);
-```
-
+```text
 #### useServiceOrders
 
 ```typescript
@@ -407,14 +396,12 @@ const {
   filters,
   setFilters,
 } = useServiceOrders();
-```
-
+```text
 #### useServiceOrderItems
 
 ```typescript
 const { items, isLoading, addItem, removeItem, refetch } = useServiceOrderItems(orderId);
-```
-
+```text
 #### useServices
 
 ```typescript
@@ -425,8 +412,7 @@ const {
   createService,
   updateService,
 } = useServices();
-```
-
+```text
 ### 🎨 Componentes UI
 
 #### VehicleSelector
@@ -439,10 +425,8 @@ Seleção em cascata com 3 níveis:
   onChange={(vehicleYearId) => setSelectedVehicle(vehicleYearId)}
   placeholder="Selecione o veículo"
 />
-```
-
-**Features:**
-
+```text
+## Features:
 - Auto-loading de modelos ao selecionar marca
 - Auto-loading de anos ao selecionar modelo
 - Reset em cascata
@@ -457,18 +441,15 @@ Busca por texto com autocomplete:
   onSelect={(vehicle) => console.log(vehicle)}
   placeholder="Buscar por marca ou modelo..."
 />
-```
-
+```text
 #### ProductCompatibilityEditor
 
 Editor completo de compatibilidades:
 
 ```tsx
 <ProductCompatibilityEditor productId={product.id} onSave={() => toast.success('Salvo!')} />
-```
-
-**Features:**
-
+```text
+## Features: (cont.)
 - Lista de compatibilidades atuais
 - Adicionar novos veículos
 - Remover compatibilidades
@@ -481,8 +462,7 @@ Campo de busca com criação rápida:
 
 ```tsx
 <CustomerSearch onSelect={(customer) => setSelectedCustomer(customer)} allowCreate />
-```
-
+```text
 #### ServiceOrderList
 
 Lista com filtros e cards:
@@ -492,10 +472,8 @@ Lista com filtros e cards:
   onSelectOrder={(id) => navigate(`/os/${id}`)}
   onCreateNew={() => navigate('/os/new')}
 />
-```
-
-**Features:**
-
+```text
+## Features: (cont.)
 - Busca por número, cliente, veículo, placa
 - Filtro por status
 - Cards clicáveis com animação
@@ -511,10 +489,8 @@ Visualização completa de uma OS:
   onEdit={() => setEditMode(true)}
   onClose={() => navigate('/os')}
 />
-```
-
-**Features:**
-
+```text
+## Features: (cont.)
 - Info cliente e veículo
 - Sintomas e diagnóstico
 - Lista de itens com ações
@@ -528,7 +504,7 @@ Visualização completa de uma OS:
 
 ### Fluxo: Criação de Ordem de Serviço
 
-```
+```text
 1. Cliente chega na oficina
    ↓
 2. Buscar/criar cliente (CustomerSearch)
@@ -538,11 +514,10 @@ Visualização completa de uma OS:
 4. Criar OS com sintomas e KM atual
    ↓
 5. OS criada com status OPEN e número sequencial
-```
-
+```text
 ### Fluxo: Atendimento da Ordem
 
-```
+```text
 OPEN (Aguardando início)
   ↓ [start_service_order]
 IN_PROGRESS (Mecânico trabalhando)
@@ -554,11 +529,10 @@ WAITING_PARTS (Aguardando peças)
 COMPLETED (Serviço finalizado, aguardando cliente)
   ↓ [deliver_service_order + payment_method]
 DELIVERED (Entregue e pago)
-```
-
+```text
 ### Fluxo: Cálculo de Totais
 
-```
+```text
 Quando adiciona item:
 1. total_item = (quantity × unit_price) - discount
 2. Salvar item
@@ -567,17 +541,15 @@ Quando adiciona item:
    - parts_cost = SUM(items WHERE type = PART)
    - total = labor_cost + parts_cost - order.discount
 4. Atualizar OS
-```
-
+```text
 ### Fluxo: Sistema de Garantia
 
-```
+```text
 Ao completar OS:
 1. completed_at = agora
 2. warranty_until = agora + warranty_days
 3. Cliente pode acionar garantia até warranty_until
-```
-
+```text
 ---
 
 ## 📚 API Reference
@@ -615,8 +587,7 @@ service_order_items (id, order_id, product_id?, item_type, quantity, unit_price,
 
 -- Sequência de OS
 _service_order_sequence (id=1, last_number)
-```
-
+```text
 ---
 
 ## 🚀 Próximos Passos
@@ -657,26 +628,19 @@ _service_order_sequence (id=1, last_number)
 ---
 
 ## 📊 Estatísticas do Projeto
-
-**Backend Rust:**
-
+## Backend Rust:
 - 3 models (vehicle, customer, service_order)
 - 3 repositories (~1300 linhas)
 - 3 command files (53 commands total)
 - 11 tabelas no banco
-
-**Frontend React:**
-
+## Frontend React:
 - 5 componentes principais (~1900 linhas)
 - 3 hooks principais (~1150 linhas)
 - 1 store (BusinessProfile)
-
-**Total:**
-
+## Total:
 - ~3500 linhas de Rust
 - ~3050 linhas de TypeScript
 - **~6550 linhas de código**
 
 ---
-
-**Desenvolvido com ❤️ para oficinas de motocicletas**
+## Desenvolvido com ❤️ para oficinas de motocicletas

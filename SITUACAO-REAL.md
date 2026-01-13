@@ -55,9 +55,7 @@ Pensávamos que auth era 0%, mas na verdade:
 ## 🔍 ANÁLISE DETALHADA
 
 ### ✅ Database (22/22 - 100%)
-
-**Implementado:**
-
+## Implementado:
 - Schema Prisma completo
 - 22 migrações aplicadas
 - Seed com dados de teste
@@ -68,9 +66,7 @@ Pensávamos que auth era 0%, mas na verdade:
 ---
 
 ### ✅ Backend (35/35 - 100%)
-
-**Implementado:**
-
+## Implementado: (cont.)
 - Tauri 2.0 + SQLx + Tokio
 - 10 Repositories (Product, Sale, Employee, Cash, etc.)
 - 50+ Tauri Commands (8 produtos, 6 vendas, 6 funcionários, etc.)
@@ -79,9 +75,7 @@ Pensávamos que auth era 0%, mas na verdade:
 - Pool SQLite com WAL mode
 
 **Localização:** `apps/desktop/src-tauri/`
-
-**Comandos Principais:**
-
+## Comandos Principais:
 ```rust
 // Produtos
 get_products, create_product, update_product, search_products
@@ -100,14 +94,11 @@ create_stock_movement, get_product_lots, get_expiring_lots
 
 // Hardware
 print_receipt, read_weight, open_drawer, start_scanner_server
-```
-
+```text
 ---
 
 ### ✅ Frontend (49/49 - 100%)
-
-**Implementado:**
-
+## Implementado: (cont.)
 - React 18.3 + TypeScript 5.4
 - 25+ páginas (PDV, Produtos, Estoque, Caixa, etc.)
 - 60+ componentes Shadcn/UI
@@ -118,10 +109,8 @@ print_receipt, read_weight, open_drawer, start_scanner_server
 - Tauri IPC wrapper (326 linhas)
 
 **Localização:** `apps/desktop/src/`
-
-**Páginas Principais:**
-
-```
+## Páginas Principais:
+```text
 PDVPage - POS principal com carrinho
 ProductsPage - CRUD de produtos
 StockPage - Dashboard de estoque
@@ -130,14 +119,11 @@ CashControlPage - Abertura/fechamento de caixa
 ReportsPage - Relatórios e analytics
 AlertsPage - Centro de notificações
 SettingsPage - Configurações do sistema
-```
-
+```text
 ---
 
 ### 🚀 Auth (11.5/15 - 76.7%)
-
-**Implementado:**
-
+## Implementado: (cont.)
 ✅ Backend:
 
 - Employee model com PIN/senha/role
@@ -152,16 +138,12 @@ SettingsPage - Configurações do sistema
 - Protected routes
 - Controle de permissões granular
 - Limites de desconto por role
-
-**O que falta:**
-
+## O que falta:
 - ⚠️ Trocar mock por comando real (5 min)
 - ⚠️ Hash de PIN/senha (30 min)
 - ⚠️ Rate limiting (1 hora)
 - ⚠️ Timeout de sessão (30 min)
-
-**Permissões Implementadas:**
-
+## Permissões Implementadas:
 ```typescript
 PERMISSIONS = {
   'pdv.sell': ['ADMIN', 'MANAGER', 'CASHIER'],
@@ -172,8 +154,7 @@ PERMISSIONS = {
   'settings.edit': ['ADMIN'],
   // ...
 };
-```
-
+```text
 ---
 
 ## 🎯 PRÓXIMOS PASSOS REAIS
@@ -182,9 +163,7 @@ PERMISSIONS = {
 
 **Prioridade:** 🔴 ALTA  
 **Complexidade:** 🟢 BAIXA
-
-**Tasks:**
-
+## Tasks:
 1. ✅ Conectar LoginPage ao comando `authenticate_by_pin` (5 min)
 2. ✅ Adicionar funcionários no seed com PINs (10 min)
 3. ✅ Testar login end-to-end (10 min)
@@ -200,15 +179,11 @@ PERMISSIONS = {
 
 **Prioridade:** 🟡 MÉDIA  
 **Complexidade:** 🟠 MÉDIA
-
-**Status Atual:**
-
+## Status Atual:
 - ✅ Hardware drivers JÁ IMPLEMENTADOS no backend!
 - ❌ Frontend precisa integrar com os comandos
 - ❌ Testes de hardware real
-
-**O que temos:**
-
+## O que temos:
 ```rust
 // Backend já tem:
 - configure_printer()
@@ -217,10 +192,8 @@ PERMISSIONS = {
 - read_weight()
 - open_drawer()
 - start_scanner_server()
-```
-
-**O que falta:**
-
+```text
+## O que falta: (cont.)
 - Componentes de configuração no frontend
 - Testes com hardware físico
 - Fallbacks quando hardware não disponível
@@ -231,9 +204,7 @@ PERMISSIONS = {
 
 **Prioridade:** 🟢 MÉDIA-BAIXA  
 **Complexidade:** 🟠 MÉDIA
-
-**Tasks:**
-
+## Tasks: (cont.)
 - Unit tests (Rust repositories)
 - Integration tests (Tauri commands)
 - E2E tests (Playwright)
@@ -245,9 +216,7 @@ PERMISSIONS = {
 
 **Prioridade:** 🟢 BAIXA  
 **Complexidade:** 🟢 BAIXA
-
-**Pode começar agora:**
-
+## Pode começar agora:
 - GitHub Actions CI/CD
 - Build scripts
 - Installer (Tauri já tem configuração!)
@@ -262,10 +231,8 @@ PERMISSIONS = {
 cd apps/desktop
 npm run dev
 # Acesse http://localhost:1420
-```
-
-**Funcionalidades testáveis:**
-
+```text
+## Funcionalidades testáveis:
 - ✅ Login (PIN: 1234 ou 0000)
 - ✅ PDV (adicionar produtos)
 - ✅ Navegação entre páginas
@@ -276,10 +243,8 @@ npm run dev
 ```bash
 cd apps/desktop
 npm run tauri dev
-```
-
-**Funcionalidades testáveis (REAL com banco):**
-
+```text
+## Funcionalidades testáveis (REAL com banco):
 - ✅ Buscar produtos reais
 - ✅ Criar/editar produtos
 - ✅ Ver categorias
@@ -312,8 +277,7 @@ await window.__TAURI__.core.invoke('create_sale', {
     ],
   },
 });
-```
-
+```text
 ---
 
 ## 🏆 MILESTONES ATINGIDAS
@@ -365,8 +329,7 @@ npx prisma db seed             # Popular database
 # Testar comandos
 cd apps/desktop/src-tauri
 cargo test
-```
-
+```text
 ---
 
 ## 🎊 CONQUISTAS DO DIA
@@ -389,9 +352,7 @@ cargo test
 
 **Tempo:** 2-3 horas  
 **Benefício:** Sistema multi-usuário funcional
-
-**Passos:**
-
+## Passos:
 1. Conectar LoginPage ao `authenticate_by_pin`
 2. Adicionar funcionários no seed
 3. Testar login real
@@ -408,8 +369,7 @@ npm run tauri dev
 # Testar CRUD de produtos
 # Testar vendas
 # Testar caixa
-```
-
+```text
 ### Opção 3: Integrations de Hardware
 
 **Tempo:** 3-4 dias  

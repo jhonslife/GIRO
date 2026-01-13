@@ -2,8 +2,7 @@
 
 **Data:** 10 de Janeiro de 2026  
 **Commit:** b9e25e7  
-**Status:** 🚀 **PRONTO PARA BUILD DE PRODUÇÃO**
-
+## Status:** 🚀 **PRONTO PARA BUILD DE PRODUÇÃO
 ---
 
 ## 🎯 Resumo Executivo
@@ -25,9 +24,8 @@ O aplicativo mobile GIRO está **100% funcional e testado**, pronto para geraç�
 
 ## 📊 Métricas Finais
 
-### Testes por Categoria:
-
-```
+### Testes por Categoria
+```text
 ✅ Stores (todos)           : 54/54  (100%)
 ✅ Integration/Connection   : 11/11  (100%)
 ✅ Integration/Scanner      :  9/9   (100%)
@@ -35,17 +33,14 @@ O aplicativo mobile GIRO está **100% funcional e testado**, pronto para geraç�
 ⚠️  Integration/Inventory   :  3/11  ( 27%) - API divergente
 ─────────────────────────────────────────
 TOTAL                       : 116/125 ( 93%)
-```
-
-### Cobertura de Código:
-
+```text
+### Cobertura de Código
 - **Global:** ~74%
 - **Stores:** 100%
 - **Hooks:** 85%
 - **UI Components:** 60%
 
-### Saúde do Build:
-
+### Saúde do Build
 - **Bundle Size:** ~3.2 MB (production optimized)
 - **Vulnerabilidades:** 0 críticas
 - **TypeScript Errors:** 256 (não-bloqueantes, maioria tipos implícitos UI)
@@ -73,8 +68,7 @@ setState('connected');
 connectionState: 'disconnected';
 setConnectionState('connected');
 disconnect(); // novo método
-```
-
+```text
 ### 3. **Correção de Tipos**
 
 - ✅ Resolvido conflito `@types/` alias (mudado para `@/types/`)
@@ -119,17 +113,13 @@ npx eas build --platform android --profile preview
 
 # 3. Build produção (AAB para Google Play)
 npx eas build --platform android --profile production
-```
-
-**Vantagens:**
-
+```text
+## Vantagens:
 - ✅ Não precisa instalar Android SDK
 - ✅ Build na nuvem (rápido)
 - ✅ Gera AAB otimizado para Play Store
 - ✅ Histórico de builds
-
-**Desvantagens:**
-
+## Desvantagens:
 - ❌ Requer conta Expo
 - ❌ Limitado a 30 builds/mês (free tier)
 
@@ -145,16 +135,12 @@ cd giro-mobile
 
 # 2. Build local
 npx eas build --platform android --profile preview --local
-```
-
-**Vantagens:**
-
+```text
+## Vantagens: (cont.)
 - ✅ Sem limite de builds
 - ✅ Não precisa conta Expo
 - ✅ Controle total do processo
-
-**Desvantagens:**
-
+## Desvantagens: (cont.)
 - ❌ Precisa instalar Android SDK (~3 GB)
 - ❌ Configuração mais complexa
 - ❌ Build mais lento
@@ -168,10 +154,8 @@ cd giro-mobile
 npm start
 
 # Scan QR code com Expo Go app no celular
-```
-
-**Limitações:**
-
+```text
+## Limitações:
 - ⚠️ Apenas para desenvolvimento
 - ⚠️ Não gera APK instalável
 - ⚠️ Requer Expo Go instalado
@@ -217,22 +201,17 @@ npm start
 **Motivo:** Testes usam API antiga (`startSession`, `countItem`), código atual usa (`setCurrentInventory`, `updateItem`)
 
 **Impacto:** ❌ **ZERO** - Código de produção validado via unit tests
-
-**Solução (opcional):**
-
+## Solução (opcional):
 ```typescript
 // Atualizar app/__tests__/integration/inventory.test.ts
 // para usar novos method names
-```
-
+```text
 ### 2. **Teste de Button UI (1 failing)**
 
 **Motivo:** NativeWind Pressable não dispara eventos no Jest (incompatibilidade de tooling)
 
 **Impacto:** ❌ **ZERO** - Button funciona perfeitamente em runtime
-
-**Solução (opcional):**
-
+## Solução (opcional): (cont.)
 - Usar Testing Library com renderização real (não jsdom)
 - Aguardar NativeWind 5.0 com melhor suporte Jest
 
@@ -241,9 +220,7 @@ npm start
 **Motivo:** Maioria são tipos implícitos de `className` props (NativeWind)
 
 **Impacto:** ❌ **ZERO** - Metro bundler compila JavaScript (ignora tipos)
-
-**Solução (opcional):**
-
+## Solução (opcional): (cont.)
 - Aguardar NativeWind 5.0 com types completos
 - Criar custom types estendendo ComponentProps
 
@@ -294,9 +271,7 @@ npm start
 ---
 
 ## 🎉 Conclusão
-
-**O GIRO Mobile está 100% pronto para build de produção!**
-
+## O GIRO Mobile está 100% pronto para build de produção!
 Todos os componentes críticos estão funcionais, testados e documentados.  
 O único passo restante é gerar o APK/AAB via EAS Build ou Android Studio.
 

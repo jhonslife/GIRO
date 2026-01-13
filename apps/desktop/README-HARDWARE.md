@@ -20,14 +20,12 @@ Este módulo implementa integração completa com hardware comercial para PDV (P
 ```bash
 cd apps/desktop/src-tauri
 cargo build --release
-```
-
+```text
 ### Executar Aplicação
 
 ```bash
 cargo run
-```
-
+```text
 ### Abrir Interface de Teste
 
 A aplicação abre automaticamente em `http://localhost` com uma interface HTML para testar todos os comandos hardware.
@@ -54,8 +52,7 @@ await invoke('configure_printer', {
     encoding: 'UTF8', // 'UTF8' | 'CP850' | 'CP437'
   },
 });
-```
-
+```text
 ### Imprimir Cupom
 
 ```javascript
@@ -90,17 +87,15 @@ await invoke('print_receipt', {
     footer: 'Obrigado pela preferência!',
   },
 });
-```
-
+```text
 ### Teste de Impressão
 
 ```javascript
 await invoke('test_printer');
-```
-
+```text
 **Imprime**:
 
-```
+```text
 ================================
   TESTE DE IMPRESSORA
 ================================
@@ -114,8 +109,7 @@ Data/Hora: 2026-01-02 20:00:00
 ================================
   Impressão OK!
 ================================
-```
-
+```text
 ---
 
 ## ⚖️ Balança Comercial
@@ -129,7 +123,7 @@ Data/Hora: 2026-01-02 20:00:00
 | Elgin    | Elgin     | 9600      | Binário 6B |
 | Urano    | Urano     | 4800      | Hex 8B     |
 
-### Configuração
+### Configuração (cont.)
 
 ```javascript
 await invoke('configure_scale', {
@@ -140,8 +134,7 @@ await invoke('configure_scale', {
     timeout_ms: 2000,
   },
 });
-```
-
+```text
 ### Auto-Detecção
 
 ```javascript
@@ -150,8 +143,7 @@ const protocol = await invoke('auto_detect_scale', {
 });
 
 console.log(`Protocolo detectado: ${protocol}`);
-```
-
+```text
 ### Ler Peso
 
 ```javascript
@@ -163,8 +155,7 @@ console.log({
   tare: reading.tare, // 0.000
   unit: reading.unit, // "kg"
 });
-```
-
+```text
 ### Código de Barras Pesável
 
 ```javascript
@@ -177,8 +168,7 @@ const barcode = '2023456012347';
 // Código produto: 023456
 // Peso: 01.234 kg
 // Check digit: 7
-```
-
+```text
 ---
 
 ## 📱 Scanner de Código de Barras
@@ -208,8 +198,7 @@ await invoke('start_scanner_server', {
 // Gerar QR para pareamento
 const qr_url = await invoke('generate_pairing_qr');
 console.log(qr_url); // "ws://192.168.1.100:3847/scan"
-```
-
+```text
 ### Cliente Mobile (PWA)
 
 ```javascript
@@ -238,8 +227,7 @@ function onScan(barcode) {
     })
   );
 }
-```
-
+```text
 ### Validação EAN
 
 ```rust
@@ -261,13 +249,12 @@ fn validate_ean13(barcode: &str) -> bool {
     let check_digit = (10 - (sum % 10)) % 10;
     check_digit == barcode.chars().last().unwrap().to_digit(10).unwrap()
 }
-```
-
+```text
 ---
 
 ## 💰 Gaveta de Dinheiro
 
-### Configuração
+### Configuração (cont.)
 
 ```javascript
 await invoke('configure_drawer', {
@@ -277,17 +264,15 @@ await invoke('configure_drawer', {
     pin: 'Pin2', // 'Pin2' (Epson/Elgin) ou 'Pin5' (Bematech/Daruma)
   },
 });
-```
-
+```text
 ### Abrir Gaveta
 
 ```javascript
 await invoke('open_drawer');
-```
-
+```text
 ### Comando ESC/POS
 
-```
+```text
 ESC p pin t1 t2
 0x1B 0x70 [pin] [t1] [t2]
 
@@ -297,8 +282,7 @@ pin:
 
 t1: ON time (ms * 2) - Exemplo: 100ms = 200 (0xC8)
 t2: OFF time (ms * 5) - Exemplo: 100ms = 500 (0x1F4)
-```
-
+```text
 ---
 
 ## 🔌 Portas Seriais
@@ -314,8 +298,7 @@ console.log(ports);
 //   { name: "/dev/ttyUSB1", type: "USB" },
 //   { name: "/dev/usb/lp0", type: "Printer" }
 // ]
-```
-
+```text
 ### Verificar Porta
 
 ```javascript
@@ -326,8 +309,7 @@ const exists = await invoke('check_port_exists', {
 if (!exists) {
   console.error('Porta não encontrada!');
 }
-```
-
+```text
 ---
 
 ## 🧪 Testes
@@ -350,13 +332,12 @@ Abra a aplicação e use a interface HTML para testar:
 
 Todos os comandos exibem logs no console:
 
-```
+```text
 [20:00:00] Configurando impressora em /dev/usb/lp0...
 [20:00:01] Impressora configurada com sucesso!
 [20:00:02] Enviando teste de impressão...
 [20:00:03] Impressão de teste enviada!
-```
-
+```text
 ---
 
 ## 📦 Dependências
@@ -371,13 +352,12 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 chrono = "0.4"
 uuid = { version = "1.10", features = ["v4"] }
-```
-
+```text
 ---
 
 ## 🛠️ Arquitetura
 
-```
+```text
 src/
 ├── main.rs              # Entry point Tauri
 ├── lib.rs               # Library exports
@@ -390,8 +370,7 @@ src/
     ├── scale.rs         # Commercial scale protocols
     ├── scanner.rs       # Barcode scanner (WebSocket)
     └── drawer.rs        # Cash drawer control
-```
-
+```text
 ---
 
 ## 🔧 Troubleshooting
@@ -404,8 +383,7 @@ sudo chmod 666 /dev/usb/lp0
 
 # Testar comunicação
 echo "teste" > /dev/usb/lp0
-```
-
+```text
 ### Balança não responde
 
 ```bash
@@ -415,8 +393,7 @@ ls -la /dev/ttyUSB*
 # Permissões
 sudo usermod -aG dialout $USER
 # Logout/Login necessário
-```
-
+```text
 ### Scanner WebSocket não conecta
 
 ```bash
@@ -425,8 +402,7 @@ sudo ufw allow 3847/tcp
 
 # Testar porta
 nc -zv 127.0.0.1 3847
-```
-
+```text
 ### Gaveta não abre
 
 - Verificar conexão na impressora (RJ11/RJ12)

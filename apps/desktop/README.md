@@ -1,9 +1,7 @@
 # GIRO
 
 Sistema de Gestao Comercial para Varejo
-
-**Desenvolvido por Arkheion**
-
+## Desenvolvido por Arkheion
 ---
 
 ## Sobre
@@ -42,17 +40,15 @@ cargo test
 
 # Build
 npm run tauri:build
-```
-
+```text
 ## Estrutura
 
-```
+```text
 apps/desktop/
 ├── src/                 # Frontend React
 ├── src-tauri/           # Backend Rust
 └── tests/               # Testes E2E
-```
-
+```text
 ## Documentacao
 
 - [Instalador Windows](docs/INSTALL_WIZARD.md)

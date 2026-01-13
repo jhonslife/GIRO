@@ -3,9 +3,7 @@
 > **Instrução de Uso:** Copie e cole este prompt para iniciar um novo projeto com a estrutura "Beautiful Queen Standard".
 
 ---
-
-**[PASTE THIS TO YOUR AI ASSISTANT]**
-
+## [PASTE THIS TO YOUR AI ASSISTANT]
 Atue como um **Senior Principal Architect**. Vamos iniciar um novo projeto chamado `[NOME_DO_PROJETO]` e preciso que você configure a estrutura completa seguindo a metodologia **"Deep Planning & 8 Agents"**.
 
 O projeto é: `[DESCREVA SEU PROJETO AQUI]`
@@ -53,5 +51,4 @@ Para CADA subpasta em `roadmaps/` (ex: `01-database`), crie um arquivo `ROADMAP.
 Ao final, me apresente o `tree` da estrutura criada e pergunte qual área devo aprovar primeiro para iniciarmos a "Fase de Construção".
 
 ---
-
-**FIM DO PROMPT**
+## FIM DO PROMPT

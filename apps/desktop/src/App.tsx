@@ -2,6 +2,8 @@ import { LicenseGuard } from '@/components/guards';
 import { AppShell } from '@/components/layout';
 import { BusinessProfileWizard } from '@/components/shared';
 import { UpdateChecker } from '@/components/UpdateChecker';
+import { FirstAdminWizard } from '@/components/setup/FirstAdminWizard';
+import { useHasAdmin } from '@/hooks/useSetup';
 /* force refresh */
 import { useAuthStore } from '@/stores/auth-store';
 import { useBusinessProfile } from '@/stores/useBusinessProfile';
@@ -20,6 +22,7 @@ import { PDVPage } from '@/pages/pdv';
 import { CategoriesPage, ProductFormPage, ProductsPage } from '@/pages/products';
 import { ReportsPage, SalesReportPage } from '@/pages/reports';
 import { SettingsPage } from '@/pages/settings';
+import { InitialSetupPage } from '@/pages/setup';
 import { ExpirationPage, StockEntryPage, StockMovementsPage, StockPage } from '@/pages/stock';
 import { SuppliersPage } from '@/pages/suppliers';
 import { TutorialsPage } from '@/pages/tutorials';
@@ -86,6 +89,32 @@ const useHelpHotkey = () => {
   }, [navigate]);
 };
 
+const AdminCheck: FC = () => {
+  const { data: hasAdmin, isLoading } = useHasAdmin();
+  const { isAuthenticated } = useAuthStore();
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+          <p className="mt-4 text-sm text-muted-foreground">Inicializando...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!hasAdmin && !isAuthenticated) {
+    return <FirstAdminWizard />;
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <Navigate to="/pdv" replace />;
+};
+
 const App: FC = () => {
   const { isAuthenticated } = useAuthStore();
   useHelpHotkey();
@@ -94,6 +123,10 @@ const App: FC = () => {
     <>
       {isAuthenticated && <UpdateChecker />}
       <Routes>
+        <Route index element={<AdminCheck />} />
+        {/* Setup Inicial - Primeiro Acesso */}
+        <Route path="/setup" element={<InitialSetupPage />} />
+
         {/* Rota de Ativação de Licença - ANTES de tudo */}
         <Route path="/license" element={<LicenseActivationPage />} />
 

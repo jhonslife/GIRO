@@ -212,8 +212,7 @@ Implementar backend completo no GIRO Desktop para suportar conexão e operaçõe
 await invoke('start_mobile_server');
 await invoke('stop_mobile_server');
 await invoke('get_mobile_server_info');
-```
-
+```text
 ---
 
 ## 📊 Compatibilidade
@@ -249,8 +248,7 @@ await invoke('stop_mobile_server');
 
 // Obter status
 const status = await invoke('get_mobile_server_info');
-```
-
+```text
 ### Mobile - Conexão e Autenticação
 
 ```typescript
@@ -282,8 +280,7 @@ ws.send(JSON.stringify({
   },
   timestamp: 1704844800000
 }
-```
-
+```text
 ### Mobile - Buscar Produtos
 
 ```typescript
@@ -315,8 +312,7 @@ ws.send(JSON.stringify({
   },
   timestamp: 1704844801000
 }
-```
-
+```text
 ### Mobile - Ajustar Estoque
 
 ```typescript
@@ -345,8 +341,7 @@ ws.send(JSON.stringify({
   },
   timestamp: 1704844802000
 }
-```
-
+```text
 ### Mobile - Iniciar Inventário
 
 ```typescript
@@ -391,8 +386,7 @@ ws.send(
     timestamp: Date.now(),
   })
 );
-```
-
+```text
 ---
 
 ## 🎯 Próximos Passos Recomendados
@@ -405,8 +399,7 @@ ws.send(
 - [ ] Display: IP, Porta, QR Code
 - [ ] Lista de dispositivos conectados
 - [ ] Botão "Desconectar Todos"
-```
-
+```text
 ### 2. Configurações da Loja
 
 ```rust
@@ -414,8 +407,7 @@ ws.send(
 let pdv_name = get_setting("pdv_name").unwrap_or("PDV 1");
 let store_name = get_setting("store_name").unwrap_or("Mercearias GIRO");
 let store_document = get_setting("store_document");
-```
-
+```text
 ### 3. Testes (Opcional)
 
 - **TASK-MOB-016:** Testes unitários handlers

@@ -68,14 +68,12 @@
 
 ## 🔗 Dependências
 
-### Depende de:
-
+### Depende de
 - 🔧 Backend (código para testar)
 - 🎨 Frontend (componentes para testar)
 - 🔌 Integrations (hardware para mockar)
 
-### Bloqueia:
-
+### Bloqueia
 - 🚀 DevOps (CI precisa de testes)
 - 📦 Deploy (não deploya com testes falhando)
 
@@ -115,8 +113,7 @@ export default defineConfig({
     },
   },
 });
-```
-
+```text
 ### Rust Test Config
 
 ```rust
@@ -148,8 +145,7 @@ mod tests {
         // ...test logic
     }
 }
-```
-
+```text
 ### Factory Pattern para Dados de Teste
 
 ```typescript
@@ -178,8 +174,7 @@ export const createSaleData = (overrides = {}) => ({
   paymentMethod: faker.helpers.arrayElement(['money', 'pix', 'credit', 'debit']),
   ...overrides,
 });
-```
-
+```text
 ### Mock de Impressora
 
 ```rust
@@ -211,8 +206,7 @@ impl MockPrinter {
         printed_str.contains(text)
     }
 }
-```
-
+```text
 ### Playwright para Tauri
 
 ```typescript
@@ -234,8 +228,7 @@ export default defineConfig({
     },
   ],
 });
-```
-
+```text
 ---
 
 ## 🧪 Critérios de Aceite
@@ -262,7 +255,7 @@ export default defineConfig({
 
 ## 📁 Estrutura de Arquivos de Teste
 
-```
+```text
 tests/
 ├── setup.ts                    # Setup global (jsdom, mocks)
 ├── factories/
@@ -287,8 +280,7 @@ tests/
     ├── login.spec.ts
     ├── sale.spec.ts
     └── reports.spec.ts
-```
-
+```text
 ---
 
 _Roadmap do Agente Testing - Arkheion Corp_

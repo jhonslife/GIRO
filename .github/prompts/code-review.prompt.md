@@ -73,16 +73,13 @@ Realize um code review detalhado do código abaixo, focando em qualidade, segura
 ### 1. [Título] - Severidade: 🔴/🟡/🟢
 
 **Localização:** `arquivo.ts:L42`
-
-**Problema:**
+## Problema:
 [Descrição do problema]
-
-**Sugestão:**
+## Sugestão:
 ```typescript
 // código sugerido
-```
-
-**Motivo:**
+```text
+## Motivo:
 [Por que essa mudança é importante]
 
 ---
@@ -106,8 +103,7 @@ Realize um code review detalhado do código abaixo, focando em qualidade, segura
 ## ✍️ Conclusão
 
 [Recomendação final: Aprovar / Aprovar com ressalvas / Solicitar mudanças]
-```
-
+```text
 ## Níveis de Severidade
 
 - 🔴 **Crítico** - Deve ser corrigido antes do merge (segurança, bugs graves)

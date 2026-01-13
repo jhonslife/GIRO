@@ -111,8 +111,7 @@ ALIGN_RIGHT= [0x1B, 0x61, 0x02]   // Alinhar direita
 BARCODE    = [0x1D, 0x6B]         // Código de barras
 QRCODE     = [0x1D, 0x28, 0x6B]   // QR Code
 FEED       = [0x1B, 0x64]         // Avançar linhas
-```
-
+```text
 ### Funcionalidades
 
 - Impressão de recibos formatados
@@ -134,7 +133,7 @@ FEED       = [0x1B, 0x64]         // Avançar linhas
 4. **Urano** - Baud 4800, formato hexadecimal
 5. **Generic** - Auto-detect fallback
 
-### Funcionalidades
+### Funcionalidades (cont.)
 
 - Leitura de peso em kg
 - Detecção de estabilidade
@@ -145,14 +144,13 @@ FEED       = [0x1B, 0x64]         // Avançar linhas
 
 ### Formato Barcode Pesável
 
-```
+```text
 2 XXXXXX PPPPP C
 │    │      │   └─ Check digit
 │    │      └───── Peso (5 dígitos, 3 decimais)
 │    └──────────── Código produto (6 dígitos)
 └───────────────── Prefixo (sempre 2)
-```
-
+```text
 ---
 
 ## 📱 Scanner de Código de Barras
@@ -179,8 +177,7 @@ FEED       = [0x1B, 0x64]         // Avançar linhas
   "timestamp": "2026-01-02T20:00:00Z",
   "device_id": "mobile-scanner-001"
 }
-```
-
+```text
 ### Validação
 
 - Check digit EAN-13/EAN-8
@@ -213,13 +210,12 @@ FEED       = [0x1B, 0x64]         // Avançar linhas
 // pin: 0x00 (Pin2) ou 0x01 (Pin5)
 // duration_high: ms * 2 (100ms = 200)
 // duration_low: ms * 5 (100ms = 500)
-```
-
+```text
 ---
 
 ## 🧪 Interface de Teste
 
-### Funcionalidades
+### Funcionalidades (cont.)
 
 - UI moderna dark theme (green accent)
 - Botões para todos os 18 comandos
@@ -270,8 +266,7 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 chrono = "0.4"
 uuid = { version = "1.10", features = ["v4"] }
-```
-
+```text
 ---
 
 ## 🐛 Correções Realizadas

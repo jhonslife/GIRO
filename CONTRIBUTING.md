@@ -29,46 +29,35 @@ Antes de criar um bug report:
 **Template de Bug Report**:
 
 ```markdown
-**Descrição**
+## Descrição
 Descrição clara do bug
-
-**Passos para Reproduzir**
-
+## Passos para Reproduzir
 1. Vá para '...'
 2. Clique em '...'
 3. Veja o erro
-
-**Comportamento Esperado**
+## Comportamento Esperado
 O que deveria acontecer
-
-**Screenshots**
+## Screenshots
 Se aplicável
-
-**Ambiente**
-
+## Ambiente
 - OS: [e.g. Windows 11]
 - Versão: [e.g. 1.0.0]
 - Browser/App: [e.g. Chrome, Desktop App]
-```
-
+```text
 ### 💡 Sugerindo Melhorias
 
 **Template de Feature Request**:
 
 ```markdown
-**Problema**
+## Problema
 Descrição do problema que a feature resolve
-
-**Solução Proposta**
+## Solução Proposta
 Como você imagina que funcione
-
-**Alternativas Consideradas**
+## Alternativas Consideradas
 Outras abordagens que você pensou
-
-**Contexto Adicional**
+## Contexto Adicional
 Screenshots, exemplos, etc.
-```
-
+```text
 ### 🔧 Contribuindo com Código
 
 1. **Fork** o repositório
@@ -98,8 +87,7 @@ pnpm prisma db push
 # Execute em modo dev
 cd ../../apps/desktop
 pnpm tauri dev
-```
-
+```text
 ### Mobile
 
 ```bash
@@ -107,22 +95,20 @@ cd giro-mobile
 pnpm install
 pnpm expo prebuild
 pnpm android # ou pnpm ios
-```
-
+```text
 ## 📐 Padrões de Código
 
 ### Conventional Commits
 
 Seguimos o padrão [Conventional Commits](https://www.conventionalcommits.org/):
 
-```
+```text
 <type>(<scope>): <subject>
 
 <body>
 
 <footer>
-```
-
+```text
 **Types**:
 
 - `feat`: Nova funcionalidade
@@ -140,8 +126,7 @@ feat(pdv): add product barcode scanner
 fix(auth): resolve token expiration issue
 docs(readme): update installation instructions
 test(products): add unit tests for CRUD operations
-```
-
+```text
 ### TypeScript/JavaScript
 
 ```typescript
@@ -156,8 +141,7 @@ const getUserById = async (id: string): Promise<User> => {
 function getUser(id) {
   return prisma.user.findUnique({ where: { id } });
 }
-```
-
+```text
 ### Rust
 
 ```rust
@@ -176,8 +160,7 @@ pub async fn get_product(pool: &SqlitePool, id: i32) -> Product {
         .await
         .unwrap()
 }
-```
-
+```text
 ### Formatação
 
 - **TypeScript/JavaScript**: Prettier + ESLint
@@ -192,8 +175,7 @@ cargo fmt          # Rust
 # Lint
 pnpm lint          # TypeScript/JavaScript
 cargo clippy       # Rust
-```
-
+```text
 ## 🔄 Processo de Pull Request
 
 1. **Atualize** sua branch com a main
@@ -217,7 +199,7 @@ cargo clippy       # Rust
 ### Template de PR
 
 ```markdown
-## Descrição
+## Descrição (cont.)
 
 Breve descrição das mudanças
 
@@ -234,7 +216,7 @@ Breve descrição das mudanças
 2. Passo 2
 3. ...
 
-## Screenshots
+## Screenshots (cont.)
 
 Se aplicável
 
@@ -243,8 +225,7 @@ Se aplicável
 - [ ] Código segue padrões
 - [ ] Testes passam
 - [ ] Documentação atualizada
-```
-
+```text
 ## 🧪 Testes
 
 ```bash
@@ -256,8 +237,7 @@ pnpm test:e2e
 
 # Coverage
 pnpm test:coverage
-```
-
+```text
 **Cobertura mínima**: 80% para código novo
 
 ## 📝 Documentação
@@ -287,8 +267,7 @@ RUST_LOG=debug pnpm tauri dev
 
 # Mobile
 pnpm expo start --clear
-```
-
+```text
 ## 📞 Dúvidas?
 
 - 💬 Abra uma [Discussion](https://github.com/jhonslife/GIRO/discussions)

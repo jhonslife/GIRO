@@ -7,9 +7,7 @@
 [![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react)](https://react.dev)
 [![Rust](https://img.shields.io/badge/Rust-1.83-orange?style=for-the-badge&logo=rust)](https://www.rust-lang.org)
 [![Expo](https://img.shields.io/badge/Expo-52-000020?style=for-the-badge&logo=expo)](https://expo.dev)
-
-**Sistema de Ponto de Venda completo com aplicações Desktop e Mobile**
-
+## Sistema de Ponto de Venda completo com aplicações Desktop e Mobile
 [🚀 Começar](#-instalação) • [📖 Documentação](#-documentação) • [🛠️ Desenvolvimento](#-desenvolvimento) • [🤝 Contribuir](#-contribuindo)
 
 </div>
@@ -36,7 +34,7 @@ GIRO é um sistema completo de Ponto de Venda (PDV) desenvolvido com tecnologias
 
 ## 🏗️ Arquitetura
 
-```
+```text
 GIRO/
 ├── apps/
 │   ├── desktop/          # Aplicação Tauri (React + Rust)
@@ -48,8 +46,7 @@ GIRO/
 │   └── database/         # Schema Prisma compartilhado
 ├── docs/                 # Documentação completa
 └── scripts/              # Scripts de build e deploy
-```
-
+```text
 ### 🔧 Stack Tecnológica
 
 #### Desktop
@@ -90,8 +87,7 @@ pnpm install
 cd packages/database
 pnpm prisma generate
 pnpm prisma db push
-```
-
+```text
 #### Desktop (Linux)
 
 ```bash
@@ -104,16 +100,14 @@ sudo apt install -y libwebkit2gtk-4.1-dev \
 
 pnpm install
 cd packages/database && pnpm prisma generate && pnpm prisma db push
-```
-
-#### Mobile
+```text
+#### Mobile (cont.)
 
 ```bash
 cd giro-mobile
 pnpm install
 pnpm expo prebuild
-```
-
+```text
 ---
 
 ## 💻 Desenvolvimento
@@ -133,8 +127,7 @@ pnpm test:e2e
 
 # Testes unitários
 pnpm test
-```
-
+```text
 ### Mobile
 
 ```bash
@@ -148,8 +141,7 @@ pnpm android
 
 # Testes
 pnpm test
-```
-
+```text
 ---
 
 ## 📦 Build de Produção
@@ -159,20 +151,18 @@ pnpm test
 ```bash
 cd apps/desktop
 .\build-windows.sh
-```
-
+```text
 Gera instalador em `src-tauri/target/release/bundle/`
 
-### Mobile
+### Mobile (cont.)
 
 ```bash
 cd giro-mobile
 
-# Build de produção
+# Build de produção (cont.)
 eas build --platform android
 eas build --platform ios
-```
-
+```text
 ---
 
 ## 🎯 Funcionalidades
@@ -214,27 +204,25 @@ Documentação completa disponível em [`/docs`](./docs/):
 
 ## 🧪 Testes
 
-### Desktop
+### Desktop (cont.)
 
 ```bash
-# Testes unitários
+# Testes unitários (cont.)
 pnpm test
 
-# Testes E2E
+# Testes E2E (cont.)
 pnpm test:e2e
 
 # Coverage
 pnpm test:coverage
-```
-
-### Mobile
+```text
+### Mobile (cont.)
 
 ```bash
 cd giro-mobile
 pnpm test
 pnpm test:coverage
-```
-
+```text
 **Status atual**: 80%+ de cobertura em módulos críticos
 
 ---
@@ -266,15 +254,14 @@ Contribuições são bem-vindas! Por favor:
 
 Seguimos [Conventional Commits](https://www.conventionalcommits.org/):
 
-```
+```text
 feat(scope): add new feature
 fix(scope): fix bug description
 docs(scope): update documentation
 refactor(scope): refactor code
 test(scope): add tests
 chore(scope): maintenance tasks
-```
-
+```text
 ---
 
 ## 📄 Licença
@@ -284,9 +271,7 @@ Este projeto é proprietário. Todos os direitos reservados.
 ---
 
 ## 👨‍💻 Autor
-
-**Arkheion Corp**
-
+## Arkheion Corp
 - GitHub: [@jhonslife](https://github.com/jhonslife)
 
 ---
@@ -302,9 +287,7 @@ Este projeto é proprietário. Todos os direitos reservados.
 ---
 
 <div align="center">
-
-**[⬆ Voltar ao topo](#-giro---sistema-pdv-completo)**
-
+## [⬆ Voltar ao topo](#-giro---sistema-pdv-completo)
 Feito com ❤️ por Arkheion Corp
 
 </div>

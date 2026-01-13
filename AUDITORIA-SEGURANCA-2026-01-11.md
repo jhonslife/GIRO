@@ -21,9 +21,7 @@ O sistema de segurança do GIRO foi auditado e está **funcionalmente completo e
 | **Gestão de Usuários**     | ✅ Aprovado  | 10/10 |
 | **Fluxo de Onboarding**    | ✅ Aprovado  | 10/10 |
 | **Interface de Segurança** | ⚠️ Ressalvas | 8/10  |
-
-**Nota Final: 9.5/10**
-
+## Nota Final: 9.5/10
 ---
 
 ## 🔍 1. Autenticação
@@ -46,10 +44,8 @@ fn hash_pin(pin: &str) -> String {
     hasher.update(pin.as_bytes());
     format!("{:x}", hasher.finalize())
 }
-```
-
-**✅ Pontos Fortes:**
-
+```text
+## ✅ Pontos Fortes:
 - ✅ PINs **NUNCA** são armazenados em texto plano
 - ✅ Hash SHA-256 (compatível com seed do Prisma)
 - ✅ Verificação de `is_active` antes de autenticar
@@ -68,10 +64,8 @@ const handleLogin = async () => {
     else navigate('/');
   }
 };
-```
-
-**✅ Pontos Fortes:**
-
+```text
+## ✅ Pontos Fortes: (cont.)
 - ✅ PIN enviado via IPC (não exposto em rede)
 - ✅ Validação de tamanho mínimo (4 dígitos)
 - ✅ Loading states e tratamento de erros
@@ -79,7 +73,7 @@ const handleLogin = async () => {
 
 ### 🎯 Fluxo de Autenticação Completo
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                  FLUXO DE AUTENTICAÇÃO SEGURO                   │
 └─────────────────────────────────────────────────────────────────┘
@@ -107,8 +101,7 @@ const handleLogin = async () => {
 
 8. Redireciona baseado em isConfigured
    └─ Wizard ou Dashboard
-```
-
+```text
 ---
 
 ## 🛡️ 2. Autorização (RBAC)
@@ -143,8 +136,7 @@ pub enum Permission {
     // Fornecedores/Categorias
     ViewSuppliers, ManageSuppliers, ViewCategories, ManageCategories,
 }
-```
-
+```text
 ### 📊 Matriz de Permissões
 
 | Permissão                | ADMIN | MANAGER | CASHIER | VIEWER | STOCKER |
@@ -177,10 +169,8 @@ pub enum Permission {
     <SuppliersPage />
   </ProtectedRoute>
 } />
-```
-
-**✅ Pontos Fortes:**
-
+```text
+## ✅ Pontos Fortes: (cont.)
 - ✅ Proteção em nível de rota
 - ✅ Redirecionamento automático se não autorizado
 - ✅ Verificação antes de renderizar componentes
@@ -203,10 +193,8 @@ hasPermission: (permission) => {
   const allowedRoles = PERMISSIONS[permission];
   return allowedRoles.includes(employee.role);
 };
-```
-
-**✅ Pontos Fortes:**
-
+```text
+## ✅ Pontos Fortes: (cont.)
 - ✅ Permissões granulares (ex: 3 níveis de desconto)
 - ✅ Hierarquia de roles clara
 - ✅ Helper `canDiscount(percentage)` para validar limites
@@ -234,10 +222,8 @@ toast({
   description: `PIN gerado: ${randomPin}`,
   duration: 10000, // 10s para anotar
 });
-```
-
-**✅ Pontos Fortes:**
-
+```text
+## ✅ Pontos Fortes: (cont.)
 - ✅ PIN gerado automaticamente (evita PINs fracos como 0000, 1111)
 - ✅ Range de 1000-9999 (4 dígitos válidos)
 - ✅ Toast com 10s de duração para anotar
@@ -256,8 +242,7 @@ pub async fn create(&self, data: CreateEmployee) -> AppResult<Employee> {
     .execute(self.pool)
     .await?;
 }
-```
-
+```text
 ### ✅ **Migration Inicial com Admin**
 
 **Arquivo**: `apps/desktop/src-tauri/migrations/001_initial_schema.sql`
@@ -267,18 +252,15 @@ pub async fn create(&self, data: CreateEmployee) -> AppResult<Employee> {
 -- Hash de "1234": 03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4
 
 -- ℹ️ NOTA: Esta inserção está no seed.sql, não na migration
-```
-
+```text
 **Arquivo**: `apps/desktop/src-tauri/seed.sql`
 
 ```sql
 INSERT INTO employees (id, name, email, role, pin, is_active) VALUES
   ('emp-admin-001', 'Admin Sistema', 'admin@giro.com', 'ADMIN',
    '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4', 1);
-```
-
-**✅ Pontos Fortes:**
-
+```text
+## ✅ Pontos Fortes: (cont.)
 - ✅ Admin criado apenas via seed (desenvolvimento)
 - ✅ Hash correto do PIN 1234
 - ✅ Produção exigirá criação de admin via instalador
@@ -306,11 +288,10 @@ export function BusinessProfileWizard({
     if (redirectAfterComplete) navigate(redirectTo);
   };
 }
-```
-
+```text
 ### 🔄 **Fluxo Completo de Onboarding**
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │              FLUXO DE PRIMEIRO ACESSO                           │
 └─────────────────────────────────────────────────────────────────┘
@@ -345,8 +326,7 @@ export function BusinessProfileWizard({
 7. Redirecionamento
    └─ navigate('/pdv')
    └─ App pronto para uso
-```
-
+```text
 ### ✅ **Rota do Wizard Protegida**
 
 **Arquivo**: `apps/desktop/src/App.tsx`
@@ -372,8 +352,7 @@ const WizardRoute: FC = () => {
     </ProtectedRoute>
   }
 />;
-```
-
+```text
 ---
 
 ## 👥 5. Gestão de Funcionários
@@ -381,9 +360,7 @@ const WizardRoute: FC = () => {
 ### ✅ **Interface Completa**
 
 **Arquivo**: `apps/desktop/src/pages/employees/EmployeesPage.tsx`
-
-**Features Implementadas:**
-
+## Features Implementadas:
 1. ✅ **Lista de Funcionários**
 
    - Filtro por nome/email
@@ -422,8 +399,7 @@ const roleLabels: Record<EmployeeRole, string> = {
   CASHIER: 'Operador de Caixa', // Apenas vender e caixa
   VIEWER: 'Visualizador', // Apenas leitura
 };
-```
-
+```text
 ---
 
 ## 🔒 6. Segurança em Camadas
@@ -439,8 +415,7 @@ role TEXT NOT NULL DEFAULT 'CASHIER'
 
 -- ✅ Constraint de ativo
 is_active BOOLEAN NOT NULL DEFAULT 1
-```
-
+```text
 ### ✅ **2. Camada de Repository (Rust)**
 
 ```rust
@@ -455,8 +430,7 @@ pub async fn authenticate_pin(&self, pin: &str) -> AppResult<Option<Employee>> {
     let pin_hash = hash_pin(pin);
     self.find_by_pin(&pin_hash).await
 }
-```
-
+```text
 ### ✅ **3. Camada de Commands (Tauri)**
 
 ```rust
@@ -471,8 +445,7 @@ pub async fn authenticate_employee(
     // ✅ Retorna SafeEmployee (sem PIN/password)
     Ok(employee.map(SafeEmployee::from))
 }
-```
-
+```text
 ### ✅ **4. Camada de Frontend (React)**
 
 ```tsx
@@ -491,27 +464,21 @@ persist(state, {
   name: 'auth-storage',
   storage: createJSONStorage(() => localStorage),
 });
-```
-
+```text
 ---
 
 ## ⚠️ 7. Ressalvas e Recomendações
 
 ### ⚠️ **1. PIN em Toast (Menor Prioridade)**
-
-**Situação Atual:**
-
+## Situação Atual:
 ```tsx
 toast({
   description: `PIN gerado: ${randomPin}`,
   duration: 10000,
 });
-```
-
+```text
 **Risco:** Se alguém estiver olhando a tela, pode ver o PIN.
-
-**Recomendação (Opcional):**
-
+## Recomendação (Opcional):
 ```tsx
 // Opção 1: Botão "Copiar PIN" + limpar clipboard após 30s
 const [showPin, setShowPin] = useState(true);
@@ -542,22 +509,17 @@ toast({
     <Button onClick={handleConfirm}>Anotei, pode prosseguir</Button>
   </DialogFooter>
 </Dialog>;
-```
-
+```text
 **Prioridade:** 🟡 Baixa (UX enhancement, não critical)
 
 ---
 
 ### ✅ **2. Rate Limiting (Produção)**
-
-**Situação Atual:**  
+## Situação Atual: (cont.)
 Sem limite de tentativas de login.
-
-**Risco:**  
+## Risco:
 Brute force para descobrir PINs (4 dígitos = 10.000 combinações).
-
-**Recomendação (Produção):**
-
+## Recomendação (Produção):
 ```rust
 // src-tauri/src/middleware/rate_limit.rs
 
@@ -610,16 +572,13 @@ impl RateLimiter {
 // Em authenticate_employee:
 let rate_limiter = state.rate_limiter.clone();
 rate_limiter.check_and_record(&pin)?;
-```
-
+```text
 **Prioridade:** 🟢 Alta para produção
 
 ---
 
 ### ✅ **3. Auditoria de Login (Opcional)**
-
-**Recomendação:**
-
+## Recomendação:
 ```sql
 CREATE TABLE IF NOT EXISTS audit_logs (
     id TEXT PRIMARY KEY,
@@ -634,8 +593,7 @@ CREATE TABLE IF NOT EXISTS audit_logs (
 CREATE INDEX idx_audit_employee ON audit_logs(employee_id);
 CREATE INDEX idx_audit_event ON audit_logs(event_type);
 CREATE INDEX idx_audit_created ON audit_logs(created_at);
-```
-
+```text
 ```rust
 async fn log_auth_event(pool: &SqlitePool, event: &str, employee_id: Option<&str>) {
     sqlx::query(
@@ -649,16 +607,13 @@ async fn log_auth_event(pool: &SqlitePool, event: &str, employee_id: Option<&str
     .await
     .ok();
 }
-```
-
+```text
 **Prioridade:** 🟡 Média (compliance e rastreabilidade)
 
 ---
 
 ### ✅ **4. Expiração de Sessão (Futuro)**
-
-**Recomendação:**
-
+## Recomendação: (cont.)
 ```typescript
 // src/stores/auth-store.ts
 
@@ -690,8 +645,7 @@ useEffect(() => {
 
   return () => clearInterval(interval);
 }, []);
-```
-
+```text
 **Prioridade:** 🟡 Baixa (desktop app com uso contínuo)
 
 ---
@@ -762,12 +716,9 @@ O sistema está **APROVADO** para build de produção com as seguintes configura
 -- INSERT INTO employees (id, name, email, role, pin, is_active) VALUES
 --   ('emp-admin-001', 'Admin Sistema', 'admin@giro.com', 'ADMIN',
 --    '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4', 1);
-```
-
+```text
 #### 2. ✅ Adicionar Criação de Admin no Instalador
-
-**Opção A: Wizard de Primeiro Admin**
-
+## Opção A: Wizard de Primeiro Admin
 ```tsx
 // components/setup/FirstAdminWizard.tsx
 
@@ -820,10 +771,8 @@ export function FirstAdminWizard() {
     </Dialog>
   );
 }
-```
-
-**Opção B: Gerar PIN Automático no Instalador**
-
+```text
+## Opção B: Gerar PIN Automático no Instalador
 ```rust
 // src-tauri/src/setup/first_run.rs
 
@@ -854,11 +803,9 @@ pub async fn create_default_admin(pool: &SqlitePool) -> AppResult<String> {
 
     Ok(pin)
 }
-```
-
-**Tela do Instalador:**
-
-```
+```text
+## Tela do Instalador:
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │              BEM-VINDO AO GIRO - INSTALAÇÃO                 │
 ├─────────────────────────────────────────────────────────────┤
@@ -881,8 +828,7 @@ pub async fn create_default_admin(pool: &SqlitePool) -> AppResult<String> {
 │  [ 🖨️ Imprimir ]  [ 📋 Copiar ]  [ ✅ Anotei, Continuar ]  │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
-```
-
+```text
 #### 3. ✅ Configurar Build do Tauri
 
 **Arquivo**: `apps/desktop/src-tauri/tauri.conf.json`
@@ -911,8 +857,7 @@ pub async fn create_default_admin(pool: &SqlitePool) -> AppResult<String> {
     }
   }
 }
-```
-
+```text
 #### 4. ✅ Script de Build
 
 **Arquivo**: `apps/desktop/build-production.sh`
@@ -956,8 +901,7 @@ npm run tauri:build
 
 echo "✅ Build concluído!"
 echo "📂 Instalador em: src-tauri/target/release/bundle/"
-```
-
+```text
 ---
 
 ## 📈 10. Métricas de Segurança
@@ -985,9 +929,7 @@ echo "📂 Instalador em: src-tauri/target/release/bundle/"
 ### Resumo Final
 
 O sistema de segurança do GIRO está **pronto para produção** com a seguinte nota:
-
-**🏆 APROVADO - 9.5/10**
-
+## 🏆 APROVADO - 9.5/10
 ### Pontos Fortes
 
 1. ✅ **Hash SHA-256** para PINs (segurança criptográfica)
@@ -1015,9 +957,7 @@ O sistema de segurança do GIRO está **pronto para produção** com a seguinte 
 - [ ] 🟡 Modal dedicado para PIN gerado
 
 ### Recomendação Final
-
-**✅ APROVADO PARA BUILD DE PRODUÇÃO**
-
+## ✅ APROVADO PARA BUILD DE PRODUÇÃO
 O sistema possui segurança robusta e está alinhado com as melhores práticas da indústria. As melhorias sugeridas são enhancements opcionais que podem ser implementados em futuras versões.
 
 ---

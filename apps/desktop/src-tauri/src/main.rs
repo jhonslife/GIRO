@@ -114,6 +114,9 @@ async fn main() {
             commands::get_employee_by_id,
             commands::authenticate_by_pin,
             commands::authenticate_employee, // alias
+            commands::has_admin,
+            commands::has_any_employee,
+            commands::create_first_admin,
             commands::create_employee,
             commands::update_employee,
             commands::deactivate_employee,
@@ -168,6 +171,10 @@ async fn main() {
             commands::get_setting_number,
             commands::set_setting,
             commands::delete_setting,
+            // Sistema
+            commands::get_app_data_path,
+            commands::get_database_path,
+            commands::get_disk_usage,
             // Fornecedores
             commands::get_suppliers,
             commands::get_supplier_by_id,

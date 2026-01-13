@@ -18,6 +18,7 @@ pub mod service_orders;
 pub mod settings;
 pub mod stock;
 pub mod suppliers;
+pub mod system;
 pub mod vehicles;
 pub mod warranties;
 
@@ -41,6 +42,7 @@ pub use service_orders::*;
 pub use settings::*;
 pub use stock::*;
 pub use suppliers::*;
+pub use system::*;
 pub use vehicles::*;
 pub use warranties::*;
 pub mod reports_motoparts;

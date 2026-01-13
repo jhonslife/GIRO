@@ -26,9 +26,7 @@
 ### 🔴 Fase 1: Backend Core (CRÍTICO)
 
 **Objetivo:** Implementar todos os Tauri commands para conectar Frontend ↔ Database
-
-**Tasks Prioritárias:**
-
+## Tasks Prioritárias:
 1. ✅ Setup Tauri 2.0 (BE-001 a BE-006)
 2. ✅ Models Rust (BE-007 a BE-010)
 3. 🔴 **Repositories CRUD** (BE-011 a BE-020) - **COMEÇAR AQUI**
@@ -36,9 +34,7 @@
 5. 🔴 Tauri Commands (BE-027 a BE-034)
 
 **Estimativa:** 3-5 dias de desenvolvimento focado
-
-**Benefícios:**
-
+## Benefícios:
 - Frontend vira funcional (sai dos mocks)
 - PDV pode realizar vendas reais
 - Permite testes de integração
@@ -119,11 +115,10 @@ serde_json = "1"
 chrono = "0.4"
 bcrypt = "0.15"  // Para auth
 uuid = { version = "1", features = ["serde", "v4"] }
-```
-
+```text
 ### Estrutura de Arquivos
 
-```
+```text
 src-tauri/
 ├── Cargo.toml
 ├── tauri.conf.json
@@ -152,8 +147,7 @@ src-tauri/
 │       ├── product.rs
 │       ├── sale.rs
 │       └── ...
-```
-
+```text
 ---
 
 ## 🎬 Comandos de Início
@@ -178,31 +172,24 @@ cp ../../packages/database/data/mercearias.db .
 # 4. Testar build
 cargo build
 npm run tauri build
-```
-
+```text
 ---
 
 ## ✅ Próxima Ação
-
-**COMEÇAR AGORA:**
-
+## COMEÇAR AGORA:
 1. Verificar se estrutura Tauri existe em `apps/desktop/src-tauri`
 2. Se sim → Prosseguir com repositories
 3. Se não → Criar estrutura básica Tauri
-
-**Comando sugerido:**
-
+## Comando sugerido:
 ```bash
 ls -la apps/desktop/src-tauri
-```
-
+```text
 Se não existir, criar:
 
 ```bash
 cd apps/desktop
 npm create tauri-app@latest -- --name mercearias --template vanilla-ts
-```
-
+```text
 ---
 
 ## 🎯 Meta de Curto Prazo

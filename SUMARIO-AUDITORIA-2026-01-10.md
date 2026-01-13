@@ -13,9 +13,7 @@ Identificar e resolver TODAS as pendências do projeto Mercearias, validando o e
 ## ✅ Trabalho Realizado
 
 ### 1. Varredura Completa de Documentos ✅
-
-**Arquivos analisados:**
-
+## Arquivos analisados:
 - 24 ROADMAPs
 - 7 STATUS.md
 - CHECKLIST-FINAL-RELEASE.md
@@ -28,15 +26,11 @@ Identificar e resolver TODAS as pendências do projeto Mercearias, validando o e
 ---
 
 ### 2. Verificação de Codebase ✅
-
-**Diretórios inspecionados:**
-
+## Diretórios inspecionados:
 - `apps/desktop/` (Frontend + Backend Tauri)
 - `giro-mobile/` (React Native Expo)
 - `giro-license-server/` (Backend Node.js)
-
-**Resultado:**
-
+## Resultado:
 - Desktop: 95% implementado
 - Mobile: 100% implementado
 - License Server: 100% implementado
@@ -46,16 +40,13 @@ Identificar e resolver TODAS as pendências do projeto Mercearias, validando o e
 ### 3. Execução de Testes E2E ✅
 
 **Comando:** `npm run test:e2e`
-
-**Resultado:**
-
-```
+## Resultado: (cont.)
+```text
 ✅ 9 testes passando (Auth + Caixa)
 ❌ 1 teste falhando (Abertura de sessão)
 ⚠️ 1 teste interrompido
 ⏸️ 63 testes não executados (85%)
-```
-
+```text
 **Taxa de sucesso:** 82% (dos executados)
 
 ---
@@ -108,26 +99,20 @@ Identificar e resolver TODAS as pendências do projeto Mercearias, validando o e
 #### 1. Corrigir Teste E2E de Abertura de Caixa
 
 **Arquivo:** `apps/desktop/tests/e2e/cash-session.spec.ts:27`
-
-**Problema:**
-
+## Problema:
 ```typescript
 // Linha 71
 expect(statusVisible).toBeTruthy(); // ❌ Recebe false
-```
-
+```text
 **Impacto:** Bloqueia validação do fluxo completo de caixa
 
 **Tempo estimado:** 30 minutos
-
-**Ação:**
-
+## Ação:
 ```bash
 cd apps/desktop/tests/e2e
 # Revisar seletor do elemento de status
 # Adicionar waitFor apropriado
-```
-
+```text
 ---
 
 ## 🟡 Pendências Não-Bloqueantes
@@ -137,9 +122,7 @@ cd apps/desktop/tests/e2e
 #### 2. Executar 63 Testes E2E Restantes
 
 **Status:** ⏸️ Não executados (85% da suíte)
-
-**Escopo:**
-
+## Escopo:
 - Hardware (17 testes)
 - Produtos (5 testes)
 - Vendas (16 testes)
@@ -148,14 +131,11 @@ cd apps/desktop/tests/e2e
 - Outros (17 testes)
 
 **Tempo estimado:** 2-3 horas
-
-**Ação:**
-
+## Ação: (cont.)
 ```bash
 cd apps/desktop
 npm run test:e2e -- --headed  # Com UI para debug
-```
-
+```text
 ---
 
 #### 3. Executar Testes Rust (Backend)
@@ -165,14 +145,11 @@ npm run test:e2e -- --headed  # Com UI para debug
 **Escopo:** 20+ módulos com `#[cfg(test)]`
 
 **Tempo estimado:** 15 minutos
-
-**Ação:**
-
+## Ação: (cont.)
 ```bash
 cd apps/desktop/src-tauri
 cargo test --lib
-```
-
+```text
 ---
 
 #### 4. Medir Cobertura de Código
@@ -182,14 +159,11 @@ cargo test --lib
 **Target:** > 80%
 
 **Tempo estimado:** 10 minutos
-
-**Ação:**
-
+## Ação: (cont.)
 ```bash
 cd apps/desktop
 npm run test:coverage
-```
-
+```text
 ---
 
 ### Baixa Prioridade
@@ -197,9 +171,7 @@ npm run test:coverage
 #### 5. Implementar CI/CD
 
 **Status:** ⬜ Não implementado
-
-**Escopo:**
-
+## Escopo: (cont.)
 - GitHub Actions workflows
 - Build automático em PR
 - Testes automáticos
@@ -359,9 +331,7 @@ npm run test:coverage
 ---
 
 ## 🚀 Próximo Passo
-
-**Corrigir teste `cash-session.spec.ts:27` e executar suíte completa.**
-
+## Corrigir teste `cash-session.spec.ts:27` e executar suíte completa.
 Após isso, teremos visibilidade real da qualidade do projeto.
 
 ---

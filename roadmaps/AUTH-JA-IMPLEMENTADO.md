@@ -45,8 +45,7 @@ pub struct Employee {
 pub struct SafeEmployee {
     // Sem pin/password - seguro para frontend
 }
-```
-
+```text
 #### 2. Repository com Autenticação
 
 ```rust
@@ -62,8 +61,7 @@ impl EmployeeRepository {
         self.find_by_pin(pin).await
     }
 }
-```
-
+```text
 #### 3. Tauri Commands
 
 ```rust
@@ -87,8 +85,7 @@ pub async fn authenticate_employee(
 ) -> AppResult<Option<SafeEmployee>> {
     authenticate_by_pin(pin, state).await
 }
-```
-
+```text
 ✅ **Commands registrados no main.rs!**
 
 ---
@@ -145,8 +142,7 @@ const discountLimits = {
   MANAGER: 20, // 20%
   ADMIN: 100, // 100%
 };
-```
-
+```text
 #### 2. Auth Hooks (100%)
 
 ```typescript
@@ -183,8 +179,7 @@ export function useAuth() {
     // ...
   };
 }
-```
-
+```text
 #### 3. LoginPage (100%)
 
 ```tsx
@@ -224,8 +219,7 @@ export const LoginPage: FC = () => {
     </div>
   );
 };
-```
-
+```text
 ✅ **UI completa e funcional!**
 
 #### 4. ProtectedRoute (100%)
@@ -261,8 +255,7 @@ const ProtectedRoute: FC<ProtectedRouteProps> = ({ children, requiredRole }) => 
     </ProtectedRoute>
   }
 />;
-```
-
+```text
 ✅ **Proteção de rotas implementada!**
 
 ---
@@ -270,9 +263,7 @@ const ProtectedRoute: FC<ProtectedRouteProps> = ({ children, requiredRole }) => 
 ## ⚠️ O QUE FALTA (10%)
 
 ### 1. Trocar Mock por Comando Real
-
-**LoginPage.tsx - Linha 52:**
-
+## LoginPage.tsx - Linha 52:
 ```tsx
 // ❌ ANTES (mock)
 if (pin === '1234') {
@@ -291,12 +282,9 @@ if (employee) {
 } else {
   setError('PIN incorreto');
 }
-```
-
+```text
 ### 2. Hashing de PIN/Senha (Produção)
-
-**Backend - employee_repository.rs - Linha 130:**
-
+## Backend - employee_repository.rs - Linha 130:
 ```rust
 // ❌ ATUAL (desenvolvimento)
 pub async fn authenticate_pin(&self, pin: &str) -> AppResult<Option<Employee>> {
@@ -311,8 +299,7 @@ pub async fn authenticate_pin(&self, pin: &str) -> AppResult<Option<Employee>> {
         Ok(None)
     }
 }
-```
-
+```text
 ### 3. Sessões com Token/JWT (Opcional)
 
 Atualmente a autenticação é:
@@ -338,8 +325,7 @@ pub async fn login_with_pin(pin: String, state: State<'_, AppState>)
         token,
     })
 }
-```
-
+```text
 ---
 
 ## 📊 Implementação Atual vs Roadmap
@@ -396,8 +382,7 @@ const handleLogin = async () => {
     setIsLoading(false);
   }
 };
-```
-
+```text
 ### Passo 2: Adicionar funcionários de teste no seed
 
 ```typescript
@@ -423,20 +408,18 @@ const employees = [
     isActive: true,
   },
 ];
-```
-
+```text
 ### Passo 3: Testar autenticação end-to-end
 
 ```bash
 npm run tauri dev
 
-# No app:
+# No app
 # 1. Digite PIN 1234
 # 2. Deve logar como Admin
 # 3. Verificar permissões no PDV
 # 4. Testar logout
-```
-
+```text
 ---
 
 ## 🎯 Funcionalidades de Auth Já Prontas
@@ -455,8 +438,7 @@ if (hasPermission('settings.edit')) {
 if (canDiscount(15)) {
   // Aplicar desconto de 15%
 }
-```
-
+```text
 ### ✅ Protected Routes por Role
 
 ```tsx
@@ -468,8 +450,7 @@ if (canDiscount(15)) {
     </ProtectedRoute>
   }
 />
-```
-
+```text
 ### ✅ Persistência de Sessão
 
 ```typescript
@@ -484,8 +465,7 @@ const useAuthStore = create<AuthState>()(
     }
   )
 );
-```
-
+```text
 ### ✅ UI de Login Profissional
 
 - Teclado numérico visual
@@ -535,18 +515,14 @@ const useAuthStore = create<AuthState>()(
 ## 🎊 Conclusão
 
 O sistema de autenticação está **76.7% completo**!
-
-**O que já funciona:**
-
+## O que já funciona:
 - ✅ Login por PIN
 - ✅ RBAC com permissões granulares
 - ✅ Protected routes
 - ✅ Store persistente
 - ✅ UI profissional
 - ✅ Backend integrado
-
-**O que falta (crítico):**
-
+## O que falta (crítico):
 - ⚠️ Trocar mock por comando real no LoginPage (5 min)
 - ⚠️ Hash de PIN/senha (30 min)
 - ⚠️ Rate limiting (1 hora)

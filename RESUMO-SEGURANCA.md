@@ -41,10 +41,9 @@
 
 **Fluxo Completo**:
 
-```
+```text
 Login → Hash SHA-256 → Busca no DB → SafeEmployee → Zustand Store → Navegação
-```
-
+```text
 ### 2. Controle de Permissões (RBAC) ✅
 
 **Roles Implementados**:
@@ -77,10 +76,9 @@ Login → Hash SHA-256 → Busca no DB → SafeEmployee → Zustand Store → Na
 
 **Fluxo de Primeiro Acesso**:
 
-```
+```text
 Instalação → Login (admin) → Verificação → Wizard de Perfil → Dashboard
-```
-
+```text
 **Perfis Disponíveis**:
 
 - 🛒 **MERCEARIA** (padrão)
@@ -100,16 +98,15 @@ Instalação → Login (admin) → Verificação → Wizard de Perfil → Dashbo
 ```sql
 -- ❌ COMENTAR/REMOVER EM PRODUÇÃO:
 -- INSERT INTO employees VALUES ('emp-admin-001', ..., 'ADMIN', ...)
-```
-
-**Por quê?**  
+```text
+## Por quê?
 O admin com PIN `1234` é público e conhecido. Em produção, cada instalação deve criar seu próprio admin.
 
 #### 2. Implementar Criação de Admin no Instalador
 
 **Opção Recomendada**: Wizard de Primeiro Admin
 
-```
+```text
 ┌─────────────────────────────────────────────────────┐
 │     BEM-VINDO AO GIRO - INSTALAÇÃO                 │
 ├─────────────────────────────────────────────────────┤
@@ -128,8 +125,7 @@ O admin com PIN `1234` é público e conhecido. Em produção, cada instalação
 │  [ Gerar PIN Aleatório ]  [ ✅ Criar Admin ]      │
 │                                                     │
 └─────────────────────────────────────────────────────┘
-```
-
+```text
 **Implementação**:  
 Ver seção 9.2 da [AUDITORIA-SEGURANCA-2026-01-11.md](./AUDITORIA-SEGURANCA-2026-01-11.md)
 
@@ -151,8 +147,7 @@ pub struct RateLimiter {
     window: Duration::from_secs(60),
     lockout: Duration::from_secs(300),
 }
-```
-
+```text
 **Prioridade**: 🟢 Alta para produção
 
 #### 4. Audit Logs (Compliance)
@@ -165,8 +160,7 @@ CREATE TABLE audit_logs (
     employee_id TEXT,
     created_at TEXT
 );
-```
-
+```text
 **Prioridade**: 🟡 Média
 
 #### 5. Modal Dedicado para PIN Gerado
@@ -184,8 +178,7 @@ CREATE TABLE audit_logs (
     <Button>✅ Anotei</Button>
   </DialogFooter>
 </Dialog>
-```
-
+```text
 **Prioridade**: 🟡 Baixa (UX enhancement)
 
 ---
@@ -197,8 +190,7 @@ CREATE TABLE audit_logs (
 ```bash
 cd apps/desktop
 ./build-production.sh
-```
-
+```text
 O script fará:
 
 1. ✅ Verificação de dependências
@@ -212,24 +204,22 @@ O script fará:
 
 **Linux**:
 
-```
+```text
 src-tauri/target/release/bundle/
 ├── deb/
 │   └── giro_1.0.0_amd64.deb
 └── appimage/
     └── giro_1.0.0_amd64.AppImage
-```
-
+```text
 **Windows**:
 
-```
+```text
 src-tauri\target\release\bundle\
 ├── msi\
 │   └── GIRO_1.0.0_x64_en-US.msi
 └── nsis\
     └── GIRO_1.0.0_x64-setup.exe
-```
-
+```text
 ### Passo 3: Testar em Máquina Limpa
 
 **Checklist de Teste**:
@@ -321,5 +311,4 @@ O GIRO possui um sistema de segurança **robusto e profissional**, seguindo as m
 - Próxima Revisão: Antes de cada release major
 
 ---
-
-**✅ Sistema pronto para build e distribuição após implementar wizard de primeiro admin.**
+## ✅ Sistema pronto para build e distribuição após implementar wizard de primeiro admin.

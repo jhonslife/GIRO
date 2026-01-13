@@ -39,26 +39,20 @@
 #### Problema Principal: **State Management nos Stores**
 
 Os testes de integração estão falhando porque o `usePDVStore` não está sendo inicializado corretamente no ambiente de teste.
-
-**Erro comum:**
-
-```
+## Erro comum:
+```text
 expected undefined to be 20
 expected undefined to be 35.5
-```
-
+```text
 **Causa:** Os métodos do store retornam `undefined` ao invés dos valores esperados.
 
 #### Testes E2E (0/0)
 
 Os testes Playwright não estão sendo executados pelo Vitest devido a conflito de frameworks.
-
-**Erro:**
-
-```
+## Erro:
+```text
 Playwright Test did not expect test.describe() to be called here.
-```
-
+```text
 **Causa:** Playwright testes devem rodar separadamente com `npx playwright test`, não com Vitest.
 
 ---
@@ -68,24 +62,19 @@ Playwright Test did not expect test.describe() to be called here.
 ### FASE 1: Corrigir Testes de Integração (Prioridade Alta)
 
 **Problema:** State não persiste entre ações nos testes
-**Solução:**
-
+## Solução:
 1. Resetar stores antes de cada teste
 2. Garantir que os mocks do Tauri retornem dados válidos
 3. Usar `act()` do React Testing Library para atualizações de state
 
 ### FASE 2: Separar Testes E2E do Vitest (Prioridade Alta)
-
-**Ações:**
-
+## Ações:
 1. Criar script separado `test:e2e` no package.json
 2. Configurar Playwright para rodar testes Tauri
 3. Mover testes E2E para configuração específica
 
 ### FASE 3: Implementar Testes E2E Completos (Sprint 6)
-
-**Fluxos Críticos:**
-
+## Fluxos Críticos:
 - [ ] E2E-001: Login com PIN
 - [ ] E2E-002: Abertura de caixa
 - [ ] E2E-003: Venda simples (1 produto)
@@ -100,9 +89,7 @@ Playwright Test did not expect test.describe() to be called here.
 - [ ] E2E-012: Backup de dados
 
 ### FASE 4: Testes de Hardware (Mock) (Sprint 6)
-
-**Dispositivos:**
-
+## Dispositivos:
 - [ ] HW-001: Impressora térmica ESC/POS
 - [ ] HW-002: Balança serial Toledo
 - [ ] HW-003: Scanner de código de barras
@@ -128,8 +115,7 @@ export default defineConfig({
     ],
   },
 });
-```
-
+```text
 **Arquivo:** `package.json`
 
 ```json
@@ -141,8 +127,7 @@ export default defineConfig({
     "test:e2e:ui": "playwright test --ui"
   }
 }
-```
-
+```text
 ### 2. Setup de Mocks Tauri
 
 **Arquivo:** `tests/setup.ts`
@@ -166,8 +151,7 @@ vi.mock('@tauri-apps/api/core', () => ({
     return mocks[cmd]?.(args) || Promise.resolve(null);
   }),
 }));
-```
-
+```text
 ### 3. Factory de Dados
 
 **Criar:** `tests/factories/product.factory.ts`
@@ -182,13 +166,12 @@ export const createMockProduct = (overrides = {}) => ({
   unit: 'UN',
   ...overrides,
 });
-```
-
+```text
 ---
 
 ## 📋 Estrutura Ideal de Testes
 
-```
+```text
 tests/
 ├── unit/                    ✅ 45 testes passando
 │   ├── utils/
@@ -228,8 +211,7 @@ tests/
 │   └── cash.factory.ts
 │
 └── setup.ts                 ✅ Configurado
-```
-
+```text
 ---
 
 ## 🎯 Métricas de Cobertura Desejadas
@@ -264,8 +246,7 @@ npx vitest run tests/unit/utils/formatters.test.ts
 
 # Executar testes em modo watch
 npm run test
-```
-
+```text
 ---
 
 ## 🚀 Timeline de Implementação

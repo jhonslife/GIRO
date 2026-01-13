@@ -10,8 +10,7 @@ Para o sistema de atualização automática funcionar corretamente, você precis
 
 ```bash
 cargo install tauri-cli --version "^2.0.0"
-```
-
+```text
 ### 2. Gerar Par de Chaves
 
 ```bash
@@ -23,8 +22,7 @@ cargo tauri signer generate -w ~/.tauri/giro.key
 
 # A senha deve ter pelo menos 8 caracteres
 # GUARDE ESTA SENHA EM LOCAL SEGURO!
-```
-
+```text
 Isso irá gerar:
 
 - `~/.tauri/giro.key` - Chave privada (NUNCA COMMITAR!)
@@ -34,13 +32,12 @@ Isso irá gerar:
 
 A saída será algo como:
 
-```
+```text
 Your keypair was generated successfully!
 
 Private key: ~/.tauri/giro.key (keep it secret!)
 Public key: dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IERDOUU0RkE1RDk0MjEwNDkKUldUeHAvZlJjSEN0VFM3UUtHNGNEcnFiNEhMQm1wMTFWZEt2RU9LVkxXN1I0eTZxUGFEMW9TcmIK
-```
-
+```text
 **Copie a chave pública (a string grande depois de "Public key:")**.
 
 ### 4. Atualizar tauri.conf.json
@@ -58,18 +55,14 @@ Edite `apps/desktop/src-tauri/tauri.conf.json`:
     }
   }
 }
-```
-
+```text
 ### 5. Configurar GitHub Secrets
 
-#### Via GitHub Web Interface:
-
+#### Via GitHub Web Interface
 1. Vá para: https://github.com/jhonslife/GIRO/settings/secrets/actions
 2. Clique em "New repository secret"
 3. Adicione os seguintes secrets:
-
-**Secret 1:**
-
+## Secret 1:
 - Name: `TAURI_SIGNING_PRIVATE_KEY`
 - Value: Conteúdo completo do arquivo `~/.tauri/giro.key`
 
@@ -77,15 +70,12 @@ Edite `apps/desktop/src-tauri/tauri.conf.json`:
 # Copiar conteúdo da chave privada
 cat ~/.tauri/giro.key
 # Cole todo o conteúdo no GitHub
-```
-
-**Secret 2:**
-
+```text
+## Secret 2:
 - Name: `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`
 - Value: A senha que você usou ao gerar a chave
 
-#### Via GitHub CLI (alternativa):
-
+#### Via GitHub CLI (alternativa)
 ```bash
 # Ler chave privada
 PRIVATE_KEY=$(cat ~/.tauri/giro.key)
@@ -95,8 +85,7 @@ gh secret set TAURI_SIGNING_PRIVATE_KEY --body "$PRIVATE_KEY" --repo jhonslife/G
 
 # Adicionar secret da senha (substitua YOUR_PASSWORD)
 gh secret set TAURI_SIGNING_PRIVATE_KEY_PASSWORD --body "YOUR_PASSWORD" --repo jhonslife/GIRO
-```
-
+```text
 ### 6. Fazer Commit e Push
 
 ```bash
@@ -104,8 +93,7 @@ cd ~/GIRO
 git add apps/desktop/src-tauri/tauri.conf.json
 git commit -m "chore: update updater public key"
 git push origin main
-```
-
+```text
 ### 7. Habilitar GitHub Pages
 
 1. Vá para: https://github.com/jhonslife/GIRO/settings/pages
@@ -131,8 +119,7 @@ git push origin v1.0.0
 
 # Aguardar workflow de release completar
 # Verificar em: https://github.com/jhonslife/GIRO/releases
-```
-
+```text
 ## 📋 Checklist Completo
 
 - [ ] Tauri CLI instalado

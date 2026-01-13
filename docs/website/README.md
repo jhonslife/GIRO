@@ -42,8 +42,7 @@ Landing page profissional hospedada em:
     }
   }
 }
-```
-
+```text
 #### Dependências
 
 - `tauri-plugin-updater` no Cargo.toml
@@ -57,8 +56,7 @@ Landing page profissional hospedada em:
 ```bash
 git tag v1.0.1
 git push origin v1.0.1
-```
-
+```text
 ### 2. GitHub Actions
 
 O workflow `.github/workflows/release.yml` automaticamente:
@@ -96,8 +94,7 @@ cargo install tauri-cli
 
 # Gerar par de chaves
 tauri signer generate -w ~/.tauri/myapp.key
-```
-
+```text
 ### Configurar GitHub Secrets
 
 1. Vá em Settings → Secrets and variables → Actions
@@ -117,8 +114,7 @@ A chave pública deve estar em `tauri.conf.json`:
     }
   }
 }
-```
-
+```text
 ## 🧪 Testando Updates Localmente
 
 ### 1. Criar Build de Teste
@@ -126,8 +122,7 @@ A chave pública deve estar em `tauri.conf.json`:
 ```bash
 cd apps/desktop
 pnpm tauri build
-```
-
+```text
 ### 2. Simular Release
 
 ```bash
@@ -136,8 +131,7 @@ git tag v1.0.1-test
 
 # Fazer push (trigger workflow)
 git push origin v1.0.1-test
-```
-
+```text
 ### 3. Testar App
 
 1. Instale a versão antiga
@@ -164,8 +158,7 @@ vim docs/website/index.html
 git add docs/website/
 git commit -m "docs: update landing page"
 git push
-```
-
+```text
 ### Criar Hotfix
 
 ```bash
@@ -174,8 +167,7 @@ git tag v1.0.1
 git push origin v1.0.1
 
 # Users serão notificados automaticamente
-```
-
+```text
 ## 📝 Checklist de Release
 
 - [ ] CHANGELOG atualizado

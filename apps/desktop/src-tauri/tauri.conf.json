@@ -50,7 +50,10 @@
         "languages": ["PortugueseBR"],
         "installerIcon": "icons/icon.ico",
         "headerImage": "icons/128x128.png",
-        "sidebarImage": "icons/128x128.png"
+        "sidebarImage": "icons/128x128.png",
+        "template": "uninstall.nsi",
+        "installerHooks": "./installer-hooks",
+        "compression": "lzma"
       }
     }
   },

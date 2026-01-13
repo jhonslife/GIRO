@@ -39,8 +39,7 @@ pub struct MobileResponse {
     pub error: Option<MobileError>,
     pub timestamp: i64,
 }
-```
-
+```text
 **Critérios de aceite**:
 
 - [x] Tipos Rust compatíveis com TypeScript do Mobile
@@ -83,8 +82,7 @@ pub fn start_mdns_broadcast(config: &MdnsConfig) -> Result<()> {
     // Porta: 3847
     // TXT: version, store_name
 }
-```
-
+```text
 **Critérios de aceite**:
 
 - [x] Descoberto pelo Mobile via Zeroconf
@@ -270,8 +268,7 @@ pub enum EmployeeRole {
     Stocker,   // NOVO - Repositor
     Viewer,
 }
-```
-
+```text
 **Critérios de aceite**:
 
 - [x] Migration para adicionar role
@@ -289,8 +286,7 @@ pub enum ProductUnit {
     // ... existentes
     Centimeter, // cm
 }
-```
-
+```text
 **Critérios de aceite**:
 
 - [x] Serializa como "CM" no JSON
@@ -343,8 +339,7 @@ pub enum ProductUnit {
 await invoke('start_mobile_server');
 await invoke('stop_mobile_server');
 await invoke('get_mobile_server_info');
-```
-
+```text
 **Critérios de aceite**:
 
 - [x] Comandos Tauri disponíveis para frontend
@@ -407,13 +402,12 @@ jsonwebtoken = "9.2"
 tokio-tungstenite = "0.21"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-```
-
+```text
 ---
 
 ## 📁 Estrutura de Arquivos
 
-```
+```text
 src-tauri/src/
 ├── services/
 │   ├── mod.rs                    # ✏️ Modificar
@@ -436,8 +430,7 @@ src-tauri/src/
 ├── hardware/
 │   └── scanner.rs                # ✏️ Modificar (integrar)
 └── main.rs                       # ✏️ Modificar (startup)
-```
-
+```text
 ---
 
 ## 📝 Notas

@@ -37,8 +37,7 @@ Documentação gerada:
 
 # Push para o repositório
 git push origin main
-```
-
+```text
 ---
 
 ### Opção 2: 🧪 Executar Testes E2E
@@ -54,8 +53,7 @@ pnpm test:e2e:ui
 
 # Ou rodar em modo debug
 pnpm test:e2e:debug
-```
-
+```text
 **Resultado esperado:** 85%+ dos testes passando
 
 ---
@@ -70,10 +68,8 @@ pnpm tauri build
 
 # Ou build com logs detalhados
 pnpm tauri build --verbose
-```
-
-**Saída esperada:**
-
+```text
+## Saída esperada:
 - `target/release/mercearias-desktop.exe`
 - `target/release/bundle/msi/Mercearias_*.msi`
 
@@ -146,8 +142,7 @@ git push origin main --tags
 
 # 4. Build
 cd apps/desktop && pnpm tauri build
-```
-
+```text
 ---
 
 ## 📊 Resumo dos Bugs Corrigidos
@@ -164,18 +159,15 @@ cd apps/desktop && pnpm tauri build
 
 ## 💡 Dicas
 
-### Se encontrar erros nos testes:
-
+### Se encontrar erros nos testes
 ```bash
 # Ver logs detalhados
 pnpm test:e2e --reporter=list
 
 # Rodar teste específico
 pnpm test:e2e tests/e2e/auth.spec.ts
-```
-
-### Se o build falhar:
-
+```text
+### Se o build falhar
 ```bash
 # Limpar cache
 cd apps/desktop/src-tauri
@@ -184,18 +176,15 @@ cargo clean
 # Tentar novamente
 cd ../..
 pnpm tauri build
-```
-
-### Para debug:
-
+```text
+### Para debug
 ```bash
 # Modo desenvolvimento
 pnpm tauri dev
 
 # Com logs
 RUST_LOG=debug pnpm tauri dev
-```
-
+```text
 ---
 
 ## 📞 Próximos Passos Detalhados
@@ -228,9 +217,7 @@ RUST_LOG=debug pnpm tauri dev
 ## ✅ Tudo Pronto!
 
 Seu projeto está **aprovado para release**! 🎉
-
-**Escolha uma opção acima e siga em frente.**
-
+## Escolha uma opção acima e siga em frente.
 Boa sorte com o lançamento! 🚀
 
 ---

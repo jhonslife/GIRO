@@ -97,11 +97,10 @@ Schema Design: Prisma 7+
 Runtime Queries: SQLx 0.7+ (Rust)
 Migrations: Prisma Migrate
 Backup: Arquivo único (.sqlite)
-```
-
+```text
 ## 📁 Estrutura de Arquivos
 
-```
+```text
 packages/database/
 ├── prisma/
 │   ├── schema.prisma          # Schema principal
@@ -113,8 +112,7 @@ packages/database/
 ├── src/
 │   └── types.ts               # Types gerados
 └── package.json
-```
-
+```text
 ## 📐 Convenções de Schema
 
 ### Model Base
@@ -144,8 +142,7 @@ model Entity {
   @@index([status])
   @@index([createdAt])
 }
-```
-
+```text
 ### Regras de Nomenclatura
 
 | Tipo        | Padrão              | Exemplo                        |
@@ -161,7 +158,7 @@ model Entity {
 
 ### Hierarquia de Entidades
 
-```
+```text
 Category (autocorrelacional)
     └── Product
             └── ProductLot (validade FIFO)
@@ -181,8 +178,7 @@ Supplier
 Settings (chave-valor)
 Alert (notificações)
 PriceHistory (auditoria de preços)
-```
-
+```text
 ### Índices Obrigatórios
 
 ```prisma
@@ -205,8 +201,7 @@ PriceHistory (auditoria de preços)
 
 // Movimentações
 @@index([productId, createdAt])  // Histórico do produto
-```
-
+```text
 ## 🔧 Comandos Prisma
 
 ```bash
@@ -227,8 +222,7 @@ npx prisma studio
 
 # Formatar schema
 npx prisma format
-```
-
+```text
 ## 📋 Checklist de Migration
 
 Antes de criar uma migration:
@@ -260,8 +254,7 @@ sqlx::query_as!(
 )
 .fetch_optional(&pool)
 .await
-```
-
+```text
 ### Lotes Disponíveis (FIFO)
 
 ```rust
@@ -280,8 +273,7 @@ sqlx::query_as!(
 )
 .fetch_all(&pool)
 .await
-```
-
+```text
 ### Vendas do Dia
 
 ```rust
@@ -300,8 +292,7 @@ sqlx::query_as!(
 )
 .fetch_one(&pool)
 .await
-```
-
+```text
 ### Produtos com Estoque Baixo
 
 ```rust
@@ -318,8 +309,7 @@ sqlx::query_as!(
 )
 .fetch_all(&pool)
 .await
-```
-
+```text
 ## 🔒 Integridade de Dados
 
 ### Transações
@@ -339,8 +329,7 @@ for item in items {
 
 // Commit apenas se tudo ok
 tx.commit().await?;
-```
-
+```text
 ### Constraints Importantes
 
 ```sql
@@ -355,8 +344,7 @@ CHECK (current_quantity >= 0)
 
 -- Desconto não pode exceder subtotal
 CHECK (discount_value <= subtotal)
-```
-
+```text
 ## 📈 Performance
 
 ### WAL Mode (Write-Ahead Logging)
@@ -367,21 +355,19 @@ PRAGMA journal_mode = WAL;
 PRAGMA synchronous = NORMAL;
 PRAGMA cache_size = -64000; -- 64MB
 PRAGMA temp_store = MEMORY;
-```
-
+```text
 ### Vacuum Periódico
 
 ```rust
 // Executar semanalmente ou em manutenção
 sqlx::query("VACUUM").execute(&pool).await?;
 sqlx::query("ANALYZE").execute(&pool).await?;
-```
-
+```text
 ## 🗄️ Backup
 
 ### Estratégia
 
-```
+```text
 LOCAL:
   - Backup diário automático (03:00 se PC ligado)
   - Rotação: manter últimos 7 dias
@@ -391,8 +377,7 @@ NUVEM (Google Drive):
   - Upload após fechamento de caixa
   - Criptografia AES-256
   - Rotação: manter últimos 30 dias
-```
-
+```text
 ### Implementação
 
 ```rust
@@ -405,4 +390,4 @@ std::fs::copy(
     db_path,
     backup_dir.join(format!("backup_{}.sqlite", timestamp))
 )?;
-```
+```text

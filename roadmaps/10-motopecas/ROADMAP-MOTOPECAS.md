@@ -28,7 +28,7 @@
 
 Transformar o **GIRO** em um sistema **multi-segmento** onde o mesmo core pode atender diferentes tipos de negócios através de **perfis configuráveis**:
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────┐
 │                        GIRO - SISTEMA BASE                          │
 │                                                                      │
@@ -49,8 +49,7 @@ Transformar o **GIRO** em um sistema **multi-segmento** onde o mesmo core pode a
 │   • Pet Shop: Pets, Serviços, Agendamento                          │
 │                                                                      │
 └─────────────────────────────────────────────────────────────────────┘
-```
-
+```text
 ### Por Que Motopeças?
 
 | Métrica                           | Valor                    |
@@ -77,14 +76,13 @@ Transformar o **GIRO** em um sistema **multi-segmento** onde o mesmo core pode a
 
 ### Fluxo de Trabalho Típico
 
-```
+```text
 Cliente chega → Informa a moto → Busca peça compatível → Venda/OS
       │              │                    │                  │
       ▼              ▼                    ▼                  ▼
    Cadastro      CG 160 Titan         Filtro de óleo      Cupom +
    do Cliente      2020               compatível          Garantia
-```
-
+```text
 ### Concorrentes Específicos
 
 | Sistema        | Modelo  | Preço          | Pontos Fracos       |
@@ -137,7 +135,7 @@ Cliente chega → Informa a moto → Busca peça compatível → Venda/OS
 
 ### Seleção no Primeiro Uso (Wizard)
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────┐
 │                    BEM-VINDO AO GIRO!                               │
 │                                                                      │
@@ -155,8 +153,7 @@ Cliente chega → Informa a moto → Busca peça compatível → Venda/OS
 │   ℹ️ Você poderá alterar configurações depois nas preferências      │
 │                                                                      │
 └─────────────────────────────────────────────────────────────────────┘
-```
-
+```text
 ### Configuração do Perfil
 
 ```typescript
@@ -254,8 +251,7 @@ export const BUSINESS_PROFILES: Record<BusinessType, BusinessProfile> = {
   },
   // ... outros perfis
 };
-```
-
+```text
 ### Componente de Visibilidade Condicional
 
 ```tsx
@@ -287,8 +283,7 @@ export function FeatureGate({ feature, children, fallback = null }: FeatureGateP
 <FeatureGate feature="expirationControl">
   <ExpirationAlerts />
 </FeatureGate>
-```
-
+```text
 ---
 
 ## 🗃️ Bancos de Dados de Motos/Peças Disponíveis
@@ -297,15 +292,13 @@ export function FeatureGate({ feature, children, fallback = null }: FeatureGateP
 
 #### 1. **API FIPE (Recomendada para Base de Veículos)**
 
-```
+```text
 URL: https://parallelum.com.br/fipe/api/v1/motos
 Dados: Marcas, Modelos, Anos, Preços
 Limite: 500 req/dia (grátis) ou 1000 com token
 Cobertura: Todas as motos vendidas no Brasil
-```
-
-**Endpoints úteis:**
-
+```text
+## Endpoints úteis:
 ```bash
 # Listar todas as marcas de motos
 GET /fipe/api/v1/motos/marcas
@@ -318,10 +311,8 @@ GET /fipe/api/v1/motos/marcas/21/modelos/5223/anos
 
 # Obter valor FIPE
 GET /fipe/api/v1/motos/marcas/21/modelos/5223/anos/2020-1
-```
-
-**Exemplo de resposta:**
-
+```text
+## Exemplo de resposta:
 ```json
 {
   "TipoVeiculo": 2,
@@ -333,16 +324,14 @@ GET /fipe/api/v1/motos/marcas/21/modelos/5223/anos/2020-1
   "CodigoFipe": "811052-0",
   "MesReferencia": "janeiro de 2026"
 }
-```
-
+```text
 #### 2. **Brasil API - FIPE (Alternativa)**
 
-```
+```text
 URL: https://brasilapi.com.br/api/fipe/marcas/v1/motos
 Sem limite de requisições
 Mesmos dados da FIPE
-```
-
+```text
 ### Dados de Peças - Opções
 
 #### ❌ **Não existe API pública de peças**
@@ -358,7 +347,7 @@ Infelizmente, não existe um banco de dados público e gratuito de peças de mot
 
 ### 💡 Estratégia Recomendada
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────┐
 │                    ESTRATÉGIA DE DADOS                              │
 ├─────────────────────────────────────────────────────────────────────┤
@@ -380,8 +369,7 @@ Infelizmente, não existe um banco de dados público e gratuito de peças de mot
 │     • Machine Learning para sugerir compatibilidades               │
 │                                                                      │
 └─────────────────────────────────────────────────────────────────────┘
-```
-
+```text
 ### Seed Inicial de Veículos
 
 ```typescript
@@ -424,15 +412,14 @@ async function importMotorcycles() {
     await sleep(100);
   }
 }
-```
-
+```text
 ---
 
 ## 📦 Entidades Específicas para Motopeças
 
 ### Diagrama de Relacionamento
 
-```
+```text
 ┌────────────────────────────────────────────────────────────────────────────────┐
 │                     ENTIDADES ESPECÍFICAS MOTOPEÇAS                            │
 └────────────────────────────────────────────────────────────────────────────────┘
@@ -495,15 +482,14 @@ async function importMotorcycles() {
                            │ resolution       │
                            │ createdAt        │
                            └──────────────────┘
-```
-
+```text
 ---
 
 ## 🛠️ Features Específicas
 
 ### 1. Busca por Veículo no PDV
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────┐
 │                    BUSCA DE PEÇAS POR VEÍCULO                       │
 ├─────────────────────────────────────────────────────────────────────┤
@@ -533,11 +519,10 @@ async function importMotorcycles() {
 │  └─────────────────────────────────────────────────────────────┘   │
 │                                                                      │
 └─────────────────────────────────────────────────────────────────────┘
-```
-
+```text
 ### 2. Cadastro de Peça com Compatibilidade
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────┐
 │                    CADASTRO DE PEÇA                                 │
 ├─────────────────────────────────────────────────────────────────────┤
@@ -573,11 +558,10 @@ async function importMotorcycles() {
 │                        [Cancelar]  [Salvar Peça]                    │
 │                                                                      │
 └─────────────────────────────────────────────────────────────────────┘
-```
-
+```text
 ### 3. Ordem de Serviço (Mecânica)
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────┐
 │                    NOVA ORDEM DE SERVIÇO                            │
 ├─────────────────────────────────────────────────────────────────────┤
@@ -628,11 +612,10 @@ async function importMotorcycles() {
 │        [Imprimir OS]  [Cancelar]  [Salvar]  [Finalizar + Cobrar]    │
 │                                                                     │
 └─────────────────────────────────────────────────────────────────────┘
-```
-
+```text
 ### 4. Histórico do Veículo do Cliente
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────┐
 │                    HISTÓRICO DO VEÍCULO                             │
 ├─────────────────────────────────────────────────────────────────────┤
@@ -665,8 +648,7 @@ async function importMotorcycles() {
 │  ⚠️ Correia dentada: verificar em 60.000 km                        │
 │                                                                      │
 └─────────────────────────────────────────────────────────────────────┘
-```
-
+```text
 ---
 
 ## 💾 Schema do Banco de Dados
@@ -1116,8 +1098,7 @@ enum WarrantyClaimStatus {
   DENIED         // Negada
   RESOLVED       // Resolvida
 }
-```
-
+```text
 ### Alterações em Tabelas Existentes
 
 ```prisma
@@ -1178,8 +1159,7 @@ model Customer {
   @@index([cpf])
   @@index([phone])
 }
-```
-
+```text
 ---
 
 ## 📅 Fases de Implementação
@@ -1202,9 +1182,7 @@ model Customer {
 | 1.3  | Criar tela de visualização de veículos       |
 | 1.4  | Implementar busca/filtro de veículos         |
 | 1.5  | Seed inicial com principais marcas/modelos   |
-
-**Entregáveis:**
-
+## Entregáveis:
 - [ ] ~100 marcas de motos importadas
 - [ ] ~5.000 modelos importados
 - [ ] ~50.000 combinações ano/modelo
@@ -1218,9 +1196,7 @@ model Customer {
 | 2.3  | Implementar seleção múltipla de anos                 |
 | 2.4  | Criar busca de peças por veículo no PDV              |
 | 2.5  | Implementar sugestões de compatibilidade             |
-
-**Entregáveis:**
-
+## Entregáveis: (cont.)
 - [ ] Cadastro de peça com compatibilidade
 - [ ] Busca por veículo no PDV
 - [ ] Filtro de peças compatíveis
@@ -1245,9 +1221,7 @@ model Customer {
 | 4.5  | Integrar baixa de estoque automática   |
 | 4.6  | Criar impressão de OS                  |
 | 4.7  | Implementar finalização + cobrança     |
-
-**Entregáveis:**
-
+## Entregáveis: (cont.)
 - [ ] Criação de OS
 - [ ] Adição de itens (peças/serviços)
 - [ ] Fluxo de status
@@ -1302,7 +1276,7 @@ model Customer {
 
 ### Total
 
-```
+```text
 ┌────────────────────────────────────────────────────────────┐
 │                 ESTIMATIVA TOTAL                           │
 ├────────────────────────────────────────────────────────────┤
@@ -1318,8 +1292,7 @@ model Customer {
 │  Componentes novos: ~25 componentes React                 │
 │                                                            │
 └────────────────────────────────────────────────────────────┘
-```
-
+```text
 ---
 
 ## 🎯 Resumo Executivo

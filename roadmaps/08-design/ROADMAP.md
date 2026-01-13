@@ -61,12 +61,10 @@
 
 ## 🔗 Dependências
 
-### Depende de:
-
+### Depende de
 - Nenhum (pode iniciar imediatamente)
 
-### Bloqueia:
-
+### Bloqueia
 - 🎨 Frontend (precisa de tokens e componentes)
 
 ---
@@ -118,8 +116,7 @@
   --color-error: #ef4444;
   --color-info: #3b82f6;
 }
-```
-
+```text
 ### Tipografia
 
 ```css
@@ -149,8 +146,7 @@
   --leading-normal: 1.5;
   --leading-relaxed: 1.75;
 }
-```
-
+```text
 ### Espaçamentos (4px Grid)
 
 ```css
@@ -167,8 +163,7 @@
   --space-12: 3rem; /* 48px */
   --space-16: 4rem; /* 64px */
 }
-```
-
+```text
 ### Shadcn Theme Override
 
 ```typescript
@@ -204,8 +199,7 @@ export default {
   },
   plugins: [require('tailwindcss-animate')],
 } satisfies Config;
-```
-
+```text
 ### Componentes Específicos - ProductCard
 
 ```tsx
@@ -235,11 +229,10 @@ interface ProductCardProps {
  * │       │ Venda: R$ 5,99    [Editar] [X] │
  * └─────────────────────────────────────────┘
  */
-```
-
+```text
 ### NumPad Component
 
-```
+```text
 ┌─────────────────────────┐
 │    QUANTIDADE / PREÇO   │
 │    ┌───────────────┐    │
@@ -262,8 +255,7 @@ interface ProductCardProps {
 │   │    CONFIRMAR    │   │
 │   └─────────────────┘   │
 └─────────────────────────┘
-```
-
+```text
 ---
 
 ## 🧪 Critérios de Aceite

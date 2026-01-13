@@ -68,13 +68,11 @@
 
 ## 🔗 Dependências
 
-### Depende de:
-
+### Depende de
 - 🔧 Backend (services para chamar hardware)
 - 🎨 Frontend (UI de configuração)
 
-### Bloqueia:
-
+### Bloqueia
 - Nenhum (pode ser desenvolvido em paralelo após backend core)
 
 ---
@@ -117,8 +115,7 @@ const BOLD_OFF: [u8; 3] = [ESC, b'E', 0x00];
 const ALIGN_LEFT: [u8; 3] = [ESC, b'a', 0x00];
 const ALIGN_CENTER: [u8; 3] = [ESC, b'a', 0x01];
 const ALIGN_RIGHT: [u8; 3] = [ESC, b'a', 0x02];
-```
-
+```text
 ### Protocolo de Balança Toledo
 
 ```rust
@@ -134,8 +131,7 @@ struct ToledoResponse {
     overload: bool,      // true se sobrecarga
     negative: bool,      // true se peso negativo
 }
-```
-
+```text
 ### Scanner Mobile - WebSocket
 
 ```typescript
@@ -149,8 +145,7 @@ interface ScanMessage {
 }
 
 // Servidor Tauri aceita conexões em ws://localhost:3847
-```
-
+```text
 ### Backup - Criptografia
 
 ```rust
@@ -166,8 +161,7 @@ struct BackupMetadata {
     encrypted: bool,
     checksum_sha256: String,
 }
-```
-
+```text
 ---
 
 ## 🧪 Critérios de Aceite

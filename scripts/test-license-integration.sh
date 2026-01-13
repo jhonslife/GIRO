@@ -27,11 +27,10 @@ echo ""
 
 # Test 3: Invalid License Validation (should return 404)
 echo "3. Testing Invalid License Validation..."
+CURRENT_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 INVALID_RESPONSE=$(curl -s --max-time 10 -X POST "$LICENSE_SERVER/api/v1/licenses/INVALID-KEY/validate" \
   -H "Content-Type: application/json" \
-    -d '{"license_key":"INVALID-KEY","hardware_id":"'$HARDWARE_ID'","client_time":"2026-01-11T22:00:00Z"}')
-echo "   Response: $INVALID_RESPONSE"
-echo ""
+  -d '{"license_key":"INVALID-KEY","hardware_id":"'$HARDWARE_ID'","client_time":"'$CURRENT_TIME'"}')
 
 # Test 4: Check server time endpoint
 echo "4. Testing Server Time Endpoint..."

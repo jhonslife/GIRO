@@ -41,6 +41,6 @@ assignees: ''
 
 ## Logs
 
-```
+```text
 Cole aqui os logs relevantes do console
-```
+```text

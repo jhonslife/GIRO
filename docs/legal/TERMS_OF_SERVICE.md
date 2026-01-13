@@ -45,13 +45,13 @@ Voce e responsavel por:
 
 ## 4. USO ACEITAVEL
 
-### 4.1 Voce Concorda Em:
+### 4.1 Voce Concorda Em
 - Usar o Servico apenas para fins legais
 - Cumprir todas as leis e regulamentos aplicaveis
 - Manter registros contabeis e fiscais adequados
 - Proteger dados de clientes conforme a LGPD
 
-### 4.2 Voce Nao Pode:
+### 4.2 Voce Nao Pode
 - Usar o Servico para atividades ilegais
 - Tentar acessar areas restritas do sistema
 - Interferir no funcionamento do Servico
@@ -183,13 +183,11 @@ A nao aplicacao de qualquer direito nao constitui renuncia.
 ---
 
 ## CONTATO
-
-**Arkheion**  
+## Arkheion
 Email: contato@arkheion.com.br  
 Suporte: suporte@arkheion.com.br  
 Site: https://giro.arkheion.com.br
 
 ---
-
-*Ultima Atualizacao: 8 de Janeiro de 2026*  
-*Copyright 2026 Arkheion. Todos os direitos reservados.*
+## Ultima Atualizacao: 8 de Janeiro de 2026
+## Copyright 2026 Arkheion. Todos os direitos reservados.

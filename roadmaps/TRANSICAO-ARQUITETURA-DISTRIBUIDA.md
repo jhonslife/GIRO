@@ -56,10 +56,10 @@
 
 ## 📂 Nova Estrutura de Diretórios Sugerida
 
-```
+```text
 packages/
   kernel/               # O "Cérebro" (Rust)
   vscode-extension/     # O "Terminal" (TypeScript)
   proto/                # O "Idioma" (Protobuf)
   cli/                  # Ferramenta de linha de comando (Opcional)
-```
+```text

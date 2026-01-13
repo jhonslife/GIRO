@@ -98,8 +98,7 @@ SELECT
 FROM sales
 WHERE date(created_at) = date('now')
   AND status = 'COMPLETED';
-```
-
+```text
 ### Top Produtos
 
 ```sql
@@ -123,8 +122,7 @@ WHERE s.status = 'COMPLETED'
 GROUP BY p.id
 ORDER BY quantidade_vendida DESC
 LIMIT 20;
-```
-
+```text
 ### Curva ABC
 
 ```sql
@@ -152,8 +150,7 @@ SELECT
     END as curva
 FROM ranked_products
 ORDER BY valor_vendido DESC;
-```
-
+```text
 ### Produtos com Vencimento Próximo
 
 ```sql
@@ -174,13 +171,12 @@ WHERE pl.status = 'AVAILABLE'
   AND pl.expiration_date IS NOT NULL
   AND pl.expiration_date <= date('now', '+30 days')
 ORDER BY pl.expiration_date ASC;
-```
-
+```text
 ## 📊 Componentes de Visualização
 
 ### Estrutura de Componentes
 
-```
+```text
 src/components/reports/
 ├── charts/
 │   ├── BarChart.tsx
@@ -202,8 +198,7 @@ src/components/reports/
 └── exports/
     ├── PDFExport.tsx
     └── ExcelExport.tsx
-```
-
+```text
 ### StatCard
 
 ```tsx
@@ -241,8 +236,7 @@ export function StatCard({ title, value, change, changeLabel, icon, loading }: S
     </Card>
   );
 }
-```
-
+```text
 ### Dashboard de Vendas
 
 ```tsx
@@ -327,8 +321,7 @@ export function SalesDashboard() {
     </div>
   );
 }
-```
-
+```text
 ## 📄 Exportação
 
 ### PDF com @react-pdf/renderer
@@ -379,8 +372,7 @@ export function SalesReportPDF({ data, dateRange }: Props) {
     </Document>
   );
 }
-```
-
+```text
 ### Excel com xlsx
 
 ```typescript
@@ -399,8 +391,7 @@ export function exportToExcel(data: any[], filename: string) {
 
   XLSX.writeFile(wb, `${filename}.xlsx`);
 }
-```
-
+```text
 ## 📋 Checklist de Relatório
 
 - [ ] Query otimizada com índices

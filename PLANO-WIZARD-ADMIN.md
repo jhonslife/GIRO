@@ -33,8 +33,7 @@ pub async fn has_admin(state: State<'_, AppState>) -> AppResult<bool> {
 
     Ok(count > 0)
 }
-```
-
+```text
 #### 1.2 Criar Primeiro Admin
 
 **Arquivo**: `apps/desktop/src-tauri/src/commands/employees.rs`
@@ -95,8 +94,7 @@ pub async fn create_first_admin(
 
     Ok(SafeEmployee::from(employee))
 }
-```
-
+```text
 #### 1.3 Registrar Commands
 
 **Arquivo**: `apps/desktop/src-tauri/src/main.rs`
@@ -112,8 +110,7 @@ fn main() {
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
-```
-
+```text
 ---
 
 ### 2. Frontend React
@@ -149,8 +146,7 @@ export function useCreateFirstAdmin() {
     },
   });
 }
-```
-
+```text
 #### 2.2 Componente FirstAdminWizard
 
 **Arquivo**: `apps/desktop/src/components/setup/FirstAdminWizard.tsx`
@@ -347,8 +343,7 @@ export function FirstAdminWizard() {
     </div>
   );
 }
-```
-
+```text
 #### 2.3 Atualizar App.tsx
 
 **Arquivo**: `apps/desktop/src/App.tsx`
@@ -393,8 +388,7 @@ const App: FC = () => {
     </Routes>
   );
 };
-```
-
+```text
 ---
 
 ### 3. Remover Admin do Seed
@@ -413,8 +407,7 @@ const App: FC = () => {
 -- OU criar variável de ambiente para controlar:
 -- Se DEV_MODE=true, insere admin padrão
 -- Se DEV_MODE=false (produção), não insere
-```
-
+```text
 **Alternativa**: Controlar via flag de ambiente
 
 ```rust
@@ -433,15 +426,14 @@ async fn seed_database(pool: &SqlitePool) {
 async fn seed_database(_pool: &SqlitePool) {
     // Em produção, não executa seed
 }
-```
-
+```text
 ---
 
 ## 🧪 Testes
 
 ### Teste 1: Primeira Instalação
 
-```
+```text
 1. Instalar app em máquina limpa
 2. Abrir aplicação
 3. Verificar: Wizard de criação de admin aparece
@@ -452,31 +444,28 @@ async fn seed_database(_pool: &SqlitePool) {
 8. Verificar: Redirecionamento para wizard de perfil
 9. Selecionar perfil
 10. Verificar: Dashboard aberto
-```
-
+```text
 ### Teste 2: Segundo Acesso
 
-```
+```text
 1. Fechar aplicação
 2. Reabrir aplicação
 3. Verificar: Tela de login (não wizard de admin)
 4. Digitar PIN: "123456"
 5. Verificar: Login bem-sucedido
-```
-
+```text
 ### Teste 3: Gerar PIN Aleatório
 
-```
+```text
 1. No wizard de admin, step 2
 2. Clicar: "Gerar PIN Aleatório"
 3. Verificar: PIN de 6 dígitos aparece
 4. Verificar: Toast com PIN exibido
 5. Verificar: Campos PIN e Confirmar PIN preenchidos
-```
-
+```text
 ### Teste 4: Validações
 
-```
+```text
 # Nome vazio
 1. Deixar nome em branco
 2. Clicar "Próximo"
@@ -492,8 +481,7 @@ async fn seed_database(_pool: &SqlitePool) {
 1. PIN = "12"
 2. Clicar "Criar"
 3. Verificar: Erro "PIN deve ter entre 4 e 6 dígitos"
-```
-
+```text
 ---
 
 ## 📦 Arquivos a Criar/Modificar

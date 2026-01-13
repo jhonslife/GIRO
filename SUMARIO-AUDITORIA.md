@@ -114,25 +114,19 @@ completamente e estão em excelente estado para lançamento.
 - [x] Testes E2E > 80% (atual: 85%)
 - [x] Documentação completa
 - [x] Build funcional
-
-**Status:** ✅ **TODOS ATENDIDOS**
-
+## Status:** ✅ **TODOS ATENDIDOS
 ### Não-Bloqueantes (NICE TO HAVE)
 
 - [ ] Testes unitários → Sprint 7
 - [ ] Services dedicados → Sprint 7-8
 - [ ] Analytics → Sprint 8
-
-**Status:** ⏸️ **Planejado pós-release**
-
+## Status:** ⏸️ **Planejado pós-release
 ---
 
 ## 🚀 Decisão Final
 
 ### ✅ **APROVADO PARA RELEASE 1.0.0-rc1**
-
-**Justificativa:**
-
+## Justificativa:
 1. Todos os 4 bugs encontrados foram corrigidos
 2. Backend e Database 100% completos
 3. Performance excelente (~10ms queries)

@@ -56,8 +56,7 @@ await Promise.all([
   setSetting('company.tradeName', companyTradeName, 'string'),
   // ... mais chamadas
 ]);
-```
-
+```text
 Invoca wrapper Tauri:
 
 ```typescript
@@ -71,8 +70,7 @@ export async function setSetting(key: string, value: string, type?: string): Pro
     },
   });
 }
-```
-
+```text
 #### Backend (Rust)
 
 ```rust
@@ -82,28 +80,22 @@ pub async fn set_setting(input: SetSetting, state: State<'_, AppState>) -> AppRe
     let repo = SettingsRepository::new(state.pool());
     repo.set(input).await
 }
-```
-
+```text
 Repository tenta fazer query:
 
 ```rust
 // apps/desktop/src-tauri/src/repositories/settings_repository.rs:16
 const COLS: &'static str =
     "id, key, value, type, group_name, description, updated_by_id, created_at, updated_at";
-```
-
+```text
 E executa:
 
 ```rust
 sqlx::query_as::<_, Setting>(&format!("SELECT {} FROM settings WHERE key = ?", Self::COLS))
-```
-
+```text
 ### Causa Raiz
-
-**🎯 SCHEMA MISMATCH CRÍTICO entre modelo Rust e tabela SQLite!**
-
-#### ❌ Schema Original no Banco (Incorreto):
-
+## 🎯 SCHEMA MISMATCH CRÍTICO entre modelo Rust e tabela SQLite!
+#### ❌ Schema Original no Banco (Incorreto)
 ```sql
 CREATE TABLE IF NOT EXISTS settings (
     key TEXT PRIMARY KEY NOT NULL,
@@ -111,12 +103,10 @@ CREATE TABLE IF NOT EXISTS settings (
     category TEXT NOT NULL DEFAULT 'general',
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
-```
-
+```text
 **Colunas disponíveis:** `key`, `value`, `category`, `updated_at` (apenas 4)
 
-#### ❌ Schema Esperado pelo Rust:
-
+#### ❌ Schema Esperado pelo Rust
 ```rust
 pub struct Setting {
     pub id: String,                     // ❌ NÃO EXISTE
@@ -129,19 +119,16 @@ pub struct Setting {
     pub created_at: String,             // ❌ NÃO EXISTE
     pub updated_at: String,             // ✅ OK
 }
-```
-
+```text
 **Colunas esperadas:** 9 campos, sendo 5 INEXISTENTES no banco!
 
-#### 💥 Consequência:
-
+#### 💥 Consequência
 Quando o repositório executa:
 
 ```sql
 SELECT id, key, value, type, group_name, description, updated_by_id, created_at, updated_at
 FROM settings WHERE key = ?
-```
-
+```text
 O SQLite retorna erro porque as colunas `id`, `type`, `group_name`, `description`, `updated_by_id`, `created_at` **não existem**.
 
 O SQLx propaga o erro → Tauri retorna erro ao frontend → `Promise.all()` rejeita → catch captura → Toast de erro.
@@ -202,15 +189,13 @@ CREATE INDEX idx_settings_key ON settings(key);
 CREATE INDEX idx_settings_updated ON settings(updated_at);
 
 COMMIT;
-```
-
+```text
 ### Aplicação da Migration
 
 ```bash
 $ sqlite3 mercearias.db < migrations/002_fix_settings_schema.sql
 # ✅ Executado com sucesso
-```
-
+```text
 ### Validação do Schema
 
 ```bash
@@ -224,8 +209,7 @@ $ sqlite3 mercearias.db "PRAGMA table_info(settings);"
 6|updated_by_id|TEXT|0||0
 7|created_at|TEXT|1|datetime('now')|0
 8|updated_at|TEXT|1|datetime('now')|0
-```
-
+```text
 ✅ **9 colunas corretas!**
 
 ### Dados Preservados
@@ -236,8 +220,7 @@ company_name          | Minha Mercearia | STRING | general
 printer_enabled       | false           | STRING | printer
 scale_enabled         | false           | STRING | scale
 allow_negative_stock  | false           | STRING | pdv
-```
-
+```text
 ✅ **Todas as configurações migradas com sucesso!**
 
 ---
@@ -272,8 +255,7 @@ $ ./test-settings-save.sh
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ✅ TODOS OS TESTES PASSARAM!
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
+```text
 ### Teste Manual (Interface)
 
 **PRÓXIMO PASSO:** Restart do app Tauri e teste real na UI:
@@ -299,9 +281,7 @@ $ ./test-settings-save.sh
 - [x] Documentação do fix
 
 ### Testes de Regressão Recomendados
-
-**Adicionar no suite E2E:**
-
+## Adicionar no suite E2E:
 ```typescript
 // apps/desktop/src/pages/settings/__tests__/SettingsPage.test.tsx
 
@@ -319,12 +299,9 @@ describe('Settings - Database Integration', () => {
     // Test persistence
   });
 });
-```
-
+```text
 ### Logs Melhorados
-
-**Adicionar no Repository:**
-
+## Adicionar no Repository:
 ```rust
 // apps/desktop/src-tauri/src/repositories/settings_repository.rs
 
@@ -341,8 +318,7 @@ pub async fn set(&self, data: SetSetting) -> AppResult<Setting> {
         // ... insert logic
     }
 }
-```
-
+```text
 ---
 
 ## 7. Arquivos Modificados
@@ -385,7 +361,5 @@ pub async fn set(&self, data: SetSetting) -> AppResult<Setting> {
 - [ ] Documentar processo de migrations no README
 
 ---
-
-**Status Final:** ✅ **BUG RESOLVIDO**
-
+## Status Final:** ✅ **BUG RESOLVIDO
 O sistema de configurações está totalmente funcional e pronto para uso em produção.

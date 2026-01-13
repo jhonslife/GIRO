@@ -56,8 +56,7 @@
 ╠══════════════════════════════════════════════════════════════════════════════════════╣
 ║  LEGENDA:  ⏸️ Aguardando  │  🔒 Bloqueado  │  🔄 Em Progresso  │  ✅ Concluído       ║
 ╚══════════════════════════════════════════════════════════════════════════════════════╝
-```
-
+```text
 ---
 
 ## 📊 Tabela de Progresso
@@ -108,9 +107,7 @@
 | TASK-MOB-015            | Inicialização no Startup       |
 | TASK-MOB-016 (opcional) | Testes Unitários               |
 | TASK-MOB-017 (opcional) | Testes de Integração           |
-
-**Documentos de Referência:**
-
+## Documentos de Referência:
 - [AUDITORIA-CROSSOVER.md](../giro-mobile/docs/AUDITORIA-CROSSOVER.md)
 - [MATRIZ-COMPATIBILIDADE.md](../giro-mobile/docs/MATRIZ-COMPATIBILIDADE.md)
 - [ROADMAP Mobile Integration](./08-mobile-integration/ROADMAP.md)
@@ -152,11 +149,10 @@
 │   TESTING    │◀─────────────────│    DEVOPS    │
 │  (Sprint 3-6)│                  │  (Sprint 1-6)│
 └──────────────┘                  └──────────────┘
-```
-
+```text
 ### Ordem de Execução Recomendada
 
-```
+```text
 FASE 1 (Paralelo):
 ├── 🗄️ Database (Sprint 1)
 ├── 🎨 Design (Sprint 1-2)
@@ -180,8 +176,7 @@ FASE 5 (Finalização):
 ├── 🧪 Testing - E2E (Sprint 5-6)
 ├── 🚀 DevOps - Instalador (Sprint 5-6)
 └── 📦 Release (Sprint 6)
-```
-
+```text
 ---
 
 ## 📅 Timeline por Sprint
@@ -283,9 +278,7 @@ FASE 5 (Finalização):
 ### ✅ Conquistas
 
 **Backend Mobile Completo Implementado** (17/17 tasks)
-
-**Arquivos Criados (13):**
-
+## Arquivos Criados (13):
 1. `mobile_protocol.rs` - Protocolo WebSocket + mensagens legacy scanner
 2. `mobile_session.rs` - Gerenciamento JWT
 3. `mdns_service.rs` - mDNS discovery
@@ -299,17 +292,13 @@ FASE 5 (Finalização):
 11. `mobile_handlers/categories.rs` - Categorias
 12. `mobile_handlers/system.rs` - Sistema
 13. `models/inventory.rs` - Modelo inventário
-
-**Repositórios Criados/Estendidos (5):**
-
+## Repositórios Criados/Estendidos (5):
 - `inventory_repository.rs` - CRUD completo
 - `product_lot_repository.rs` - Gestão de lotes
 - `stock_repository.rs` - Movimentações tipadas
 - `product_repository.rs` - Queries mobile
 - `category_repository.rs` - Árvore categorias
-
-**Features:**
-
+## Features:
 - ✅ WebSocket unificado porta 3847
 - ✅ Compatibilidade scanner legacy
 - ✅ JWT 8h expiry, max 2 sessões
@@ -349,8 +338,7 @@ ws.send(
     timestamp: Date.now(),
   })
 );
-```
-
+```text
 ### 📊 Status Geral do Projeto
 
 | Módulo          | Status | Tasks     |

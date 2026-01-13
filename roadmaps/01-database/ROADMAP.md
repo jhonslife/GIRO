@@ -63,12 +63,10 @@
 
 ## 🔗 Dependências
 
-### Depende de:
-
+### Depende de
 - Nenhum (agente inicial)
 
-### Bloqueia:
-
+### Bloqueia
 - 🔧 Backend (precisa do schema para implementar repositories)
 - 🔐 Auth (precisa do model Employee)
 

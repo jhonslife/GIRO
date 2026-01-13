@@ -14,7 +14,7 @@ O instalador GIRO guia o usuario atraves de 6 telas para uma instalacao completa
 
 ## Tela 1: Bem-vindo
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════╗
 ║                                                              ║
 ║                         [LOGO GIRO]                          ║
@@ -33,9 +33,8 @@ O instalador GIRO guia o usuario atraves de 6 telas para uma instalacao completa
 ║                                                              ║
 ║                                    [Cancelar]  [Proximo >]   ║
 ╚══════════════════════════════════════════════════════════════╝
-```
-
-**Acoes:**
+```text
+## Acoes:
 - Proximo: Avanca para Tela 2
 - Cancelar: Confirma saida e fecha instalador
 
@@ -43,7 +42,7 @@ O instalador GIRO guia o usuario atraves de 6 telas para uma instalacao completa
 
 ## Tela 2: Contrato de Licenca (EULA)
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════╗
 ║  Contrato de Licenca                                         ║
 ╠══════════════════════════════════════════════════════════════╣
@@ -68,9 +67,8 @@ O instalador GIRO guia o usuario atraves de 6 telas para uma instalacao completa
 ║                                                              ║
 ║                          [< Voltar]  [Cancelar]  [Proximo >] ║
 ╚══════════════════════════════════════════════════════════════╝
-```
-
-**Acoes:**
+```text
+## Acoes: (cont.)
 - Aceitar: Habilita botao Proximo
 - Nao Aceitar: Desabilita botao Proximo
 - Proximo: Avanca para Tela 3 (apenas se aceitar)
@@ -79,7 +77,7 @@ O instalador GIRO guia o usuario atraves de 6 telas para uma instalacao completa
 
 ## Tela 3: Local de Instalacao
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════╗
 ║  Local de Instalacao                                         ║
 ╠══════════════════════════════════════════════════════════════╣
@@ -102,9 +100,8 @@ O instalador GIRO guia o usuario atraves de 6 telas para uma instalacao completa
 ║                                                              ║
 ║                          [< Voltar]  [Cancelar]  [Instalar]  ║
 ╚══════════════════════════════════════════════════════════════╝
-```
-
-**Opcoes:**
+```text
+## Opcoes:
 - Pasta padrao: `C:\Program Files\Arkheion\GIRO`
 - Atalho Desktop: Marcado por padrao
 - Atalho Menu: Marcado por padrao
@@ -114,7 +111,7 @@ O instalador GIRO guia o usuario atraves de 6 telas para uma instalacao completa
 
 ## Tela 4: Progresso da Instalacao
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════╗
 ║  Instalando                                                  ║
 ╠══════════════════════════════════════════════════════════════╣
@@ -139,9 +136,8 @@ O instalador GIRO guia o usuario atraves de 6 telas para uma instalacao completa
 ║  [ ] Finalizando instalacao                                  ║
 ║                                                              ║
 ╚══════════════════════════════════════════════════════════════╝
-```
-
-**Etapas:**
+```text
+## Etapas:
 1. Verificando sistema (requisitos)
 2. Extraindo arquivos principais
 3. Instalando componentes
@@ -153,7 +149,7 @@ O instalador GIRO guia o usuario atraves de 6 telas para uma instalacao completa
 
 ## Tela 5: Instalacao Concluida
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════╗
 ║                                                              ║
 ║                         [LOGO GIRO]                          ║
@@ -175,9 +171,8 @@ O instalador GIRO guia o usuario atraves de 6 telas para uma instalacao completa
 ║                                                              ║
 ║                                              [Concluir]      ║
 ╚══════════════════════════════════════════════════════════════╝
-```
-
-**Opcoes Finais:**
+```text
+## Opcoes Finais:
 - Executar GIRO: Marcado por padrao
 - Abrir pasta: Desmarcado
 - Ver docs: Desmarcado
@@ -186,7 +181,7 @@ O instalador GIRO guia o usuario atraves de 6 telas para uma instalacao completa
 
 ## Tela 6: Desinstalacao (via Painel de Controle)
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════╗
 ║  Desinstalar GIRO                                            ║
 ╠══════════════════════════════════════════════════════════════╣
@@ -210,8 +205,7 @@ O instalador GIRO guia o usuario atraves de 6 telas para uma instalacao completa
 ║                                                              ║
 ║                             [Cancelar]    [Desinstalar]      ║
 ╚══════════════════════════════════════════════════════════════╝
-```
-
+```text
 ---
 
 ## Requisitos do Sistema
@@ -228,7 +222,7 @@ O instalador GIRO guia o usuario atraves de 6 telas para uma instalacao completa
 
 ## Estrutura de Arquivos Instalados
 
-```
+```text
 C:\Program Files\Arkheion\GIRO\
 ├── GIRO.exe                 # Executavel principal
 ├── resources/
@@ -242,8 +236,7 @@ C:\Users\[User]\AppData\Local\GIRO\
 ├── config.json              # Configuracoes
 ├── logs/                    # Arquivos de log
 └── backups/                 # Backups locais
-```
-
+```text
 ---
 
 ## Codigos de Erro
@@ -256,6 +249,5 @@ C:\Users\[User]\AppData\Local\GIRO\
 | 1004 | Versao incompativel | Atualize o Windows |
 
 ---
-
-*Documento tecnico - GIRO Instalador Windows*  
-*Copyright 2026 Arkheion*
+## Documento tecnico - GIRO Instalador Windows
+## Copyright 2026 Arkheion

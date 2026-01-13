@@ -25,7 +25,7 @@
 
 O GIRO opera com um modelo **Desktop-First com Licenciamento Centralizado**:
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                         ECOSSISTEMA GIRO                                │
 ├─────────────────────────────────────────────────────────────────────────┤
@@ -51,8 +51,7 @@ O GIRO opera com um modelo **Desktop-First com Licenciamento Centralizado**:
 │                                              └───────────────────────┘  │
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
-```
-
+```text
 ### Proposta de Valor por Segmento
 
 | Segmento                 | Licenças Típicas | Ticket Mensal | Valor Percebido     |
@@ -101,18 +100,17 @@ O GIRO opera com um modelo **Desktop-First com Licenciamento Centralizado**:
 
 Cada licença é vinculada a uma **assinatura única de hardware** (Hardware Fingerprint):
 
-```
+```text
 Hardware ID = SHA256(
     CPU_ID +
     MOTHERBOARD_SERIAL +
     DISK_SERIAL +
     MAC_ADDRESS
 )
-```
-
+```text
 ### Fluxo de Ativação
 
-```
+```text
 ┌──────────────┐         ┌──────────────┐         ┌──────────────┐
 │   Cliente    │         │   Desktop    │         │   License    │
 │   (Compra)   │         │     GIRO     │         │    Server    │
@@ -137,8 +135,7 @@ Hardware ID = SHA256(
        │  6. App Ativado!       │                        │
        │◄───────────────────────│                        │
        │                        │                        │
-```
-
+```text
 ### Regras de Licenciamento
 
 | Regra                     | Descrição                              |
@@ -163,8 +160,7 @@ Hardware ID = SHA256(
   "max_mobile_devices": 5,
   "status": "active"
 }
-```
-
+```text
 ---
 
 ## 🛡️ Proteção Anti-Fraude
@@ -172,9 +168,7 @@ Hardware ID = SHA256(
 ### Vetor 1: Mudança de Data do Windows
 
 **Problema:** Usuário altera data do sistema para "estender" licença.
-
-**Solução:**
-
+## Solução:
 ```rust
 fn validate_time() -> Result<(), LicenseError> {
     // 1. Buscar hora do servidor de licenças
@@ -191,14 +185,11 @@ fn validate_time() -> Result<(), LicenseError> {
 
     Ok(())
 }
-```
-
+```text
 ### Vetor 2: Clonagem de Hardware ID
 
 **Problema:** Copiar instalação para outra máquina.
-
-**Solução:**
-
+## Solução: (cont.)
 - Hardware ID muda → Ativação inválida
 - Requer reativação → Servidor detecta conflito
 - Admin notificado → Pode liberar ou bloquear
@@ -206,9 +197,7 @@ fn validate_time() -> Result<(), LicenseError> {
 ### Vetor 3: Uso Offline Infinito
 
 **Problema:** Desconectar para nunca validar.
-
-**Solução:**
-
+## Solução: (cont.)
 - Grace Period: 7 dias offline
 - Após 7 dias: Modo somente leitura (consultas OK, vendas bloqueadas)
 - Após 14 dias: App trava com mensagem de reconexão
@@ -216,9 +205,7 @@ fn validate_time() -> Result<(), LicenseError> {
 ### Vetor 4: Compartilhamento de Licença
 
 **Problema:** Usar mesma chave em múltiplos locais.
-
-**Solução:**
-
+## Solução: (cont.)
 - Cada ativação invalida a anterior
 - Notificação push para admin
 - Log de tentativas no painel
@@ -235,7 +222,7 @@ fn validate_time() -> Result<(), LicenseError> {
 
 O GIRO Desktop envia **métricas agregadas** para o servidor de licenças em intervalos configuráveis:
 
-```
+```text
 ┌──────────────┐                    ┌──────────────┐
 │   Desktop    │     Sync Data      │   License    │
 │     GIRO     │ ──────────────────►│    Server    │
@@ -253,8 +240,7 @@ O GIRO Desktop envia **métricas agregadas** para o servidor de licenças em int
                                     │  Acesso do   │
                                     │  Proprietário│
                                     └──────────────┘
-```
-
+```text
 ### Dados Sincronizados
 
 | Métrica              | Frequência | Descrição                |
@@ -288,7 +274,7 @@ O GIRO Desktop envia **métricas agregadas** para o servidor de licenças em int
 
 ### Produtos do Ecossistema
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                         ECOSSISTEMA GIRO                                │
 ├─────────────────────────────────────────────────────────────────────────┤
@@ -318,8 +304,7 @@ O GIRO Desktop envia **métricas agregadas** para o servidor de licenças em int
 │  └───────────────┘  └───────────────┘  └───────────────┘              │
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
-```
-
+```text
 ### Relação Entre Produtos
 
 | Produto                 | Tipo                | Precificação       | Dependência    |
@@ -356,14 +341,13 @@ O GIRO Desktop envia **métricas agregadas** para o servidor de licenças em int
 
 ### Break-Even
 
-```
+```text
 Break-Even = Custo Fixo / Ticket Médio
 Break-Even = R$ 6.000 / R$ 129
 Break-Even = ~47 clientes
 
 Meta Ano 1: 500 clientes = 10x break-even ✅
-```
-
+```text
 ---
 
 ## 🎯 Roadmap de Monetização

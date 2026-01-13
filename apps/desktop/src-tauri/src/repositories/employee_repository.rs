@@ -64,6 +64,22 @@ impl<'a> EmployeeRepository<'a> {
         Ok(employees.into_iter().map(SafeEmployee::from).collect())
     }
 
+    /// Verifica se existe algum funcionário cadastrado
+    pub async fn has_any_employee(&self) -> AppResult<bool> {
+        let result: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM employees")
+            .fetch_one(self.pool)
+            .await?;
+        Ok(result.0 > 0)
+    }
+
+    /// Verifica se existe algum admin cadastrado
+    pub async fn has_admin(&self) -> AppResult<bool> {
+        let result: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM employees WHERE role = 'ADMIN' AND is_active = 1")
+            .fetch_one(self.pool)
+            .await?;
+        Ok(result.0 > 0)
+    }
+
     pub async fn create(&self, data: CreateEmployee) -> AppResult<Employee> {
         let id = new_id();
         let now = chrono::Utc::now().to_rfc3339();

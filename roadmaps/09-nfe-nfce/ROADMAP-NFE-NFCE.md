@@ -18,12 +18,10 @@
 | **4. XMLDSig e Integração** | ✅ Completa | 8 | `services/nfce_service.rs`, `routes/nfce.rs` |
 | **5. Contingência** | ✅ Completa | 1 | `contingency.rs` |
 | **6. DANFE** | ✅ Completa | 7 | `danfe.rs` |
-
-**Total: 30 testes unitários passando**
-
+## Total: 30 testes unitários passando
 ### Módulos Implementados
 
-```
+```text
 src/nfce/
 ├── access_key.rs    ✅ 44-dígitos com mod-11
 ├── certificate.rs   ✅ Load/validate PFX + XMLDSig
@@ -33,8 +31,7 @@ src/nfce/
 ├── xml_builder.rs   ✅ NFC-e XML per SEFAZ 4.00
 ├── danfe.rs         ✅ Impressão térmica (80mm) + HTML + QR Code
 └── contingency.rs   ⏳ EPEC/offline (TODO)
-```
-
+```text
 ---
 
 ## 📋 Sumário
@@ -58,9 +55,7 @@ src/nfce/
 | --------------------- | ----------------------------------- | ------------------------------- |
 | **NF-e** (Modelo 55)  | Vendas B2B, atacado, transferências | Pessoa Jurídica (CNPJ)          |
 | **NFC-e** (Modelo 65) | Vendas no varejo, PDV               | Consumidor Final (CPF opcional) |
-
-**Para Mercearias/Varejo: NFC-e é o documento ideal!**
-
+## Para Mercearias/Varejo: NFC-e é o documento ideal!
 ### Por Que a Emissão é Opcional?
 
 - Nem todo cliente precisa/quer nota fiscal
@@ -85,7 +80,7 @@ src/nfce/
 
 ### 2. Requisitos Técnicos (Nossa Responsabilidade)
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────┐
 │                    COMPONENTES A IMPLEMENTAR                         │
 ├─────────────────────────────────────────────────────────────────────┤
@@ -119,8 +114,7 @@ src/nfce/
 │  └── Exportação para contabilidade                                 │
 │                                                                      │
 └─────────────────────────────────────────────────────────────────────┘
-```
-
+```text
 ### 3. Dependências Rust a Adicionar
 
 ```toml
@@ -147,8 +141,7 @@ regex = "1.10"
 
 # Encoding
 encoding_rs = "0.8"  # ISO-8859-1 para XML
-```
-
+```text
 ---
 
 ## 🔧 Requisitos Técnicos Detalhados
@@ -277,15 +270,14 @@ Cada estado possui URLs diferentes. Exemplo para principais estados:
   <!-- Assinatura Digital -->
   <Signature>...</Signature>
 </NFe>
-```
-
+```text
 ---
 
 ## 👤 Fluxo de Configuração do Admin
 
 ### Passo a Passo para o Cliente Final
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────┐
 │                    WIZARD DE CONFIGURAÇÃO NFC-e                      │
 ├─────────────────────────────────────────────────────────────────────┤
@@ -368,11 +360,10 @@ Cada estado possui URLs diferentes. Exemplo para principais estados:
 │                    [← Voltar]  [Salvar e Ativar NFC-e →]            │
 │                                                                      │
 └─────────────────────────────────────────────────────────────────────┘
-```
-
+```text
 ### Fluxo de Emissão Automática
 
-```
+```text
 ┌────────────────────────────────────────────────────────────────────┐
 │                     FLUXO DE EMISSÃO AUTOMÁTICA                     │
 └────────────────────────────────────────────────────────────────────┘
@@ -413,15 +404,14 @@ Cada estado possui URLs diferentes. Exemplo para principais estados:
                    │ Imprimir     │          │ Imprimir DANFE  │
                    │ DANFE NFC-e  │          │ Contingência    │
                    └──────────────┘          └─────────────────┘
-```
-
+```text
 ---
 
 ## 🏗️ Arquitetura da Integração
 
 ### Estrutura de Pastas (Backend Rust)
 
-```
+```text
 src-tauri/src/
 ├── nfce/
 │   ├── mod.rs              # Módulo principal
@@ -440,11 +430,10 @@ src-tauri/src/
 │   └── nfce_models.rs      # Structs de dados fiscais
 └── repositories/
     └── nfce_repository.rs  # Persistência de notas
-```
-
+```text
 ### Estrutura de Pastas (Frontend React)
 
-```
+```text
 src/
 ├── pages/
 │   └── settings/
@@ -463,8 +452,7 @@ src/
 │   └── useNFCe.ts                      # Hook de emissão
 └── stores/
     └── nfceStore.ts                    # Estado global NFC-e
-```
-
+```text
 ---
 
 ## 💾 Schema do Banco de Dados
@@ -698,8 +686,7 @@ enum ProductOrigin {
   ESTRANGEIRA_MERC_S_SI    // 7
   NACIONAL_CI_NI           // 8
 }
-```
-
+```text
 ### Alterações na Tabela Sale
 
 ```prisma
@@ -712,8 +699,7 @@ model Sale {
   // Novo: Flag para indicar se tem nota
   hasNFCe       Boolean  @default(false)
 }
-```
-
+```text
 ---
 
 ## 📅 Fases de Implementação
@@ -727,9 +713,7 @@ model Sale {
 | 1.3    | Criar tela de configuração fiscal (wizard)         | Frontend    |
 | 1.4    | Upload e validação de certificado A1               | Full-stack  |
 | 1.5    | Armazenamento seguro do certificado (criptografia) | Backend     |
-
-**Entregáveis:**
-
+## Entregáveis:
 - [ ] Migrations do banco de dados
 - [ ] Upload de certificado funcionando
 - [ ] Wizard de configuração básico
@@ -744,9 +728,7 @@ model Sale {
 | 2.3    | Validação de XML contra XSD                           | Backend     |
 | 2.4    | Testes com XMLs de exemplo                            | Backend     |
 | 2.5    | Configuração de dados fiscais de produtos (NCM, CFOP) | Frontend    |
-
-**Entregáveis:**
-
+## Entregáveis: (cont.)
 - [ ] XML gerado corretamente
 - [ ] Assinatura digital funcionando
 - [ ] Tela de dados fiscais de produtos
@@ -761,9 +743,7 @@ model Sale {
 | 3.4    | Implementar NFeAutorizacao (envio)           | Backend     |
 | 3.5    | Implementar tratamento de retorno e erros    | Backend     |
 | 3.6    | Testes em ambiente de homologação            | QA          |
-
-**Entregáveis:**
-
+## Entregáveis: (cont.)
 - [ ] Conexão com SEFAZ funcionando
 - [ ] Autorização de NFC-e em homologação
 - [ ] Logs de comunicação
@@ -776,9 +756,7 @@ model Sale {
 | 4.2    | Layout DANFE NFC-e (cupom térmico)        | Backend     |
 | 4.3    | Integrar com impressora térmica existente | Backend     |
 | 4.4    | Preview de DANFE no frontend              | Frontend    |
-
-**Entregáveis:**
-
+## Entregáveis: (cont.)
 - [ ] DANFE imprimindo corretamente
 - [ ] QR Code válido
 - [ ] Preview no sistema
@@ -792,9 +770,7 @@ model Sale {
 | 5.3    | Implementar cancelamento de NFC-e               | Backend     |
 | 5.4    | Implementar inutilização de numeração           | Backend     |
 | 5.5    | Transmissão automática quando SEFAZ voltar      | Backend     |
-
-**Entregáveis:**
-
+## Entregáveis: (cont.)
 - [ ] Sistema resiliente a quedas
 - [ ] Cancelamento funcionando
 - [ ] Inutilização funcionando
@@ -809,9 +785,7 @@ model Sale {
 | 6.4    | Consulta de notas por chave           | Frontend    |
 | 6.5    | Exportação de XMLs para contabilidade | Backend     |
 | 6.6    | Alertas de certificado vencendo       | Backend     |
-
-**Entregáveis:**
-
+## Entregáveis: (cont.)
 - [ ] Fluxo completo integrado
 - [ ] Histórico e reimpressão
 - [ ] Exportação funcionando
@@ -844,7 +818,7 @@ model Sale {
 
 ### Total Estimado
 
-```
+```text
 ┌────────────────────────────────────────────────────────────┐
 │                 ESTIMATIVA TOTAL                           │
 ├────────────────────────────────────────────────────────────┤
@@ -859,8 +833,7 @@ model Sale {
 │  - Acesso ao Portal SEFAZ do estado                       │
 │                                                            │
 └────────────────────────────────────────────────────────────┘
-```
-
+```text
 ### Riscos e Mitigações
 
 | Risco                              | Probabilidade | Impacto | Mitigação                              |

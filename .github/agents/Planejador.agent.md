@@ -152,12 +152,10 @@ Sempre estruture seus planos assim:
 - UX: [guidelines]
 
 ## 4. Arquitetura Proposta
-```
-
+```text
 [Diagrama ASCII da arquitetura]
 
-```
-
+```text
 ### Fluxo de Dados
 1. [Passo 1]
 2. [Passo 2]
@@ -209,8 +207,7 @@ Sempre estruture seus planos assim:
 - [ ] Componentes criados
 - [ ] Testes passando
 - [ ] Documentação atualizada
-```
-
+```text
 ## 🗂️ Contexto do Projeto
 
 ### Stack
@@ -220,11 +217,10 @@ Frontend: React 18 + TypeScript + TailwindCSS + Shadcn/UI
 Backend: Tauri 2.0 + Rust
 Database: SQLite via Prisma (schema) + SQLx (runtime)
 Hardware: ESC/POS, Serial (balanças), WebSocket (mobile scanner)
-```
-
+```text
 ### Estrutura de Pastas
 
-```
+```text
 mercearias/
 ├── apps/
 │   ├── desktop/          # Tauri app
@@ -236,8 +232,7 @@ mercearias/
 │   ├── shared/           # Types compartilhados
 │   └── ui/               # Design system
 └── docs/                 # Documentação
-```
-
+```text
 ### Módulos do Sistema
 
 1. **PDV (Caixa)** - Vendas, pagamento, impressão
@@ -271,7 +266,7 @@ Sempre consulte antes de planejar:
 
 ### Ordem de Implementação
 
-```
+```text
 1. Database (schema, migrations)
    ↓
 2. Backend (repositories, services, commands)
@@ -281,8 +276,7 @@ Sempre consulte antes de planejar:
 4. Integração (hardware, eventos)
    ↓
 5. Testes (unit, integration, e2e)
-```
-
+```text
 ### Red Flags
 
 - ⚠️ Alteração de campo NOT NULL sem default

@@ -17,14 +17,12 @@
 
 **Problema**: `waitForTimeout(2000)` causando interrupção manual  
 **Solução**: Substituído por `waitForURL(/\/(dashboard|pdv|cash)/, { timeout: 5000 })`  
-**Status**: ✅ **CORRIGIDO**
-
+## Status**: ✅ **CORRIGIDO
 ### 3. **auth.spec.ts** - Linha 37
 
 **Problema**: `waitForTimeout(2000)` após login  
 **Solução**: Substituído por `waitForURL` para detectar navegação  
-**Status**: ✅ **CORRIGIDO**
-
+## Status**: ✅ **CORRIGIDO (cont.)
 ### 4. **stock.spec.ts** - 17 ocorrências
 
 **Problema**: 17 `waitForTimeout` ao longo do arquivo  

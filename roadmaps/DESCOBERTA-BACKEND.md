@@ -11,25 +11,20 @@ Enquanto preparávamos para **começar** o desenvolvimento do backend, fizemos u
 
 ```bash
 ls -la apps/desktop/src-tauri
-```
-
-**Resultado Surpreendente:**
-
-```
+```text
+## Resultado Surpreendente:
+```text
 drwxrwxr-x   6 jhonslife jhonslife   4096 jan  7 20:30 src-tauri
-```
-
+```text
 **Pensamos:** "Ah, deve ser só a estrutura básica do Tauri..."
 
 Mas quando investigamos:
 
 ```bash
 ls apps/desktop/src-tauri/src/
-```
-
-**BOOM! 💥**
-
-```
+```text
+## BOOM! 💥
+```text
 commands/       ← 50+ comandos Tauri!
 database/       ← DatabaseManager completo!
 error.rs        ← Sistema de erros!
@@ -39,16 +34,13 @@ main.rs
 models/         ← 10 models!
 repositories/   ← 10 repositórios CRUD!
 services/       ← Lógica de negócio!
-```
-
+```text
 ---
 
 ## 😱 O Que Encontramos
 
 ### 📂 Estrutura Completa (100%)
-
-**10 Repositories:**
-
+## 10 Repositories:
 1. `product_repository.rs` (262 linhas)
 2. `sale_repository.rs`
 3. `employee_repository.rs`
@@ -59,9 +51,7 @@ services/       ← Lógica de negócio!
 8. `supplier_repository.rs`
 9. `settings_repository.rs`
 10. Mais repositórios auxiliares
-
-**50+ Tauri Commands:**
-
+## 50+ Tauri Commands:
 ```rust
 // main.rs - Lines 52-147
 .invoke_handler(tauri::generate_handler![
@@ -93,10 +83,8 @@ services/       ← Lógica de negócio!
 
     // ... E MAIS 30+ COMMANDS!
 ])
-```
-
-**4 Integrações de Hardware:**
-
+```text
+## 4 Integrações de Hardware:
 1. **Impressora Térmica** (`hardware/printer.rs`)
 
    - Auto-detecção de modelo (Bematech, Daruma, Elgin)
@@ -126,11 +114,9 @@ services/       ← Lógica de negócio!
 ```bash
 cd apps/desktop/src-tauri
 cargo check
-```
-
-**Resultado:**
-
-```
+```text
+## Resultado:
+```text
    Compiling mercearias-desktop v0.1.0
 warning: unused import: `AppError`
 warning: unused import: `ScanEvent`
@@ -138,8 +124,7 @@ warning: unused import: `ProductFilters`
 ...
 warning: `mercearias-desktop` (lib) generated 19 warnings
     Finished `dev` profile [unoptimized + debuginfo] target(s) in 5.06s
-```
-
+```text
 **✅ COMPILA PERFEITAMENTE!** (apenas warnings de imports não utilizados)
 
 ---
@@ -148,7 +133,7 @@ warning: `mercearias-desktop` (lib) generated 19 warnings
 
 ### Arquivos Criados
 
-```
+```text
 src-tauri/
 ├── Cargo.toml              (93 linhas)
 ├── tauri.conf.json
@@ -163,8 +148,7 @@ src-tauri/
 │   ├── services/
 │   ├── commands/          (~800+ linhas total)
 │   └── hardware/          (~600+ linhas total)
-```
-
+```text
 **Total Estimado:** ~4000+ linhas de Rust de alta qualidade!
 
 ### Dependências Configuradas
@@ -188,8 +172,7 @@ chrono = { version = "0.4", features = ["serde"] }
 uuid = { version = "1.10", features = ["v4", "serde"] }
 aes-gcm = "0.10"     # Para backup criptografado!
 sha2 = "0.10"
-```
-
+```text
 ---
 
 ## 🎯 Padrões de Código Encontrados
@@ -218,8 +201,7 @@ impl<'a> ProductRepository<'a> {
 
     // ... 10+ métodos CRUD
 }
-```
-
+```text
 ### Command Pattern
 
 ```rust
@@ -234,8 +216,7 @@ pub async fn create_product(input: CreateProduct, state: State<'_, AppState>) ->
     let repo = ProductRepository::new(state.pool());
     repo.create(input).await
 }
-```
-
+```text
 ### Error Handling
 
 ```rust
@@ -255,21 +236,16 @@ pub enum AppError {
 }
 
 pub type AppResult<T> = Result<T, AppError>;
-```
-
+```text
 ---
 
 ## 🤔 Mistério: Quem Fez Isso?
-
-**Possibilidades:**
-
+## Possibilidades:
 1. ✅ **Você já tinha começado** e esqueceu (mais provável)
 2. ❓ Código de exemplo/template muito completo
 3. ❓ Colaborador anterior
 4. ❓ IA em sessão anterior que não documentamos
-
-**Evidências:**
-
+## Evidências:
 - Código muito específico para Mercearias PDV
 - Nomes em português (Employee, Fornecedor, Sangria)
 - Integração perfeita com schema Prisma
@@ -301,9 +277,7 @@ pub type AppResult<T> = Result<T, AppError>;
 ## 🎊 Impacto no Projeto
 
 ### Antes da Descoberta
-
-**Plano Original:**
-
+## Plano Original:
 - Implementar 35 tasks de backend (3-5 dias)
 - Criar repositories do zero
 - Implementar Tauri commands
@@ -313,9 +287,7 @@ pub type AppResult<T> = Result<T, AppError>;
 **Estimativa:** 1-2 semanas de trabalho
 
 ### Depois da Descoberta
-
-**Realidade:**
-
+## Realidade:
 - ✅ Backend 100% completo
 - ✅ Tudo compila e funciona
 - ✅ Integração com hardware
@@ -329,7 +301,7 @@ pub type AppResult<T> = Result<T, AppError>;
 
 ### Antes
 
-```
+```text
 [ ] BE-001: Setup Tauri
 [ ] BE-002: Cargo.toml
 [ ] BE-003: tauri.conf.json
@@ -337,15 +309,13 @@ pub type AppResult<T> = Result<T, AppError>;
 [ ] BE-005: Conexão SQLite
 [ ] BE-006: Pool de conexões
 [ ] BE-007 a BE-034: Implementar tudo...
-```
-
+```text
 ### Agora
 
-```
+```text
 [x] BE-001 a BE-035: TUDO JÁ FEITO! ✅
 [ ] AUTH-001: Começar sistema de autenticação
-```
-
+```text
 ---
 
 ## 📝 Lições Aprendidas
@@ -364,8 +334,7 @@ pub type AppResult<T> = Result<T, AppError>;
 ```bash
 cd apps/desktop
 npm run tauri dev
-```
-
+```text
 ### 2. Verificar se Hooks do Frontend funcionam
 
 Os hooks em `src/hooks/` já chamam os commands Tauri corretos:
@@ -378,8 +347,7 @@ export function useProducts() {
     queryFn: () => invoke<Product[]>('get_products'), // ✅ Command existe!
   });
 }
-```
-
+```text
 ### 3. Remover Mocks e Usar Dados Reais
 
 Agora que backend existe, podemos:
@@ -399,13 +367,9 @@ Com Backend pronto, Auth fica mais simples:
 ---
 
 ## 🏆 Conclusão
-
-**Esta descoberta economizou semanas de trabalho!**
-
+## Esta descoberta economizou semanas de trabalho!
 Encontramos um backend Rust/Tauri de **produção quality** já implementado, compilando e pronto para uso.
-
-**Status do Projeto:**
-
+## Status do Projeto:
 - ✅ Database: 100%
 - ✅ Backend: 100% (SURPRESA!)
 - ✅ Frontend: 100%

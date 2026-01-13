@@ -24,8 +24,7 @@ Você é um assistente de desenvolvimento de elite trabalhando
 - Siga o padrão Repository para acesso a dados
 - Use Zod para validação de schemas
 - Prefira async/await sobre Promises raw
-```
-
+```text
 ### Python
 
 ```python
@@ -35,8 +34,7 @@ Você é um assistente de desenvolvimento de elite trabalhando
 - Use dataclasses ou Pydantic para models
 - Docstrings no formato Google
 - Prefira pathlib sobre os.path
-```
-
+```text
 ### React/Next.js
 
 ```tsx
@@ -46,8 +44,7 @@ Você é um assistente de desenvolvimento de elite trabalhando
 - Prefira React Server Actions para mutations
 - Use Suspense para loading states
 - Siga o padrão de colocation de arquivos
-```
-
+```text
 ---
 
 ## 🗄️ Banco de Dados
@@ -72,14 +69,13 @@ Você é um assistente de desenvolvimento de elite trabalhando
 
 ### Estrutura
 
-```
+```text
 tests/
 ├── unit/           # Testes unitários (Vitest/pytest)
 ├── integration/    # Testes de integração
 ├── e2e/           # Testes end-to-end (Playwright)
 └── fixtures/       # Dados de teste
-```
-
+```text
 ### Padrões
 
 - Nomenclatura: `describe('ComponentName')`, `it('should do X when Y')`
@@ -111,15 +107,14 @@ tests/
 
 Use Conventional Commits:
 
-```
+```text
 feat(scope): add new feature
 fix(scope): fix bug description
 docs(scope): update documentation
 refactor(scope): refactor code
 test(scope): add tests
 chore(scope): maintenance tasks
-```
-
+```text
 ---
 
 ## 🔐 Segurança
@@ -137,15 +132,14 @@ chore(scope): maintenance tasks
 
 ### Estrutura de Docs
 
-```
+```text
 docs/
 ├── 00-OVERVIEW.md      # Visão geral
 ├── 01-ARQUITETURA.md   # Decisões técnicas
 ├── 02-DATABASE.md      # Schema e migrations
 ├── 03-FEATURES.md      # Funcionalidades
 └── API.md              # Documentação de API
-```
-
+```text
 ### READMEs
 
 - Descrição clara do projeto
@@ -165,8 +159,7 @@ docs/
 --secondary: Champagne (#F7E7CE)
 --accent: Deep Rose (#8B4557)
 --background: Cream White (#FFFEF9)
-```
-
+```text
 ### Componentes
 
 - Seguir atomic design (atoms, molecules, organisms)

@@ -9,9 +9,7 @@
 ## 1. Visao de Negocio
 
 ### 1.1 Proposta de Valor
-
-**"Gestao profissional ao alcance do pequeno comerciante brasileiro"**
-
+## "Gestao profissional ao alcance do pequeno comerciante brasileiro"
 O Mercearias Desktop e um sistema de PDV (Ponto de Venda) completo para varejo alimenticio, desenvolvido como aplicacao desktop nativa para Windows. Combina a robustez de solucoes enterprise com a simplicidade necessaria para operadores de caixa e proprietarios de mercearias, padarias, minimercados e pequenos supermercados.
 
 ### 1.2 Publico-Alvo
@@ -137,7 +135,7 @@ Tecnologia inovadora que permite usar o celular do operador como leitor de codig
 
 ### 4.1 Arquitetura
 
-```
+```text
 Frontend (React/TypeScript)
      |
      | Tauri IPC (invoke)
@@ -147,9 +145,8 @@ Backend (Rust)
      | SQLx
      v
 SQLite (Local)
-```
-
-**Pontos Fortes:**
+```text
+## Pontos Fortes:
 - Separacao clara entre camadas
 - Type-safety end-to-end (TypeScript + Rust)
 - Performance nativa sem overhead de Electron
@@ -164,8 +161,7 @@ SQLite (Local)
 | **Data Fetching** | TanStack Query (cache, retry) |
 | **Componentes UI** | Shadcn/ui + Tailwind |
 | **Testes** | Vitest + Testing Library |
-
-**Codigo bem estruturado:**
+## Codigo bem estruturado:
 - Stores separados por dominio (auth, pdv, settings, alert)
 - Hooks customizados para cada funcionalidade
 - Componentes reutilizaveis
@@ -178,8 +174,7 @@ SQLite (Local)
 | **Framework** | Tauri 2.x |
 | **Database** | SQLite via SQLx (async, type-safe) |
 | **Migrations** | 4 migration files |
-
-**Pontos Fortes:**
+## Pontos Fortes: (cont.)
 - Repositorios bem definidos (10 modulos)
 - Tratamento de erros robusto (AppResult, AppError)
 - Testes de integracao com banco in-memory
@@ -231,18 +226,15 @@ SQLite (Local)
 ## 6. Conclusao
 
 O projeto **Mercearias Desktop** apresenta uma arquitetura solida, codigo bem estruturado e uma proposta de valor clara para o mercado brasileiro de pequeno varejo. Com 332+ testes automatizados e 11 modulos implementados, o sistema esta em estado avancado de desenvolvimento.
-
-**Principais forcas:**
+## Principais forcas:
 - Tecnologia moderna (Tauri + React + Rust)
 - Foco em offline-first (diferencial competitivo)
 - Sistema de tutoriais para onboarding
 - Cobertura de testes acima da media
-
-**Proximos passos recomendados:**
+## Proximos passos recomendados:
 - Completar schema do banco de dados
 - Executar E2E no pipeline de CI
 - Preparar para beta testing com usuarios reais
 
 ---
-
-*Documento gerado em 8 de Janeiro de 2026*
+## Documento gerado em 8 de Janeiro de 2026

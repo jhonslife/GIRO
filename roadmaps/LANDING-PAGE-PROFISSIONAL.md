@@ -30,7 +30,7 @@ Criar uma **Landing Page única, cinematográfica e profissional** que:
 
 ## 🎯 Diagrama do Fluxo Completo
 
-```
+```text
 ╔═══════════════════════════════════════════════════════════════════════════════════════╗
 ║                          JORNADA COMPLETA DO CLIENTE GIRO                              ║
 ╚═══════════════════════════════════════════════════════════════════════════════════════╝
@@ -259,8 +259,7 @@ Criar uma **Landing Page única, cinematográfica e profissional** que:
 │   └───────────────────┘                           └───────────────────┘                 │
 │                                                                                          │
 └─────────────────────────────────────────────────────────────────────────────────────────┘
-```
-
+```text
 ---
 
 ## 🎨 Landing Page - Especificações Técnicas
@@ -280,7 +279,7 @@ Criar uma **Landing Page única, cinematográfica e profissional** que:
 ### Seções da Landing Page
 
 #### 1. Hero Section (Acima da Dobra)
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │  ┌─────────┐                                                    │
 │  │  LOGO   │  [Recursos]  [Preços]  [Contato]  [▶ Entrar]      │
@@ -303,8 +302,7 @@ Criar uma **Landing Page única, cinematográfica e profissional** que:
 │         └─────────────────────────────────────┘                │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
-```
-
+```text
 #### 2. Showcase Interativo
 - **Carrossel 3D** de screenshots em alta resolução
 - **Zoom on hover** com efeito de foco de câmera
@@ -360,8 +358,7 @@ gnome-screenshot --delay=3 --file=screenshot.png
 
 # 5. Para resolução ainda maior (2x ou 3x)
 # No Tauri, configurar window scale factor
-```
-
+```text
 ### Tratamento das Imagens
 
 1. **Captura**: 3840x2160 (4K) ou superior
@@ -407,8 +404,7 @@ const preference = await mercadopago.preferences.create({
 
 // 3. Redirecionar para checkout
 window.location.href = preference.init_point;
-```
-
+```text
 ### Webhook de Confirmação
 
 ```typescript
@@ -447,8 +443,7 @@ app.post('/webhooks/mercadopago', async (req, res) => {
   
   res.status(200).send('OK');
 });
-```
-
+```text
 ---
 
 ## 📅 Roadmap de Implementação
@@ -512,7 +507,7 @@ app.post('/webhooks/mercadopago', async (req, res) => {
 
 ## 🗂️ Estrutura do Projeto
 
-```
+```text
 giro-website/
 ├── app/
 │   ├── page.tsx                    # Landing page
@@ -552,8 +547,7 @@ giro-website/
     ├── screenshots/
     ├── videos/
     └── 3d-models/
-```
-
+```text
 ---
 
 ## 🎬 Referências de Design
@@ -587,4 +581,3 @@ giro-website/
 ---
 
 > **Próximo passo**: Iniciar Sprint 1 - Criar projeto Next.js e capturar screenshots
-

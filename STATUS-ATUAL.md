@@ -15,9 +15,7 @@
 - ✅ Database SQLite com WAL mode
 - ✅ Seed scripts funcionais
 - ✅ Localização: `~/.local/share/Mercearias/mercearias.db`
-
-**Entidades:**
-
+## Entidades:
 - Product, Category, Supplier, ProductLot
 - Employee (RBAC: Admin, Manager, Cashier, Viewer)
 - Sale, SaleItem, CashSession, CashMovement
@@ -37,9 +35,7 @@
 - ✅ **Aliases de compatibilidade** com frontend
 
 **Localização:** `apps/desktop/src-tauri/`
-
-**Comandos Implementados (90+):**
-
+## Comandos Implementados (90+):
 ```rust
 // Produtos (8)
 get_products, get_product_by_id, get_product_by_barcode,
@@ -62,8 +58,7 @@ open_cash_session, close_cash_session, add_cash_movement
 
 // + Categorias (6), Estoque (6), Alertas (7),
 // Configurações (7), Fornecedores (6), Hardware (14)
-```
-
+```text
 \*Aliases para compatibilidade com `lib/tauri.ts`
 
 - 6 commands de fornecedores
@@ -83,9 +78,7 @@ open_cash_session, close_cash_session, add_cash_movement
 - ✅ **Dev server rodando em http://localhost:1420**
 
 **Localização:** `apps/desktop/src/`
-
-**Páginas Implementadas:**
-
+## Páginas Implementadas:
 - PDVPage (POS principal)
 - ProductsPage, ProductFormPage, CategoriesPage
 - StockPage, StockEntryPage, StockMovementsPage
@@ -110,9 +103,7 @@ open_cash_session, close_cash_session, add_cash_movement
 ### 🔐 Auth System (60% - 9/15 tasks)
 
 **Status:** 🟢 Funcional (Login/Seed/PDV Flow)
-
-**O que está pronto:**
-
+## O que está pronto:
 - ✅ Employee model com PIN e password (hash SHA256)
 - ✅ EmployeeRepository com `authenticate_pin()`
 - ✅ Commands `authenticate_by_pin` e `authenticate_employee`
@@ -153,16 +144,12 @@ open_cash_session, close_cash_session, add_cash_movement
 **Prioridade:** Alta  
 **Tasks:** 0/30 (0%)  
 **Estimativa:** 3-4 dias
-
-**Hardware já implementado no backend:**
-
+## Hardware já implementado no backend:
 - ✅ Impressora térmica (commands prontos)
 - ✅ Balança serial (commands prontos)
 - ✅ Scanner mobile WebSocket (commands prontos)
 - ✅ Gaveta de dinheiro (commands prontos)
-
-**Próximas tasks:**
-
+## Próximas tasks:
 - [ ] Configurar impressora real
 - [ ] Testar impressão de cupom
 - [ ] Integrar balança física
@@ -173,9 +160,7 @@ open_cash_session, close_cash_session, add_cash_movement
 **Status:** 🔒 Bloqueado  
 **Tasks:** 0/24 (0%)  
 **Estimativa:** 2-3 dias
-
-**Tipos de Testes:**
-
+## Tipos de Testes:
 - Unit tests (Rust repositories)
 - Integration tests (Tauri commands)
 - E2E tests (Playwright)
@@ -186,9 +171,7 @@ open_cash_session, close_cash_session, add_cash_movement
 **Status:** ⏸️ Aguardando (pode iniciar setup)  
 **Tasks:** 0/25 (0%)  
 **Estimativa:** 1-2 dias para setup inicial
-
-**Ações Imediatas:**
-
+## Ações Imediatas:
 - DEVOPS-000: Estrutura de monorepo ✅ (já existe)
 - DEVOPS-000A: Configurar workspace
 - DEVOPS-000B: Gitignore completo
@@ -199,9 +182,7 @@ open_cash_session, close_cash_session, add_cash_movement
 
 **Status:** ⏸️ Aguardando  
 **Tasks:** 0/20 (0%)
-
-**Ações:**
-
+## Ações:
 - Brand guidelines
 - Logo e identidade
 - Color system refinement
@@ -211,7 +192,7 @@ open_cash_session, close_cash_session, add_cash_movement
 
 ## 📊 Progresso Geral
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════════╗
 ║                    MERCEARIAS - MISSION CONTROL                    ║
 ║                        Status: 50.9% COMPLETO                      ║
@@ -245,8 +226,7 @@ open_cash_session, close_cash_session, add_cash_movement
 ║  LEGENDA:  ⏸️ Aguardando  │  🔒 Bloqueado  │  🔄 Em Progresso     ║
 ║            🚀 Desbloqueado │  ✅ Concluído                        ║
 ╚════════════════════════════════════════════════════════════════════╝
-```
-
+```text
 ║ ┌─────────────┐ ║
 ║ │ AUTH │ ← PRÓXIMO ║
 ║ │ ░░░░░░ 0% │ ║
@@ -285,9 +265,7 @@ open_cash_session, close_cash_session, add_cash_movement
 ### 1. Frontend (já rodando)
 
 Acesse: http://localhost:1420
-
-**Funcionalidades testáveis (com mocks):**
-
+## Funcionalidades testáveis (com mocks):
 - ✅ PDV (adicionar produtos ao carrinho)
 - ✅ Pesquisa de produtos
 - ✅ Navegação entre páginas
@@ -295,25 +273,18 @@ Acesse: http://localhost:1420
 - ✅ UI completo
 
 ### 2. Backend + Frontend Integrado
-
-**Terminal 1 (Frontend):**
-
+## Terminal 1 (Frontend):
 ```bash
 cd apps/desktop
 npm run dev
 ````
-
-**Terminal 2 (Tauri):**
-
+## Terminal 2 (Tauri):
 ```bash
 cd apps/desktop
 npm run tauri dev
-```
-
+```text
 Isso abrirá o app desktop com backend Rust + Frontend React conectados!
-
-**Funcionalidades testáveis (REAIS):**
-
+## Funcionalidades testáveis (REAIS):
 - ✅ Buscar produtos no banco de dados
 - ✅ Criar produtos
 - ✅ Ver categorias
@@ -345,8 +316,7 @@ await window.__TAURI__.core.invoke('create_product', {
     // ... outros campos
   },
 });
-```
-
+```text
 ---
 
 ## 🔥 MILESTONE ATINGIDA
@@ -394,8 +364,7 @@ npx prisma db push             # Aplicar schema
 # Monorepo
 npm run dev                    # Start all workspaces
 npm run build                  # Build all workspaces
-```
-
+```text
 ---
 
 ## 🏆 Conquistas
@@ -417,8 +386,7 @@ npm run build                  # Build all workspaces
 ```bash
 cd apps/desktop
 npm run tauri dev
-```
-
+```text
 Abra o app e teste se o backend + frontend estão conversando corretamente.
 
 ### Opção 2: Começar Auth System

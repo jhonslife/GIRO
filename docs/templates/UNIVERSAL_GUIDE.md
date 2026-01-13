@@ -14,9 +14,7 @@ Para garantir o sucesso, não pule etapas. A disciplina na fase de planejamento 
 ### 1️⃣ Fase 1: Planejamento Total (100%)
 
 Nesta fase, você opera puramente como **Arquiteto de Software**. O objetivo é mapear o território inteiro.
-
-**Entregáveis Obrigatórios:**
-
+## Entregáveis Obrigatórios:
 1.  **Visão do Produto (`00-OVERVIEW.md`)**:
     - O que é o produto?
     - Quem é o público-alvo?
@@ -36,19 +34,17 @@ Nesta fase, você opera puramente como **Arquiteto de Software**. O objetivo é 
 ### 2️⃣ Fase 2: Estrutura & Dados
 
 Aqui você transforma o plano abstrato em uma estrutura de diretórios física e navegável.
-
-**A Árvore de Documentação (`docs/`):**
+## A Árvore de Documentação (`docs/`):
 Crie uma estrutura que reflita a complexidade do domínio.
 
-```
+```text
 docs/
 ├── procedimentos/ (ou domínio específico)
 ├── cliente/
 ├── negocio/
 └── runbooks/
-```
-
-**A Árvore de Roadmaps (`roadmaps/`):**
+```text
+## A Árvore de Roadmaps (`roadmaps/`):
 Divida o trabalho em "Agentes Especialistas". Em vez de um backlog gigante, crie filas de trabalho focadas.
 
 - **01-database**: Apenas migrations e seeds.
@@ -63,9 +59,7 @@ Divida o trabalho em "Agentes Especialistas". Em vez de um backlog gigante, crie
 ### 3️⃣ Fase 3: O Processo de Construção (Roadmaps)
 
 A execução deve ser cirúrgica. Utilize o arquivo `STATUS.md` como seu centro de comando.
-
-**Regras de Construção:**
-
+## Regras de Construção:
 1.  **Profundidade Idêntica:** Cada roadmap deve ter tasks granulares.
     - _Errado:_ "Fazer tela de login"
     - _Certo:_ "Criar componente Input", "Criar componente Button", "Integrar API Login", "Tratar erros de validação".
@@ -93,8 +87,7 @@ PROJETO_RAIZ/
 │   ├── 02-backend/
 │   └── ...
 └── src/                  # O Corpo do projeto (Código)
-```
-
+```text
 ## 📝 Checklist de Iniciação
 
 - [ ] Definir a "Grande Ideia" e o Problema a ser resolvido.

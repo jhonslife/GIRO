@@ -138,7 +138,7 @@ if [ -d "$BUNDLE_DIR/msi" ]; then
 fi
 
 # Executável standalone
-EXE_PATH="src-tauri/target/x86_64-pc-windows-gnu/release/giro.exe"
+EXE_PATH="src-tauri/target/x86_64-pc-windows-gnu/release/giro-desktop.exe"
 if [ -f "$EXE_PATH" ]; then
     echo -e "${GREEN}🎯 Executável Standalone:${NC}"
     ls -lh "$EXE_PATH" | awk '{print "   📦 " $9 " (" $5 ")"}'

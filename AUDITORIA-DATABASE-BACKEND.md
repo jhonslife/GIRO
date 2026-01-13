@@ -32,13 +32,11 @@
 **Linha:** 123  
 **Problema:** Query usando `FROM Product` ao invés de `FROM products`  
 **Impacto:** Query falharia em runtime (SQLite é case-sensitive)  
-**Status:** ✅ **CORRIGIDO**
-
+## Status:** ✅ **CORRIGIDO
 ```diff
 - SELECT ... FROM Product WHERE is_active = 1 ...
 + SELECT ... FROM products WHERE is_active = 1 ...
-```
-
+```text
 ---
 
 ### Bug #2: Nome de Tabela Incorreto em `find_out_of_stock()`
@@ -47,13 +45,11 @@
 **Linha:** 131  
 **Problema:** Query usando `FROM Product` ao invés de `FROM products`  
 **Impacto:** Query falharia em runtime  
-**Status:** ✅ **CORRIGIDO**
-
+## Status:** ✅ **CORRIGIDO (cont.)
 ```diff
 - SELECT ... FROM Product WHERE is_active = 1 AND current_stock <= 0 ...
 + SELECT ... FROM products WHERE is_active = 1 AND current_stock <= 0 ...
-```
-
+```text
 ---
 
 ### Bug #3: Nome de Tabela Incorreto em `get_next_internal_code()`
@@ -62,13 +58,11 @@
 **Linha:** 142  
 **Problema:** Query usando `FROM Product` ao invés de `FROM products`  
 **Impacto:** Código interno de produtos seria gerado incorretamente  
-**Status:** ✅ **CORRIGIDO**
-
+## Status:** ✅ **CORRIGIDO (cont.)
 ```diff
 - SELECT COUNT(*) FROM Product
 + SELECT COUNT(*) FROM products
-```
-
+```text
 ---
 
 ### Bug #4: Nome de Tabela Incorreto em Query de Totais
@@ -77,13 +71,11 @@
 **Linha:** 304  
 **Problema:** Query usando `FROM Sale` ao invés de `FROM sales`  
 **Impacto:** Seed script falharia ao calcular totais  
-**Status:** ✅ **CORRIGIDO**
-
+## Status:** ✅ **CORRIGIDO (cont.)
 ```diff
 - SELECT COALESCE(SUM(total), 0) FROM Sale WHERE ...
 + SELECT COALESCE(SUM(total), 0) FROM sales WHERE ...
-```
-
+```text
 ---
 
 ## ✅ Verificações de Conformidade
@@ -146,10 +138,8 @@ SqliteConnectOptions::from_str(&format!("sqlite:{}", db_path))?
 
 SqlitePoolOptions::new()
     .max_connections(5)                          // ✅ Pool configurado
-```
-
-**Status:** ✅ **CONFIGURAÇÃO ÓTIMA PARA DESKTOP**
-
+```text
+## Status:** ✅ **CONFIGURAÇÃO ÓTIMA PARA DESKTOP
 ### Localização do Banco
 
 - **Produção:** `%LOCALAPPDATA%/Mercearias/mercearias.db` (Windows)
@@ -195,9 +185,7 @@ _Nenhum TODO crítico encontrado_ ✅
 - [x] `StockRepository` - Movements + FIFO
 - [x] `AlertRepository` - CRUD + Mark Read
 - [x] `SettingsRepository` - Key-Value Store
-
-**Status:** ✅ **100% COMPLETO**
-
+## Status:** ✅ **100% COMPLETO
 ### Services (0/6 - Próxima Iteração)
 
 > **Nota:** Na primeira iteração, a lógica de negócio foi implementada  
@@ -212,9 +200,7 @@ Planejado para Sprint 7-8:
 - [ ] `AlertService` - Geração automática
 - [ ] `ReportService` - Caching e agregações
 - [ ] `BackupService` - Backup automático
-
-**Status:** ⏸️ **PLANEJADO (NÃO BLOQUEIA RELEASE)**
-
+## Status:** ⏸️ **PLANEJADO (NÃO BLOQUEIA RELEASE)
 ---
 
 ## 🧪 Critérios de Aceite - Roadmap Database
@@ -226,9 +212,7 @@ Planejado para Sprint 7-8:
 | `npx prisma db seed` executa sem erros      | ✅     | ✅ Pass | ✅     |
 | Queries de busca de produto < 50ms          | <50ms  | ~10ms   | ✅     |
 | Schema suporta todos os casos de uso do PDV | 100%   | 100%    | ✅     |
-
-**Status:** ✅ **TODOS OS CRITÉRIOS ATENDIDOS**
-
+## Status:** ✅ **TODOS OS CRITÉRIOS ATENDIDOS
 ---
 
 ## 🧪 Critérios de Aceite - Roadmap Backend
@@ -240,15 +224,14 @@ Planejado para Sprint 7-8:
 | Testes unitários para services                 | 80%    | 0%    | ⏸️     |
 | Performance: busca de produto < 50ms           | <50ms  | ~10ms | ✅     |
 | Logs estruturados (tracing)                    | ✅     | ✅    | ✅     |
-
-**Status:** ✅ **CRITÉRIOS DE RELEASE ATENDIDOS**  
+## Status:** ✅ **CRITÉRIOS DE RELEASE ATENDIDOS
 **Nota:** Testes unitários planejados para Sprint 7
 
 ---
 
 ## 🔄 Fluxo de Dados Validado
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                   FLUXO DE DADOS VALIDADO                    │
 └─────────────────────────────────────────────────────────────┘
@@ -282,10 +265,8 @@ Frontend (TanStack Query)
     │ Cache + UI Update
     ▼
 Componente React
-```
-
-**Status:** ✅ **FLUXO COMPLETO FUNCIONANDO**
-
+```text
+## Status:** ✅ **FLUXO COMPLETO FUNCIONANDO
 ---
 
 ## 📈 Progresso dos Roadmaps
@@ -380,9 +361,7 @@ O backend e banco de dados do projeto **Mercearias** estão em excelente estado:
 8. ✅ Performance excelente (~10ms queries)
 9. ✅ Testes E2E em 85%
 10. ⏸️ 8 TODOs não-bloqueantes (melhorias futuras)
-
-**Status Final:** ✅ **APROVADO PARA RELEASE**
-
+## Status Final:** ✅ **APROVADO PARA RELEASE
 O sistema está pronto para lançamento. Os bugs encontrados foram corrigidos  
 e todos os critérios de aceite dos roadmaps foram cumpridos. As melhorias  
 planejadas (Services, testes unitários) podem ser implementadas em iterações  

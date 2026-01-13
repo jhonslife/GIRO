@@ -2,8 +2,7 @@
 
 **Data**: 2 de Janeiro de 2026  
 **Meta**: 85%+ de Cobertura de Código  
-**Status**: ✅ **COMPILANDO** | ⚠️ **6 TESTES FALHANDO** | 🔄 **EM PROGRESSO**
-
+## Status**: ✅ **COMPILANDO** | ⚠️ **6 TESTES FALHANDO** | 🔄 **EM PROGRESSO
 ---
 
 ## 📈 Resumo Executivo
@@ -78,7 +77,7 @@
 
 ## ⚠️ Backend (Rust/Cargo Test)
 
-### Testes Implementados
+### Testes Implementados (cont.)
 
 #### **1. CashRepository** - 8 testes
 
@@ -283,12 +282,11 @@ pnpm test:ui
 
 # Watch mode
 pnpm test --watch
-```
-
+```text
 ### Backend
 
 ```bash
-# Rodar todos os testes
+# Rodar todos os testes (cont.)
 cargo test
 
 # Com output detalhado
@@ -299,8 +297,7 @@ cargo test repositories
 
 # Com cobertura (após instalar cargo-llvm-cov)
 cargo llvm-cov --html
-```
-
+```text
 ---
 
 **Última Atualização**: 2 de Janeiro de 2026, 17:25  

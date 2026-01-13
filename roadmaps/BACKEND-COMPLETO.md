@@ -25,7 +25,7 @@ O backend Rust/Tauri está **100% completo e funcional**, incluindo:
 
 ## 📂 Estrutura Implementada
 
-```
+```text
 src-tauri/
 ├── Cargo.toml                    ✅ Todas dependências configuradas
 ├── tauri.conf.json               ✅ Configuração Tauri 2.0
@@ -87,8 +87,7 @@ src-tauri/
 │       ├── scale.rs               (Balança digital)
 │       ├── drawer.rs              (Gaveta de dinheiro)
 │       └── scanner.rs             (Leitor + scanner mobile)
-```
-
+```text
 ---
 
 ## 🔧 Comandos Tauri Implementados (50+)
@@ -179,34 +178,24 @@ src-tauri/
 - `delete_supplier(id)` - Deletar
 
 ### 🖨️ Hardware (14 commands)
-
-**Serial Ports:**
-
+## Serial Ports:
 - `list_serial_ports()` - Listar portas COM
 - `check_port_exists(port)` - Verificar se porta existe
-
-**Impressora:**
-
+## Impressora:
 - `configure_printer(config)` - Configurar impressora
 - `print_receipt(sale_id)` - Imprimir recibo
 - `test_printer()` - Testar impressão
 - `get_printer_config()` - Obter configuração
-
-**Balança:**
-
+## Balança:
 - `configure_scale(config)` - Configurar balança
 - `read_weight()` - Ler peso
 - `auto_detect_scale()` - Auto-detecção
 - `get_scale_config()` - Obter configuração
-
-**Gaveta:**
-
+## Gaveta:
 - `configure_drawer(config)` - Configurar gaveta
 - `open_drawer()` - Abrir gaveta
 - `get_drawer_config()` - Obter configuração
-
-**Scanner Mobile:**
-
+## Scanner Mobile:
 - `start_scanner_server(port)` - Iniciar servidor WebSocket
 - `stop_scanner_server()` - Parar servidor
 - `list_scanner_devices()` - Listar dispositivos conectados
@@ -234,8 +223,7 @@ Todos os repositórios seguem o padrão CRUD com métodos genéricos:
 - soft_delete(id)
 - update_stock(id, quantity)
 - get_stock_summary()
-```
-
+```text
 ### SaleRepository
 
 ```rust
@@ -246,8 +234,7 @@ Todos os repositórios seguem o padrão CRUD com métodos genéricos:
 - cancel(id, reason)
 - get_daily_summary()
 - get_payment_breakdown()
-```
-
+```text
 ### EmployeeRepository
 
 ```rust
@@ -258,8 +245,7 @@ Todos os repositórios seguem o padrão CRUD com métodos genéricos:
 - create(input)
 - update(id, input)
 - deactivate(id)
-```
-
+```text
 ### CashRepository
 
 ```rust
@@ -270,8 +256,7 @@ Todos os repositórios seguem o padrão CRUD com métodos genéricos:
 - close_session(id, input)
 - add_movement(session_id, input)
 - get_session_movements(session_id)
-```
-
+```text
 ### StockRepository
 
 ```rust
@@ -281,8 +266,7 @@ Todos os repositórios seguem o padrão CRUD com métodos genéricos:
 - get_product_lots(product_id)
 - get_expiring_lots(days)
 - get_expired_lots()
-```
-
+```text
 ### AlertRepository
 
 ```rust
@@ -293,8 +277,7 @@ Todos os repositórios seguem o padrão CRUD com métodos genéricos:
 - mark_all_read()
 - create(input)
 - delete(id)
-```
-
+```text
 ### CategoryRepository
 
 ```rust
@@ -304,8 +287,7 @@ Todos os repositórios seguem o padrão CRUD com métodos genéricos:
 - create(input)
 - update(id, input)
 - delete(id)
-```
-
+```text
 ### SupplierRepository
 
 ```rust
@@ -315,8 +297,7 @@ Todos os repositórios seguem o padrão CRUD com métodos genéricos:
 - create(input)
 - update(id, input)
 - delete(id)
-```
-
+```text
 ### SettingsRepository
 
 ```rust
@@ -327,8 +308,7 @@ Todos os repositórios seguem o padrão CRUD com métodos genéricos:
 - get_number(key)
 - set(key, value)
 - delete(key)
-```
-
+```text
 ---
 
 ## 🔌 Integração com Hardware
@@ -343,10 +323,8 @@ pub struct PrinterConfig {
     pub columns: u8,            // 32 ou 48 colunas
     pub cut_enabled: bool,
 }
-```
-
-**Funcionalidades:**
-
+```text
+## Funcionalidades:
 - Auto-detecção de modelo
 - Impressão de recibos formatados
 - Corte automático de papel
@@ -361,10 +339,8 @@ pub struct ScaleConfig {
     pub protocol: ScaleProtocol, // Toledo, Filizola, Urano
     pub auto_read: bool,
 }
-```
-
-**Funcionalidades:**
-
+```text
+## Funcionalidades: (cont.)
 - Leitura de peso em tempo real
 - Auto-detecção de protocolo
 - Conversão automática de unidades
@@ -376,10 +352,8 @@ pub struct DrawerConfig {
     pub port: String,
     pub trigger_byte: u8,  // Byte de comando (padrão: 0x1B)
 }
-```
-
-**Funcionalidades:**
-
+```text
+## Funcionalidades: (cont.)
 - Abertura via porta serial ou impressora
 - Configurável por modelo
 
@@ -396,10 +370,8 @@ pub struct ScanEvent {
     pub device_id: String,
     pub timestamp: DateTime<Utc>,
 }
-```
-
-**Funcionalidades:**
-
+```text
+## Funcionalidades: (cont.)
 - Servidor WebSocket para conexões mobile
 - Emparelhamento via QR Code
 - Múltiplos dispositivos simultâneos
@@ -419,8 +391,7 @@ DatabaseManager {
     - Pool máximo: 5 conexões
     - Auto-criação do banco se não existir
 }
-```
-
+```text
 ### Recursos SQLx Utilizados
 
 - ✅ `query_as!()` - Type-safe queries
@@ -453,8 +424,7 @@ pub enum AppError {
 }
 
 pub type AppResult<T> = Result<T, AppError>;
-```
-
+```text
 ---
 
 ## 📝 Logging com Tracing
@@ -466,14 +436,12 @@ pub type AppResult<T> = Result<T, AppError>;
 
 // Ambiente:
 RUST_LOG=debug cargo tauri dev
-```
-
+```text
 ---
 
 ## ✅ Próximos Passos
 
-### O Backend está 100% pronto, mas para começar a usar:
-
+### O Backend está 100% pronto, mas para começar a usar
 1. **Copiar Database do Prisma:**
 
    ```bash

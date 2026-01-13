@@ -37,18 +37,14 @@ O módulo de PDV é o coração do sistema, focado em velocidade e simplicidade 
 | **Prioridade**   | P0 - Crítica |
 | **Complexidade** | Alta         |
 | **Sprint**       | 1-2          |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais:
 - [ ] Layout dividido: Lista de itens (60%) + Painel de totais (40%)
 - [ ] Barra de busca proeminente no topo (autocomplete)
 - [ ] Exibição de itens: código, nome, qtd, preço unit, subtotal
 - [ ] Botões de ação rápida: +1, -1, quantidade manual, remover
 - [ ] Painel de totais: subtotal, desconto, total
 - [ ] Botões de finalização: Dinheiro, PIX, Cancelar
-
-**Regras de Negócio:**
-
+## Regras de Negócio:
 - Venda só pode ser iniciada com caixa aberto
 - Quantidade máxima por item: 999
 - Valores negativos são bloqueados
@@ -63,9 +59,7 @@ O módulo de PDV é o coração do sistema, focado em velocidade e simplicidade 
 | **Prioridade**   | P0 - Crítica |
 | **Complexidade** | Média        |
 | **Sprint**       | 1            |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Busca por código de barras (match exato)
 - [ ] Busca por código interno (match exato)
 - [ ] Busca por nome (fuzzy search, min 2 caracteres)
@@ -73,9 +67,7 @@ O módulo de PDV é o coração do sistema, focado em velocidade e simplicidade 
 - [ ] Exibição de: nome, preço, estoque atual
 - [ ] Destaque visual para estoque baixo (amarelo) e zerado (vermelho)
 - [ ] Suporte a tecla Enter para adicionar primeiro resultado
-
-**Regras de Negócio:**
-
+## Regras de Negócio: (cont.)
 - Busca case-insensitive
 - Remove acentos automaticamente
 - Prioriza match por código sobre nome
@@ -91,17 +83,13 @@ O módulo de PDV é o coração do sistema, focado em velocidade e simplicidade 
 | **Prioridade**   | P0 - Crítica |
 | **Complexidade** | Baixa        |
 | **Sprint**       | 2            |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Suporte a leitoras USB em modo HID (teclado)
 - [ ] Auto-submit ao detectar código
 - [ ] Suporte a códigos EAN-13, EAN-8, Code128, Code39
 - [ ] Suporte a códigos pesados (balança) com prefixo 2
 - [ ] Beep sonoro de confirmação
-
-**Regras de Negócio:**
-
+## Regras de Negócio: (cont.)
 - Códigos pesados: prefixo 2 + 5 dígitos produto + 5 dígitos peso + 1 check
 - Se produto não encontrado: abre modal de cadastro rápido
 - Códigos duplicados na mesma venda: incrementa quantidade
@@ -115,18 +103,14 @@ O módulo de PDV é o coração do sistema, focado em velocidade e simplicidade 
 | **Prioridade**   | P1 - Alta |
 | **Complexidade** | Alta      |
 | **Sprint**       | 3-4       |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] PWA scanner acessível via QR code na tela do PDV
 - [ ] Conexão WebSocket local (mesmo Wi-Fi)
 - [ ] Exibição de código QR para pareamento
 - [ ] Indicador visual de celular conectado
 - [ ] Reconexão automática se conexão perder
 - [ ] Múltiplos celulares por PDV (1 ativo por vez)
-
-**Regras de Negócio:**
-
+## Regras de Negócio: (cont.)
 - Só aceita conexões da rede local (192.168.x.x / 10.x.x.x)
 - Timeout de 30s sem atividade desconecta
 - Código do celular tem mesma prioridade que USB
@@ -140,9 +124,7 @@ O módulo de PDV é o coração do sistema, focado em velocidade e simplicidade 
 | **Prioridade**   | P1 - Alta |
 | **Complexidade** | Alta      |
 | **Sprint**       | 4         |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Suporte a balanças Toledo (Prix 3, Prix 4)
 - [ ] Suporte a balanças Filizola (CS15, Platina)
 - [ ] Suporte a balanças Elgin (DP, SM100)
@@ -151,9 +133,7 @@ O módulo de PDV é o coração do sistema, focado em velocidade e simplicidade 
 - [ ] Botão manual "Ler Peso"
 - [ ] Exibição de peso em tempo real
 - [ ] Tara automática
-
-**Regras de Negócio:**
-
+## Regras de Negócio: (cont.)
 - Produto pesável: campo isWeighted = true
 - Unidade obrigatória: KG ou GRAM
 - Peso mínimo: 0.001 kg (1g)
@@ -169,17 +149,13 @@ O módulo de PDV é o coração do sistema, focado em velocidade e simplicidade 
 | **Prioridade**   | P1 - Alta |
 | **Complexidade** | Baixa     |
 | **Sprint**       | 2         |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Desconto percentual (0-100%)
 - [ ] Desconto em valor (R$)
 - [ ] Aplicar em item específico ou venda total
 - [ ] Campo de justificativa obrigatório
 - [ ] Limite máximo configurável por role
-
-**Regras de Negócio:**
-
+## Regras de Negócio: (cont.)
 - CASHIER: máx 5% desconto
 - MANAGER: máx 20% desconto
 - ADMIN: sem limite
@@ -195,17 +171,13 @@ O módulo de PDV é o coração do sistema, focado em velocidade e simplicidade 
 | **Prioridade**   | P1 - Alta |
 | **Complexidade** | Média     |
 | **Sprint**       | 2         |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Cancelar venda em andamento (antes de finalizar)
 - [ ] Cancelar venda finalizada (requer autorização)
 - [ ] Campo de motivo obrigatório
 - [ ] Estorno automático do estoque
 - [ ] Log de auditoria com responsável
-
-**Regras de Negócio:**
-
+## Regras de Negócio: (cont.)
 - Venda em andamento: qualquer operador pode cancelar
 - Venda finalizada: apenas MANAGER ou ADMIN
 - Prazo máximo para cancelamento: 24h
@@ -220,9 +192,7 @@ O módulo de PDV é o coração do sistema, focado em velocidade e simplicidade 
 | **Prioridade**   | P0 - Crítica |
 | **Complexidade** | Média        |
 | **Sprint**       | 2            |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Seleção de forma de pagamento (Dinheiro, PIX, Outro)
 - [ ] Cálculo automático de troco para dinheiro
 - [ ] Teclado numérico virtual para valor recebido
@@ -230,9 +200,7 @@ O módulo de PDV é o coração do sistema, focado em velocidade e simplicidade 
 - [ ] Confirmação visual e sonora
 - [ ] Impressão automática de cupom (se configurado)
 - [ ] Abertura automática de gaveta (se configurado)
-
-**Regras de Negócio:**
-
+## Regras de Negócio: (cont.)
 - Não permitir finalizar venda vazia
 - Valor recebido >= total para dinheiro
 - PIX/Outro: assumir valor exato
@@ -248,9 +216,7 @@ O módulo de PDV é o coração do sistema, focado em velocidade e simplicidade 
 | **Prioridade**   | P1 - Alta |
 | **Complexidade** | Alta      |
 | **Sprint**       | 3         |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Suporte a impressoras Epson (TM-T20X, TM-T88V)
 - [ ] Suporte a impressoras Elgin (i7, i9)
 - [ ] Suporte a impressoras Bematech (MP-4200 TH)
@@ -260,10 +226,8 @@ O módulo de PDV é o coração do sistema, focado em velocidade e simplicidade 
 - [ ] Template customizável de cupom
 - [ ] Logo do estabelecimento (opcional)
 - [ ] Guilhotina automática
-
-**Template Padrão do Cupom:**
-
-```
+## Template Padrão do Cupom:
+```text
          NOME DO ESTABELECIMENTO
          Endereço completo
          CNPJ: XX.XXX.XXX/XXXX-XX
@@ -288,8 +252,7 @@ O módulo de PDV é o coração do sistema, focado em velocidade e simplicidade 
          ────────────────────────────────
          Venda #123
          Obrigado pela preferência!
-```
-
+```text
 ---
 
 #### PDV-010: Gaveta de Dinheiro
@@ -299,16 +262,12 @@ O módulo de PDV é o coração do sistema, focado em velocidade e simplicidade 
 | **Prioridade**   | P2 - Média |
 | **Complexidade** | Baixa      |
 | **Sprint**       | 3          |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Abertura via comando na impressora (pulso RJ11)
 - [ ] Abertura manual pelo menu
 - [ ] Abertura automática ao finalizar venda em dinheiro
 - [ ] Log de todas as aberturas
-
-**Regras de Negócio:**
-
+## Regras de Negócio: (cont.)
 - Apenas MANAGER e ADMIN podem abrir manualmente
 - CASHIER: apenas via venda ou sangria/suprimento
 
@@ -316,11 +275,11 @@ O módulo de PDV é o coração do sistema, focado em velocidade e simplicidade 
 
 ## 📋 Módulo Produtos
 
-### Visão Geral
+### Visão Geral (cont.)
 
 Gestão completa do catálogo de produtos com foco em cadastro rápido e organização por categorias.
 
-### Features
+### Features (cont.)
 
 #### PROD-001: Listagem de Produtos
 
@@ -329,9 +288,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P0 - Crítica |
 | **Complexidade** | Média        |
 | **Sprint**       | 1            |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Tabela com colunas: código, nome, categoria, preço, estoque
 - [ ] Ordenação por qualquer coluna
 - [ ] Filtros: categoria, status (ativo/inativo), estoque (baixo/normal)
@@ -350,9 +307,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P0 - Crítica |
 | **Complexidade** | Média        |
 | **Sprint**       | 1            |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Campos obrigatórios: nome, categoria, preço de venda
 - [ ] Campos opcionais: código de barras, descrição, estoque mínimo
 - [ ] Código interno gerado automaticamente (sequencial)
@@ -361,9 +316,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 - [ ] Cálculo automático de margem
 - [ ] Preview de como aparecerá no PDV
 - [ ] Validação de código de barras duplicado
-
-**Regras de Negócio:**
-
+## Regras de Negócio: (cont.)
 - Código interno: formato MRC-00001 (incrementa)
 - Código de barras único (se informado)
 - Preço de venda > 0
@@ -379,9 +332,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P1 - Alta |
 | **Complexidade** | Média     |
 | **Sprint**       | 2         |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Modal simplificado ao scanear código não encontrado
 - [ ] Campos apenas: nome, categoria, preço
 - [ ] Sugestão de nome via API COSMOS (código EAN)
@@ -398,18 +349,14 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P1 - Alta |
 | **Complexidade** | Baixa     |
 | **Sprint**       | 1         |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Hierarquia de 2 níveis (categoria > subcategoria)
 - [ ] Nome, cor, ícone por categoria
 - [ ] Reordenação drag-and-drop
 - [ ] Contagem de produtos por categoria
 - [ ] Mesclar categorias (unificar produtos)
 - [ ] Impedir exclusão com produtos vinculados
-
-**Categorias Padrão:**
-
+## Categorias Padrão:
 - Bebidas
 - Laticínios
 - Carnes
@@ -428,9 +375,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P2 - Média |
 | **Complexidade** | Baixa      |
 | **Sprint**       | 3          |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Timeline de alterações de preço
 - [ ] Gráfico de evolução
 - [ ] Filtro por período
@@ -446,9 +391,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P2 - Média |
 | **Complexidade** | Alta       |
 | **Sprint**       | 5          |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Upload de arquivo Excel/CSV
 - [ ] Mapeamento de colunas
 - [ ] Preview antes de importar
@@ -460,7 +403,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 
 ## 📦 Módulo Estoque
 
-### Features
+### Features (cont.)
 
 #### EST-001: Entrada de Estoque
 
@@ -469,9 +412,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P0 - Crítica |
 | **Complexidade** | Média        |
 | **Sprint**       | 2            |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Entrada individual ou em lote
 - [ ] Seleção de fornecedor
 - [ ] Número da nota fiscal
@@ -489,9 +430,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P1 - Alta |
 | **Complexidade** | Média     |
 | **Sprint**       | 3         |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Contagem de estoque físico
 - [ ] Comparação sistema vs contagem
 - [ ] Motivo obrigatório para divergências
@@ -507,9 +446,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P1 - Alta |
 | **Complexidade** | Baixa     |
 | **Sprint**       | 2         |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Histórico completo de movimentações
 - [ ] Filtros: produto, tipo, período, responsável
 - [ ] Tipos: entrada, saída, ajuste, perda, transferência
@@ -524,9 +461,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P0 - Crítica |
 | **Complexidade** | Baixa        |
 | **Sprint**       | 1            |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Busca rápida por produto
 - [ ] Exibição de saldo atual
 - [ ] Detalhamento por lote
@@ -537,7 +472,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 
 ## ⏰ Módulo Validade
 
-### Features
+### Features (cont.)
 
 #### VAL-001: Dashboard de Vencimentos
 
@@ -546,9 +481,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P0 - Crítica |
 | **Complexidade** | Média        |
 | **Sprint**       | 3            |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Cards resumo: Vencido, 3 dias, 7 dias, 30 dias
 - [ ] Lista detalhada clicável
 - [ ] Ação: marcar como verificado
@@ -564,9 +497,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P0 - Crítica |
 | **Complexidade** | Média        |
 | **Sprint**       | 3            |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Notificação visual no menu lateral (badge)
 - [ ] Popup ao abrir sistema (se houver críticos)
 - [ ] Push notification (se configurado)
@@ -582,9 +513,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P1 - Alta |
 | **Complexidade** | Média     |
 | **Sprint**       | 4         |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Vendas consomem lotes mais antigos primeiro
 - [ ] Indicação visual do lote em uso
 - [ ] Alerta se tentando vender lote mais novo
@@ -593,7 +522,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 
 ## 👥 Módulo Funcionários
 
-### Features
+### Features (cont.)
 
 #### FUNC-001: Cadastro de Funcionário
 
@@ -602,9 +531,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P1 - Alta |
 | **Complexidade** | Média     |
 | **Sprint**       | 2         |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Dados pessoais: nome, CPF, RG, telefone, email
 - [ ] Endereço completo
 - [ ] Perfil de acesso: Admin, Manager, Cashier, Viewer
@@ -622,9 +549,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P0 - Crítica |
 | **Complexidade** | Média        |
 | **Sprint**       | 2            |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] 4 perfis predefinidos
 - [ ] Matriz de permissões por módulo
 - [ ] Bloqueio de funcionalidades por role
@@ -640,9 +565,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P2 - Média |
 | **Complexidade** | Média      |
 | **Sprint**       | 4          |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Registro de login/logout
 - [ ] Registro de operações críticas
 - [ ] Filtro por funcionário, período, ação
@@ -652,7 +575,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 
 ## 💰 Módulo Controle de Caixa
 
-### Features
+### Features (cont.)
 
 #### CAIXA-001: Abertura de Caixa
 
@@ -661,9 +584,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P0 - Crítica |
 | **Complexidade** | Média        |
 | **Sprint**       | 2            |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Informar valor de abertura (fundo de troco)
 - [ ] Contagem cega (opcional): informar quantidade de cédulas/moedas
 - [ ] Apenas 1 caixa aberto por operador
@@ -678,9 +599,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P0 - Crítica |
 | **Complexidade** | Alta         |
 | **Sprint**       | 2            |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Resumo: abertura + vendas - sangrias + suprimentos = esperado
 - [ ] Informar valor contado
 - [ ] Calcular diferença (sobra/falta)
@@ -697,9 +616,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P1 - Alta |
 | **Complexidade** | Baixa     |
 | **Sprint**       | 2         |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Retirada de dinheiro do caixa
 - [ ] Motivo obrigatório
 - [ ] Aprovação de MANAGER (se > R$200)
@@ -714,9 +631,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P1 - Alta |
 | **Complexidade** | Baixa     |
 | **Sprint**       | 2         |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Adição de dinheiro ao caixa
 - [ ] Motivo obrigatório
 - [ ] Impressão de comprovante
@@ -725,7 +640,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 
 ## 📊 Módulo Relatórios
 
-### Features
+### Features (cont.)
 
 #### REL-001: Vendas por Período
 
@@ -734,9 +649,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P1 - Alta |
 | **Complexidade** | Média     |
 | **Sprint**       | 4         |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Filtros: data início/fim, operador, forma pagamento
 - [ ] Gráfico de vendas por dia/semana/mês
 - [ ] Tabela detalhada com totais
@@ -752,9 +665,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P1 - Alta |
 | **Complexidade** | Baixa     |
 | **Sprint**       | 4         |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Top 20 por quantidade
 - [ ] Top 20 por faturamento
 - [ ] Filtro por período e categoria
@@ -769,9 +680,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P1 - Alta |
 | **Complexidade** | Baixa     |
 | **Sprint**       | 4         |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Bottom 20 (menor movimento)
 - [ ] Produtos sem venda em X dias
 - [ ] Sugestão de promoção/descontinuação
@@ -785,9 +694,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P2 - Média |
 | **Complexidade** | Média      |
 | **Sprint**       | 5          |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Classificação A (80%), B (15%), C (5%)
 - [ ] Por faturamento ou quantidade
 - [ ] Gráfico de Pareto
@@ -802,9 +709,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P1 - Alta |
 | **Complexidade** | Baixa     |
 | **Sprint**       | 4         |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Valor total em estoque por custo
 - [ ] Valor total em estoque por venda
 - [ ] Por categoria
@@ -819,9 +724,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P2 - Média |
 | **Complexidade** | Alta       |
 | **Sprint**       | 6          |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Receita bruta
 - [ ] (-) Descontos
 - [ ] (=) Receita líquida
@@ -833,7 +736,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 
 ## ⚙️ Módulo Configurações
 
-### Features
+### Features (cont.)
 
 #### CONF-001: Dados da Empresa
 
@@ -842,9 +745,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P1 - Alta |
 | **Complexidade** | Baixa     |
 | **Sprint**       | 1         |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Nome do estabelecimento
 - [ ] Nome fantasia
 - [ ] CNPJ/CPF
@@ -862,9 +763,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P1 - Alta |
 | **Complexidade** | Alta      |
 | **Sprint**       | 3         |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Seleção de interface: USB, Serial, Rede
 - [ ] Detecção automática de impressoras USB
 - [ ] Teste de impressão
@@ -881,9 +780,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P1 - Alta |
 | **Complexidade** | Alta      |
 | **Sprint**       | 4         |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Seleção de porta COM
 - [ ] Seleção de protocolo (Toledo, Filizola, etc)
 - [ ] Configuração de baud rate
@@ -899,9 +796,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P2 - Média |
 | **Complexidade** | Baixa      |
 | **Sprint**       | 5          |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Dark mode / Light mode
 - [ ] Cor primária customizável
 - [ ] Tamanho da fonte (PDV)
@@ -916,9 +811,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P1 - Alta |
 | **Complexidade** | Alta      |
 | **Sprint**       | 5         |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Autenticação com Google Drive
 - [ ] Pasta de destino no Drive
 - [ ] Frequência: horário, diário, semanal
@@ -930,7 +823,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 
 ## 🚨 Módulo Alertas
 
-### Features
+### Features (cont.)
 
 #### ALERT-001: Central de Alertas
 
@@ -939,9 +832,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P1 - Alta |
 | **Complexidade** | Média     |
 | **Sprint**       | 3         |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Ícone de sino no header com badge
 - [ ] Dropdown com alertas recentes
 - [ ] Página full com todos os alertas
@@ -957,9 +848,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P1 - Alta |
 | **Complexidade** | Média     |
 | **Sprint**       | 3         |
-
-**Alertas Implementados:**
-
+## Alertas Implementados:
 - [ ] **Vencimento Crítico**: produto vence em 3 dias
 - [ ] **Vencimento Próximo**: produto vence em 7 dias
 - [ ] **Vencimento Aviso**: produto vence em 30 dias
@@ -972,7 +861,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 
 ## 💾 Módulo Backup
 
-### Features
+### Features (cont.)
 
 #### BACKUP-001: Backup Local
 
@@ -981,9 +870,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P0 - Crítica |
 | **Complexidade** | Média        |
 | **Sprint**       | 4            |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Backup automático a cada fechamento de caixa
 - [ ] Backup diário às 03:00 (se PC ligado)
 - [ ] Pasta: %APPDATA%/Mercearias/backups
@@ -999,9 +886,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P1 - Alta |
 | **Complexidade** | Alta      |
 | **Sprint**       | 5         |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Autenticação OAuth2
 - [ ] Upload após backup local
 - [ ] Criptografia AES-256 antes do upload
@@ -1017,9 +902,7 @@ Gestão completa do catálogo de produtos com foco em cadastro rápido e organiz
 | **Prioridade**   | P1 - Alta |
 | **Complexidade** | Alta      |
 | **Sprint**       | 5         |
-
-**Requisitos Funcionais:**
-
+## Requisitos Funcionais: (cont.)
 - [ ] Listar backups disponíveis (local + Drive)
 - [ ] Visualizar data e tamanho
 - [ ] Restaurar com confirmação dupla

@@ -158,8 +158,7 @@ pub mod escpos {
     // Linha
     pub const LINE_FEED: &[u8] = &[0x0A];
 }
-```
-
+```text
 ### Impressão de Cupom
 
 ```rust
@@ -231,8 +230,7 @@ impl ReceiptPrinter {
         self.write(OPEN_DRAWER)
     }
 }
-```
-
+```text
 ## ⚖️ Protocolo de Balanças
 
 ### Toledo
@@ -269,8 +267,7 @@ impl ToledoScale {
         Ok(weight)
     }
 }
-```
-
+```text
 ## 📱 Scanner Mobile (WebSocket)
 
 ### Servidor WebSocket (Tauri)
@@ -305,8 +302,7 @@ pub async fn start_scanner_server(
 
     Ok(())
 }
-```
-
+```text
 ### PWA Mobile Scanner
 
 ```typescript
@@ -362,8 +358,7 @@ export function Scanner({ serverUrl }: { serverUrl: string }) {
     </div>
   );
 }
-```
-
+```text
 ## ⚙️ Configuração de Hardware
 
 ### Tela de Configuração
@@ -391,8 +386,7 @@ interface HardwareConfig {
     mobilePort: number; // WebSocket port
   };
 }
-```
-
+```text
 ## 🐛 Troubleshooting
 
 ### Impressora não imprime

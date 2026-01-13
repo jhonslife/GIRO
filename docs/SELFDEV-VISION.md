@@ -37,7 +37,7 @@ Após análise de padrões de extensões de larga escala (Language Servers, Remo
 
 Adotaremos o padrão **LSP++ (Language Server Protocol Extended)**, onde o VS Code age apenas como "Thin Client" (IO/UI) e toda a inteligência reside em um **SelfDev Kernel** rodando em container Docker (local ou remoto).
 
-```
+```text
 ┌───────────────────────────┐          ┌──────────────────────────────────────────────┐
 │  VS CODE (HOST MACHINE)   │          │         SELFDEV KERNEL (DOCKER)              │
 │ ───────────────────────── │          │ ──────────────────────────────────────────── │
@@ -58,8 +58,7 @@ Adotaremos o padrão **LSP++ (Language Server Protocol Extended)**, onde o VS Co
 │ └───────────────────────┘ │          │ └──────────────┘  └───────────────────────┘  │
 │                           │          │                                              │
 └───────────────────────────┘          └──────────────────────────────────────────────┘
-```
-
+```text
 ---
 
 ## 🎯 Visão Geral
@@ -136,8 +135,7 @@ pub struct Kernel {
     // Interface gRPC
     api_server: GrpcServer,
 }
-```
-
+```text
 ### Agents no Kernel
 Os agentes não rodam mais como scripts JS no VS Code, mas como **Processos Leves (Tokio Tasks)** dentro do Kernel. Isso permite:
 - **Paralelismo real:** Uso de todos os cores da CPU para análise e build.
@@ -174,8 +172,7 @@ export async function activate(context: ExtensionContext) {
     // Envia mudanças locais para o container instantaneamente
     startFileSync(workspace.rootPath, client);
 }
-```
-
+```text
 ---
 
 ## 💾 Sistema de Memória Distribuída
@@ -215,8 +212,7 @@ service Orchestrator {
     rpc AskGraph (Query) returns (Answer);
     rpc TriggerAgent (AgentAction) returns (AgentResponse);
 }
-```
-
+```text
 ---
 
 ## 🏗️ Pipeline de Construção Isolado

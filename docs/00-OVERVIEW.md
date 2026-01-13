@@ -191,7 +191,7 @@ Cadastro rápido de produtos com:
 
 ## 🛣️ Roadmap de Alto Nível
 
-```
+```text
 Q1 2026: MVP Desktop + Caixa + Estoque + Validade
          ├── Instalador Windows
          ├── Impressora térmica
@@ -211,8 +211,7 @@ Q4 2026: Multi-loja + Franquias
          ├── Sincronização lojas
          ├── Dashboard consolidado
          └── Gestão de franquias
-```
-
+```text
 ---
 
 ## 💰 Modelo de Monetização (Planejado)

@@ -441,6 +441,14 @@ export async function authenticateEmployee(pin: string): Promise<Employee | null
   return tauriInvoke<Employee | null>('authenticate_employee', { pin });
 }
 
+export async function hasAdmin(): Promise<boolean> {
+  return tauriInvoke<boolean>('has_admin');
+}
+
+export async function hasAnyEmployee(): Promise<boolean> {
+  return tauriInvoke<boolean>('has_any_employee');
+}
+
 export async function createEmployee(
   input: Omit<Employee, 'id' | 'createdAt' | 'updatedAt'>
 ): Promise<Employee> {

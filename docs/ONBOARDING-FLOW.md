@@ -9,7 +9,7 @@
 
 O GIRO possui um sistema de onboarding multi-etapas que garante uma experiência suave desde a instalação até o primeiro uso produtivo.
 
-```
+```text
 ┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
 │ Instalação  │───▶│ Primeiro    │───▶│ Wizard de   │───▶│ Tutorial    │
 │ Windows     │    │ Login       │    │ Perfil      │    │ Welcome     │
@@ -19,8 +19,7 @@ O GIRO possui um sistema de onboarding multi-etapas que garante uma experiência
                                               ┌──────────────────────────┐
                                               │ Primeira Venda (PDV)     │
                                               └──────────────────────────┘
-```
-
+```text
 ---
 
 ## 1️⃣ Instalação do Sistema
@@ -29,8 +28,7 @@ O GIRO possui um sistema de onboarding multi-etapas que garante uma experiência
 
 **Arquivo**: `docs/INSTALL_WIZARD.md`
 
-#### Etapas:
-
+#### Etapas
 1. **Bem-vindo** - Apresentação do sistema
 2. **EULA** - Termos de uso e licença
 3. **Diretório** - Escolha do local de instalação (default: `C:\Program Files\GIRO`)
@@ -42,9 +40,8 @@ O GIRO possui um sistema de onboarding multi-etapas que garante uma experiência
 5. **Instalação** - Cópia de arquivos, registro, atalhos
 6. **Conclusão** - Opção de iniciar o GIRO imediatamente
 
-#### Arquivos Criados:
-
-```
+#### Arquivos Criados
+```text
 C:\Program Files\GIRO\
 ├── GIRO.exe                    # Executável principal
 ├── resources\
@@ -52,10 +49,8 @@ C:\Program Files\GIRO\
 │   └── assets\
 ├── webview\                    # Runtime do Tauri
 └── Uninstall.exe               # Desinstalador
-```
-
-#### Seeds do Banco de Dados:
-
+```text
+#### Seeds do Banco de Dados
 Ao instalar, o sistema já vem com:
 
 - ✅ **Funcionário Admin** (PIN: `1234`)
@@ -67,53 +62,37 @@ Ao instalar, o sistema já vem com:
 
 ## 2️⃣ Primeira Execução
 
-### Fluxo Atual (⚠️ PROBLEMA)
+### Fluxo Atual (✅ Corrigido no código)
 
-```
+O problema de primeira execução que fazia o app pular o `BusinessProfileWizard` foi corrigido.
+
+Resumo da correção:
+
+- Ao criar o primeiro administrador em `InitialSetupPage`, o frontend agora faz um reload (`window.location.href = '/login'`) para forçar o `App` a reexecutar a checagem `hasAdmin()` e seguir o fluxo correto.
+- A página de setup bloqueia acesso se já existir qualquer funcionário (`hasAnyEmployee()`), redirecionando para `/login`.
+
+Arquivos alterados:
+
+- [apps/desktop/src/pages/setup/InitialSetupPage.tsx](apps/desktop/src/pages/setup/InitialSetupPage.tsx)
+
+Fluxo final esperado (após correção):
+
+```text
 1. Usuário abre GIRO.exe pela primeira vez
-   ↓
-2. App.tsx carrega
-   ↓
-3. Redireciona para /login (não autenticado)
-   ↓
-4. Usuário digita PIN 1234
-   ↓
-5. authenticateEmployee() retorna Employee válido
-   ↓
-6. login(employee) no auth-store
-   ↓
-7. ❌ Redireciona direto para "/" (que vai para /pdv)
-   ↓
-8. ❌ BusinessProfileWizard NUNCA é mostrado!
-```
-
-### Fluxo Esperado (✅ CORREÇÃO)
-
-```
-1. Usuário abre GIRO.exe pela primeira vez
-   ↓
-2. App.tsx carrega
-   ↓
+  ↓
+2. App.tsx carrega e verifica se existe admin (hasAdmin())
+  ↓
 3. Redireciona para /login
-   ↓
-4. Usuário digita PIN 1234
-   ↓
-5. authenticateEmployee() OK
-   ↓
-6. login(employee)
-   ↓
-7. ✅ VERIFICAR: isConfigured do BusinessProfile
-   ↓
-   ├─ Se FALSE ────▶ Redirecionar para /wizard
-   │                 ↓
-   │                 Wizard seleciona perfil
-   │                 ↓
-   │                 markAsConfigured()
-   │                 ↓
-   │                 Redirecionar para /pdv
-   │
-   └─ Se TRUE ─────▶ Redirecionar para /pdv (normal)
-```
+  ↓
+4. Usuário digita PIN e autentica
+  ↓
+5. login(employee) no auth-store
+  ↓
+6. Verifica `isConfigured` do BusinessProfile
+  ├─ Se FALSE → navigate('/wizard') → seleciona perfil → markAsConfigured() → redireciona para /pdv
+  └─ Se TRUE → redireciona para /pdv
+```text
+Testes relacionados foram executados localmente e passaram (tests unitários de login e store).
 
 ---
 
@@ -125,16 +104,14 @@ Ao instalar, o sistema já vem com:
 
 ### Funcionalidades
 
-#### Perfis Disponíveis:
-
+#### Perfis Disponíveis
 | Perfil           | Ícone           | Features Exclusivas                                  |
 | ---------------- | --------------- | ---------------------------------------------------- |
 | **Mercearia**    | 🛒 ShoppingCart | Controle de validade, Balança, Rastreamento de lotes |
 | **Motopeças**    | 🏍️ Bike         | Compatibilidade veicular, OS, Garantias, Histórico   |
 | **Varejo Geral** | 🏪 Store        | Apenas features core (PDV, Estoque, Caixa)           |
 
-#### Processo de Seleção:
-
+#### Processo de Seleção
 1. **Escolha do Perfil**
 
    - Cards visuais com ícones e descrições
@@ -169,8 +146,7 @@ interface BusinessProfileState {
   markAsConfigured: () => void; // ⭐ Marca como já configurado
   resetProfile: () => void;
 }
-```
-
+```text
 ### Tipos de Perfil
 
 **Arquivo**: [business-profile.ts](../apps/desktop/src/types/business-profile.ts)
@@ -198,8 +174,7 @@ interface BusinessFeatures {
   warranties: boolean; // Motopeças
   // ...
 }
-```
-
+```text
 ---
 
 ## 4️⃣ Tutorial Welcome
@@ -240,8 +215,7 @@ const welcomeTutorial: Tutorial = {
     { id: 'welcome-done', placement: 'center' },
   ],
 };
-```
-
+```text
 ### Auto-start do Tutorial
 
 **TutorialProvider.tsx** (linha 110):
@@ -259,8 +233,7 @@ useEffect(() => {
     }, 1000);
   }
 }, [settings, getTutorialProgress, startTutorial, location.pathname]);
-```
-
+```text
 ---
 
 ## 5️⃣ Integração Atual - ANÁLISE
@@ -283,8 +256,7 @@ const handleLogin = async () => {
     navigate('/'); // vai para /pdv
   }
 };
-```
-
+```text
 ### App.tsx
 
 **Análise**: Não tem lógica para interceptar e mostrar wizard
@@ -304,8 +276,7 @@ const handleLogin = async () => {
     {/* ❌ NÃO TEM ROTA /wizard */}
   </Route>
 </Routes>
-```
-
+```text
 ---
 
 ## 6️⃣ SOLUÇÃO: Implementação do Fluxo Completo
@@ -352,8 +323,7 @@ const WizardRoute: FC = () => {
     {/* ... */}
   </Route>
 </Routes>
-```
-
+```text
 ### Passo 2: Modificar LoginPage
 
 **Modificar**: `LoginPage.tsx`
@@ -382,8 +352,7 @@ export const LoginPage: FC = () => {
     }
   };
 };
-```
-
+```text
 ### Passo 3: Proteger Rotas Principais
 
 **Modificar**: `App.tsx` - Adicionar guard no index
@@ -411,15 +380,14 @@ const RootRedirect: FC = () => {
   <Route index element={<RootRedirect />} />
   {/* ... */}
 </Route>;
-```
-
+```text
 ---
 
 ## 7️⃣ Fluxo Completo Final
 
 ### Primeiro Acesso
 
-```
+```text
 1. Instala GIRO.exe
    ↓
 2. Abre pela primeira vez
@@ -451,11 +419,10 @@ const RootRedirect: FC = () => {
 15. Tour de 5 minutos pelo sistema
     ↓
 16. Pronto para primeira venda!
-```
-
+```text
 ### Acessos Subsequentes
 
-```
+```text
 1. Abre GIRO.exe
    ↓
 2. /login
@@ -467,8 +434,7 @@ const RootRedirect: FC = () => {
 5. navigate('/') → /pdv
    ↓
 6. Uso normal do sistema
-```
-
+```text
 ---
 
 ## 8️⃣ Persistência de Dados
@@ -506,8 +472,7 @@ const RootRedirect: FC = () => {
     }
   }
 }
-```
-
+```text
 ### SQLite
 
 ```sql
@@ -519,8 +484,7 @@ SELECT * FROM settings WHERE key LIKE 'business.%';
 
 -- Categorias pré-criadas (dependem do perfil)
 SELECT * FROM categories;
-```
-
+```text
 ---
 
 ## 9️⃣ Adaptação por Perfil
@@ -596,8 +560,7 @@ test('should complete first-time onboarding flow', async ({ page }) => {
   // 6. Tutorial deve auto-iniciar
   await expect(page.locator('text=Bem-vindo ao GIRO')).toBeVisible();
 });
-```
-
+```text
 ---
 
 ## ✅ Checklist de Implementação
@@ -627,8 +590,6 @@ stateDiagram-v2
     PDV --> Tutorial: Auto-start
     Tutorial --> UsoNormal: Completa
     UsoNormal --> [*]
-```
-
+```text
 ---
-
-**Desenvolvido com ❤️ pela Arkheion Corp**
+## Desenvolvido com ❤️ pela Arkheion Corp

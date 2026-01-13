@@ -10,7 +10,7 @@ Package de banco de dados do sistema Mercearias.
 
 ## Estrutura
 
-```
+```text
 packages/database/
 ├── prisma/
 │   ├── schema.prisma    # Schema do banco
@@ -20,8 +20,7 @@ packages/database/
 │   ├── index.ts         # Exports principais
 │   └── types.ts         # Types customizados
 └── package.json
-```
-
+```text
 ## Comandos
 
 ```bash
@@ -45,8 +44,7 @@ pnpm db:studio
 
 # Validar schema
 pnpm db:validate
-```
-
+```text
 ## Models
 
 | Model           | Descrição                        |

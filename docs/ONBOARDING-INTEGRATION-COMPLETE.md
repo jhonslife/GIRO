@@ -20,7 +20,7 @@ Garantir que na **primeira execução do GIRO**, o usuário passe pelo fluxo com
 
 ### Antes da Correção
 
-```
+```text
 Login (PIN 1234)
    ↓
 ✅ Autenticação OK
@@ -30,8 +30,7 @@ Login (PIN 1234)
 ❌ BusinessProfileWizard NUNCA é mostrado
    ↓
 ❌ Sistema fica sem perfil configurado
-```
-
+```text
 **Resultado**: O usuário entrava no sistema sem definir o tipo de negócio, perdendo personalizações e features específicas.
 
 ---
@@ -40,7 +39,7 @@ Login (PIN 1234)
 
 ### Agora (Após Correção)
 
-```
+```text
 Login (PIN 1234)
    ↓
 ✅ Autenticação OK
@@ -56,8 +55,7 @@ Login (PIN 1234)
    │    Redireciona para /pdv
    │
    └─ TRUE → /pdv (uso normal)
-```
-
+```text
 ---
 
 ## 🔧 Mudanças Implementadas
@@ -71,8 +69,7 @@ Login (PIN 1234)
 ```typescript
 import { BusinessProfileWizard } from '@/components/shared';
 import { useBusinessProfile } from '@/stores/useBusinessProfile';
-```
-
+```text
 #### ➕ Novo Componente: WizardRoute
 
 ```typescript
@@ -86,8 +83,7 @@ const WizardRoute: FC = () => {
 
   return <BusinessProfileWizard redirectTo="/pdv" />;
 };
-```
-
+```text
 **Objetivo**: Proteger a rota `/wizard` - se o usuário já configurou, redireciona automaticamente.
 
 #### ➕ Novo Componente: RootRedirect
@@ -103,8 +99,7 @@ const RootRedirect: FC = () => {
 
   return <Navigate to="/pdv" replace />;
 };
-```
-
+```text
 **Objetivo**: Interceptar o acesso à rota raiz `/` e verificar se o perfil está configurado.
 
 #### ➕ Nova Rota: /wizard
@@ -118,8 +113,7 @@ const RootRedirect: FC = () => {
     </ProtectedRoute>
   }
 />
-```
-
+```text
 **Objetivo**: Permitir acesso ao wizard apenas para usuários autenticados.
 
 #### 🔄 Modificação: Route Index
@@ -134,8 +128,7 @@ const RootRedirect: FC = () => {
   /* DEPOIS */
 }
 <Route index element={<RootRedirect />} />;
-```
-
+```text
 **Objetivo**: Não redirecionar cegamente para `/pdv`, mas verificar se precisa configurar perfil primeiro.
 
 ---
@@ -148,14 +141,12 @@ const RootRedirect: FC = () => {
 
 ```typescript
 import { useBusinessProfile } from '@/stores/useBusinessProfile';
-```
-
+```text
 #### ➕ Hook no Componente
 
 ```typescript
 const { isConfigured } = useBusinessProfile();
-```
-
+```text
 #### 🔄 Modificação: handleLogin
 
 ```typescript
@@ -175,8 +166,7 @@ if (employee) {
     navigate('/'); // ✅ Já configurado → Dashboard
   }
 }
-```
-
+```text
 **Objetivo**: Redirecionar inteligentemente baseado no estado do perfil.
 
 ---
@@ -229,8 +219,7 @@ test('should complete full onboarding flow - Grocery profile', async ({ page }) 
   expect(profileData.state.businessType).toBe('GROCERY');
   expect(profileData.state.isConfigured).toBe(true);
 });
-```
-
+```text
 ---
 
 ### 4. Documentação
@@ -252,7 +241,7 @@ Documentação completa do fluxo com:
 
 ### Primeira Execução (Novo Usuário)
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │ 1. Instalação do GIRO.exe                                   │
 │    └─ SQLite criado com seeds (Admin PIN: 1234)             │
@@ -312,11 +301,10 @@ Documentação completa do fluxo com:
 │    └─ Tutorial: Completo ✅                                 │
 │    └─ Usuário pode fazer primeira venda                     │
 └─────────────────────────────────────────────────────────────┘
-```
-
+```text
 ### Acessos Subsequentes
 
-```
+```text
 1. Abre GIRO.exe
    ↓
 2. /login
@@ -330,8 +318,7 @@ Documentação completa do fluxo com:
 6. isConfigured === true → navigate('/pdv')
    ↓
 7. Uso normal do sistema
-```
-
+```text
 ---
 
 ## 🧪 Como Testar Manualmente
@@ -342,8 +329,7 @@ Documentação completa do fluxo com:
 // No DevTools do browser (F12):
 localStorage.clear();
 location.reload();
-```
-
+```text
 ### Fluxo de Teste
 
 1. ✅ Abrir `http://localhost:1420/`
@@ -495,10 +481,7 @@ Toda primeira execução do GIRO passa obrigatoriamente pelo wizard de seleção
 - ✅ Labels e categorias são apropriadas
 - ✅ Dashboard mostra informações relevantes
 - ✅ Tutorial guia o usuário nos primeiros passos
-
-**O GIRO agora oferece uma experiência de onboarding profissional e personalizada desde o primeiro acesso! 🚀**
-
+## O GIRO agora oferece uma experiência de onboarding profissional e personalizada desde o primeiro acesso! 🚀
 ---
-
-**Desenvolvido com ❤️ pela Arkheion Corp**  
+## Desenvolvido com ❤️ pela Arkheion Corp
 **Data**: 10 de Janeiro de 2026

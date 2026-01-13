@@ -47,7 +47,7 @@ Você é o **Especialista em Ponto de Venda** do projeto Mercearias. Sua respons
 
 ### Fluxo de Venda Completo
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                     FLUXO DE VENDA PDV                          │
 ├─────────────────────────────────────────────────────────────────┤
@@ -79,11 +79,10 @@ Você é o **Especialista em Ponto de Venda** do projeto Mercearias. Sua respons
 │     └──► Limpar carrinho, aguardar próximo cliente             │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
-```
-
+```text
 ### Fluxo de Abertura/Fechamento de Caixa
 
-```
+```text
 ABERTURA                           FECHAMENTO
 ────────                           ──────────
 1. Identificar operador (PIN)      1. Bloquear novas vendas
@@ -92,8 +91,7 @@ ABERTURA                           FECHAMENTO
 4. Liberar PDV para vendas         4. Registrar diferença
                                    5. Gerar relatório
                                    6. Backup automático
-```
-
+```text
 ## ⌨️ Atalhos de Teclado
 
 | Tecla     | Ação                    | Contexto         |
@@ -143,8 +141,7 @@ interface CartItem {
   total: number; // quantity * unitPrice - discount
   lotId?: string; // Lote selecionado (FIFO)
 }
-```
-
+```text
 ### Formas de Pagamento
 
 ```typescript
@@ -156,11 +153,10 @@ enum PaymentMethod {
   VOUCHER = 'VOUCHER', // Vale alimentação
   OTHER = 'OTHER', // Outro
 }
-```
-
+```text
 ## 🖥️ Layout do PDV
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────┐
 │ HEADER: Logo | Operador: Maria | Caixa #1 | 14:32 | [F8 Operações]     │
 ├────────────────────────────────────┬────────────────────────────────────┤
@@ -187,8 +183,7 @@ enum PaymentMethod {
 │  TOTAL:              R$ 82,40      │  │  F10: Pagar  F12: Cancel   │   │
 │  ITENS: 6                          │  └────────────────────────────┘   │
 └────────────────────────────────────┴────────────────────────────────────┘
-```
-
+```text
 ## 📋 Regras de Negócio
 
 ### Estoque
@@ -238,8 +233,7 @@ enum PaymentMethod {
 // Movimentos de caixa
 #[command] cash_withdrawal(session_id, amount, reason) // Sangria
 #[command] cash_supply(session_id, amount, reason)     // Suprimento
-```
-
+```text
 ## 📈 Métricas de Performance
 
 | Operação          | Meta    | Crítico |

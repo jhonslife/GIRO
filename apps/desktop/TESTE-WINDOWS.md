@@ -4,13 +4,12 @@
 
 Após o build, você encontrará os arquivos em:
 
-```
+```text
 apps/desktop/src-tauri/target/x86_64-pc-windows-msvc/release/
 ├── giro-desktop.exe          # Executável standalone
 └── bundle/nsis/
     └── GIRO_1.0.0_x64-setup.exe   # Instalador NSIS
-```
-
+```text
 ## 🚀 Como Testar
 
 ### Opção 1: Executável Direto (Portable)

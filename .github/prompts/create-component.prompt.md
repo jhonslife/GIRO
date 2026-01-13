@@ -17,14 +17,13 @@ Crie um componente React completo seguindo os padrões da Arkheion Corp.
 
 ## Estrutura de Arquivos a Criar
 
-```
+```text
 src/components/[tipo]/[ComponentName]/
 ├── index.tsx           # Export principal
 ├── [ComponentName].tsx # Implementação
 ├── [ComponentName].test.tsx # Testes
 └── [ComponentName].stories.tsx # Storybook (opcional)
-```
-
+```text
 ## Template do Componente
 
 ```tsx
@@ -48,8 +47,7 @@ export const ${COMPONENT_NAME}: FC<${COMPONENT_NAME}Props> = ({
     </div>
   );
 };
-```
-
+```text
 ## Checklist
 
 - [ ] TypeScript types completos

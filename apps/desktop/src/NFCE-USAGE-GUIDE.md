@@ -25,8 +25,7 @@ async function checkService() {
     console.error('Erro de comunicação:', error);
   }
 }
-```
-
+```text
 ### 2. Emitir NFC-e
 
 A emissão processa o XML, assina, envia, gera QR Code e retorna os dados para impressão.
@@ -99,8 +98,7 @@ async function finalizeSale() {
     // Mostrar erro ao usuário e permitir tentar novamente ou contigência
   }
 }
-```
-
+```text
 ## 🛠️ Tratamento de Erros
 
 O backend retorna erros detalhados em caso de:
