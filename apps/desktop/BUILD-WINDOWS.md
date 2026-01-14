@@ -14,7 +14,7 @@
 
 ### Ferramentas Necessárias
 
-```bash
+````bash
 # Rust e Cargo
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 rustup target add x86_64-pc-windows-gnu
@@ -58,6 +58,7 @@ Este script faz:
 ```bash
 # 1. Limpar builds antigos
 rm -rf dist src-tauri/target
+rm -f src-tauri/giro.db-shm src-tauri/giro.db-wal
 cd src-tauri && cargo clean && cd ..
 
 # 2. Instalar dependências
@@ -96,8 +97,17 @@ src-tauri/target/x86_64-pc-windows-gnu/release/bundle/msi/
 
 ```text
 src-tauri/target/x86_64-pc-windows-gnu/release/
-└── giro.exe                           # Requer DLLs manualmente
+└── giro-desktop.exe                   # Requer DLLs manualmente
 ```text
+
+### ZIP Portátil (para testes rápidos no Windows)
+
+```text
+src-tauri/target/x86_64-pc-windows-gnu/release/giro-windows-portable.zip
+└── Contém: giro-desktop.exe, DLLs (WebView2Loader, giro_lib.dll), resources/ (dist)
+```text
+
+Instruções rápidas: copie o ZIP para uma máquina Windows, extraia, instale o WebView2 Runtime se necessário e execute `giro-desktop.exe`.
 ---
 
 ## ⏱️ Tempo Estimado de Build
@@ -119,7 +129,7 @@ src-tauri/target/x86_64-pc-windows-gnu/release/
 
 - [ ] Instalador `.exe` gerado em `bundle/nsis/`
 - [ ] Tamanho do instalador entre 80-150MB
-- [ ] Executável `giro.exe` em `release/`
+- [ ] Executável `giro-desktop.exe` em `release/`
 - [ ] Sem erros de compilação nos logs
 - [ ] Hash SHA256 gerado para distribuição
 
@@ -214,7 +224,7 @@ rm -rf ~/.cargo/registry/cache
 
 | Arquivo              | Tamanho Típico |
 | -------------------- | -------------- |
-| `giro.exe` (backend) | 15-25 MB       |
+| `giro-desktop.exe` (backend) | 15-25 MB       |
 | `dist/` (frontend)   | 5-10 MB        |
 | Instalador NSIS      | 80-120 MB      |
 | Instalador MSI       | 85-130 MB      |
@@ -318,3 +328,4 @@ Convenção:
 ---
 ## Desenvolvido com ❤️ por Arkheion Corp
 _GIRO - Sistema de Gestão Comercial_
+````

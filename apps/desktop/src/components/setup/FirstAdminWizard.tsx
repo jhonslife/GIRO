@@ -180,8 +180,8 @@ export function FirstAdminWizard() {
                   className="flex-1"
                   onClick={handleCreate}
                   disabled={!pin || !confirmPin || pin !== confirmPin || createAdmin.isPending}
-                  >
-                    {createAdmin.isPending ? 'Criando...' : '✅ Criar Administrador'}
+                >
+                  {createAdmin.isPending ? 'Criando...' : '✅ Criar Administrador'}
                 </Button>
               </div>
             </>
