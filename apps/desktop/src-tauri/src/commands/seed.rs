@@ -91,20 +91,20 @@ pub async fn seed_database(state: State<'_, AppState>) -> AppResult<String> {
 
     // 1. Ensure Admin Exists
     let admin_id = if let Some(id) = sqlx::query_scalar::<_, String>(
-        "SELECT id FROM Employee WHERE role = 'ADMIN' AND is_active = 1 ORDER BY created_at LIMIT 1"
+        "SELECT id FROM employees WHERE role = 'ADMIN' AND is_active = 1 ORDER BY created_at LIMIT 1"
     )
     .fetch_optional(pool)
     .await? {
         id
     } else {
-        println!("Creating default admin user...");
+        tracing::warn!("Creating seed admin user with temporary PIN...");
         let admin = emp_repo.create(CreateEmployee {
-            name: "Administrador".to_string(),
+            name: "Administrador Semente".to_string(),
             cpf: None,
             phone: None,
             email: Some("admin@giro.local".to_string()),
-            pin: "1234".to_string(),
-            password: Some("admin".to_string()),
+            pin: "8899".to_string(), // Alterado de 1234 para segurança
+            password: Some("admin123".to_string()),
             role: Some(EmployeeRole::Admin),
         }).await?;
         admin.id
