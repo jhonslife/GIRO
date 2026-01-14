@@ -154,4 +154,71 @@ impl XmlSigner {
 }
 
 #[cfg(test)]
-mod tests {}
+mod tests {
+    use super::*;
+    use openssl::asn1::Asn1Time;
+    use openssl::bn::BigNum;
+    use openssl::hash::MessageDigest;
+    use openssl::pkey::PKey;
+    use openssl::rsa::Rsa;
+    use openssl::x509::{X509Builder, X509NameBuilder};
+
+    fn make_test_certificate() -> Certificate {
+        let rsa = Rsa::generate(2048).unwrap();
+        let pkey = PKey::from_rsa(rsa).unwrap();
+
+        let mut name_builder = X509NameBuilder::new().unwrap();
+        name_builder
+            .append_entry_by_text("CN", "TEST CERT 12345678000190")
+            .unwrap();
+        let name = name_builder.build();
+
+        let mut builder = X509Builder::new().unwrap();
+        builder.set_version(2).unwrap();
+        let serial = BigNum::from_u32(1).unwrap().to_asn1_integer().unwrap();
+        builder.set_serial_number(&serial).unwrap();
+        builder.set_subject_name(&name).unwrap();
+        builder.set_issuer_name(&name).unwrap();
+        builder.set_pubkey(&pkey).unwrap();
+        builder
+            .set_not_before(&Asn1Time::days_from_now(0).unwrap())
+            .unwrap();
+        builder
+            .set_not_after(&Asn1Time::days_from_now(365).unwrap())
+            .unwrap();
+        builder.sign(&pkey, MessageDigest::sha256()).unwrap();
+        let x509 = builder.build();
+
+        Certificate {
+            x509,
+            private_key: pkey,
+            cnpj: "12345678000190".to_string(),
+            valid_until: chrono::Utc::now().naive_utc() + chrono::Duration::days(365),
+        }
+    }
+
+    #[test]
+    fn test_sign_inserts_signature() {
+        let cert = make_test_certificate();
+        let signer = XmlSigner::new(cert);
+
+        let xml = r#"<?xml version="1.0"?>
+<NFe>
+    <infNFe Id="NFe123">
+        <ide>TEST</ide>
+    </infNFe>
+</NFe>"#;
+
+        let signed = signer.sign(xml).expect("sign failed");
+
+        assert!(signed.contains("<Signature"), "Signature element not found");
+        assert!(
+            signed.contains("<SignatureValue>"),
+            "SignatureValue not found"
+        );
+        assert!(
+            signed.contains("<X509Certificate>"),
+            "Certificate not embedded"
+        );
+    }
+}

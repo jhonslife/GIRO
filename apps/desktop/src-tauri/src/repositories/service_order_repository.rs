@@ -453,8 +453,20 @@ impl ServiceOrderRepository {
                 id: order_id.to_string(),
             })?;
 
+        // Calcular custo de peças (order_products)
+        let parts_total = sqlx::query!(
+            r#"
+            SELECT COALESCE(SUM(total), 0) as total
+            FROM order_products
+            WHERE order_id = ?
+            "#,
+            order_id
+        )
+        .fetch_one(&self.pool)
+        .await?;
+
         let labor_cost = totals.service_total as f64;
-        let parts_cost = 0.0; // TODO: somar de order_products quando implementado
+        let parts_cost = parts_total.total as f64;
         let total = labor_cost + parts_cost - order.discount;
 
         sqlx::query!(

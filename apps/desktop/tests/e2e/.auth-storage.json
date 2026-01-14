@@ -1,0 +1,23 @@
+{
+  "origins": [
+    {
+      "origin": "http://127.0.0.1:1420",
+      "localStorage": [
+        {
+          "name": "giro-license",
+          "value": "{\"licenseKey\":\"TEST-LOCAL-KEY\",\"licenseInfo\":{\"status\":\"active\",\"expires_at\":\"2099-01-01T00:00:00.000Z\",\"metadata\":{}},\"lastValidation\":\"2026-01-14T15:15:13.349Z\"}"
+        }
+      ]
+    }
+    ,
+    {
+      "origin": "http://localhost:1420",
+      "localStorage": [
+        {
+          "name": "giro-license",
+          "value": "{\"licenseKey\":\"TEST-LOCAL-KEY\",\"licenseInfo\":{\"status\":\"active\",\"expires_at\":\"2099-01-01T00:00:00.000Z\",\"metadata\":{}},\"lastValidation\":\"2026-01-14T15:15:13.349Z\"}"
+        }
+      ]
+    }
+  ]
+}

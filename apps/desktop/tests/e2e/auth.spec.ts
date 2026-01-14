@@ -1,15 +1,46 @@
+import { expect, test } from '@playwright/test';
+import { dismissTutorialIfPresent, ensureLicensePresent } from './e2e-helpers';
+import fs from 'fs';
+import path from 'path';
+
 /**
  * @file auth.spec.ts - Testes E2E de Autenticação
  * Testa fluxo completo de login/logout com diferentes roles
  */
 
-import { expect, test } from '@playwright/test';
-
 test.describe('Autenticação E2E', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/');
+    // Garantir que a licença esteja presente antes do carregamento da aplicação
+    await ensureLicensePresent(page);
+    // Navigate directly to test-only login route to avoid LicenseGuard during E2E
+    await page.goto('/__test-login');
     // Aguardar app carregar
     await page.waitForLoadState('domcontentloaded');
+    await dismissTutorialIfPresent(page);
+
+    // Dump localStorage to test-results for debugging origin/keys
+    try {
+      const storage = await page.evaluate(() => {
+        const out: Record<string, string | null> = {};
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k) out[k] = localStorage.getItem(k);
+        }
+        return out;
+      });
+      // Print to stdout so Playwright captures it in the run log
+      // (helps debugging when file write didn't occur)
+      // eslint-disable-next-line no-console
+      console.log('DEBUG_LOCALSTORAGE:', JSON.stringify(storage));
+      const outDir = path.resolve(process.cwd(), 'test-results');
+      fs.mkdirSync(outDir, { recursive: true });
+      fs.writeFileSync(
+        path.join(outDir, 'debug-localstorage.json'),
+        JSON.stringify(storage, null, 2)
+      );
+    } catch (e) {
+      // ignore debug write failures
+    }
   });
 
   test('deve exibir página de login ao iniciar', async ({ page }) => {

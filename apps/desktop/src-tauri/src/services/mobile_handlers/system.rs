@@ -37,8 +37,11 @@ pub struct MemoryInfo {
     pub percent: f32,
 }
 
+use sqlx::SqlitePool;
+
 /// Handler de sistema
 pub struct SystemHandler {
+    pool: SqlitePool,
     start_time: std::time::Instant,
     pdv_name: String,
     store_name: String,
@@ -47,8 +50,14 @@ pub struct SystemHandler {
 
 impl SystemHandler {
     /// Cria novo handler
-    pub fn new(pdv_name: String, store_name: String, store_document: Option<String>) -> Self {
+    pub fn new(
+        pool: SqlitePool,
+        pdv_name: String,
+        store_name: String,
+        store_document: Option<String>
+    ) -> Self {
         Self {
+            pool,
             start_time: std::time::Instant::now(),
             pdv_name,
             store_name,
@@ -115,7 +124,11 @@ impl SystemHandler {
     /// Retorna status de conexão com serviços
     pub async fn status(&self, id: u64) -> MobileResponse {
         // Verificar conectividade com banco
-        let db_status = "connected"; // TODO: verificar real
+        // Verificar conectividade com banco
+        let db_status = match self.pool.acquire().await {
+            Ok(_) => "connected",
+            Err(_) => "offline",
+        };
 
         // Verificar periféricos
         let printer_status = "unknown";
@@ -136,10 +149,17 @@ impl SystemHandler {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use sqlx::sqlite::SqlitePoolOptions;
 
-    #[test]
-    fn test_ping() {
+    #[tokio::test]
+    async fn test_ping() {
+        let pool = SqlitePoolOptions::new()
+            .connect("sqlite::memory:")
+            .await
+            .unwrap();
+
         let handler = SystemHandler::new(
+            pool,
             "PDV-01".to_string(),
             "Mercearia Teste".to_string(),
             Some("12.345.678/0001-90".to_string()),
@@ -149,9 +169,14 @@ mod tests {
         assert!(response.success);
     }
 
-    #[test]
-    fn test_info() {
-        let handler = SystemHandler::new("PDV-01".to_string(), "Mercearia Teste".to_string(), None);
+    #[tokio::test]
+    async fn test_info() {
+        let pool = SqlitePoolOptions::new()
+            .connect("sqlite::memory:")
+            .await
+            .unwrap();
+
+        let handler = SystemHandler::new(pool, "PDV-01".to_string(), "Mercearia Teste".to_string(), None);
 
         let response = handler.info(2);
         assert!(response.success);

@@ -18,7 +18,7 @@ O GIRO oferece dois tipos de desinstalação:
 
 ### Método 1: Via Painel de Controle (Recomendado)
 
-```text
+````text
 1. Menu Iniciar
 2. Configurações
 3. Aplicativos
@@ -154,7 +154,7 @@ C:\Users\[Usuário]\AppData\Local\GIRO\
 │
 ├── backups/                  # Backups automáticos
 │   ├── backup_2026-01-12_08-00.db
-│   ├── backup_2026-01-11_08-00.db
+└── ❌ remover todo o conteúdo da pasta
 │   └── backup_2026-01-10_08-00.db
 │
 ├── logs/                     # Logs do sistema (opcional)
@@ -373,3 +373,4 @@ Test-Path "$env:USERPROFILE\Desktop\GIRO.lnk"
 ---
 ## Desenvolvido com ❤️ por Arkheion Corp
 _GIRO - Sistema de Gestão Comercial_
+````

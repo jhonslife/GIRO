@@ -20,11 +20,16 @@ echo "║              Arkheion Corp © 2026                        ║"
 echo "╚══════════════════════════════════════════════════════════╝"
 echo -e "${NC}"
 
-# Diretório do projeto
-PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Diretório do projeto (raiz do repositório)
+# O script fica em `scripts/`, então subir um nível obtém a raiz do projeto
+PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DESKTOP_DIR="$PROJECT_DIR/apps/desktop"
 
-cd "$DESKTOP_DIR"
+if [ -d "$DESKTOP_DIR" ]; then
+    cd "$DESKTOP_DIR"
+else
+    echo -e "${YELLOW}Aviso:${NC} diretório $DESKTOP_DIR não encontrado. Mantendo diretório atual.${NC}"
+fi
 
 # Função para executar comando com título
 run_test() {

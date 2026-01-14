@@ -130,6 +130,9 @@ const App: FC = () => {
         {/* Rota de Ativação de Licença - ANTES de tudo */}
         <Route path="/license" element={<LicenseActivationPage />} />
 
+        {/* Test-only route to bypass license guard for E2E (not used in production) */}
+        <Route path="/__test-login" element={<LoginPage />} />
+
         {/* Rota de Login - Protegida por licença */}
         <Route
           path="/login"

@@ -60,6 +60,7 @@ const formSchema = z.object({
   customer_id: z.string().min(1, 'Cliente é obrigatório'),
   source_type: z.enum(['SALE', 'SERVICE_ORDER']),
   product_id: z.string().min(1, 'Produto é obrigatório'),
+  origin_id: z.string().optional(),
   description: z.string().optional(),
   reason: z.string().min(5, 'Motivo é obrigatório e deve ser detalhado'),
 });
@@ -115,9 +116,8 @@ export function WarrantyForm({ onCancel, onSuccess }: WarrantyFormProps) {
         product_id: values.product_id,
         description: values.description || '',
         reason: values.reason,
-        // TODO: Implementar vínculo real com item de venda/OS
-        // sale_item_id: ...,
-        // order_item_id: ...,
+        sale_item_id: values.source_type === 'SALE' ? values.origin_id : undefined,
+        order_item_id: values.source_type === 'SERVICE_ORDER' ? values.origin_id : undefined,
       };
 
       await createWarranty.mutateAsync(input);
@@ -186,6 +186,21 @@ export function WarrantyForm({ onCancel, onSuccess }: WarrantyFormProps) {
                         <SelectItem value="SERVICE_ORDER">Ordem de Serviço</SelectItem>
                       </SelectContent>
                     </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Origem ID */}
+              <FormField
+                control={form.control}
+                name="origin_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>ID da Origem (Venda/OS)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Opcional" {...field} />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}

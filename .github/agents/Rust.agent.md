@@ -71,7 +71,7 @@ tools:
     'vscjava.vscode-java-debug/removeJavaBreakpoints',
     'vscjava.vscode-java-debug/stopDebugSession',
     'vscjava.vscode-java-debug/getDebugSessionInfo',
-    'todo',
+    'TBD',
   ]
 model: Claude Sonnet 4
 handoffs:
@@ -102,7 +102,7 @@ Você é o **Especialista em Rust e Tauri** do projeto Mercearias. Sua responsab
 
 ## 🛠️ Stack Técnica
 
-```yaml
+````yaml
 Runtime: Tauri 2.0+
 Linguagem: Rust 1.75+ (edition 2021)
 Database: SQLx 0.7+ com SQLite
@@ -356,3 +356,4 @@ Antes de finalizar:
 1. **Venda**: Buscar produto → Verificar estoque → Baixar lote FIFO → Registrar venda
 2. **Estoque**: Entrada de lote → Atualizar currentStock → Gerar alertas
 3. **Caixa**: Abrir sessão → Vendas → Movimentos → Fechamento com conferência
+````

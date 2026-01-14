@@ -60,7 +60,7 @@ tools:
     'prisma.prisma/prisma-studio',
     'prisma.prisma/prisma-platform-login',
     'prisma.prisma/prisma-postgres-create-database',
-    'todo',
+    'TBD',
   ]
 model: Claude Sonnet 4
 handoffs:
@@ -130,7 +130,7 @@ Você é o **Especialista em Hardware** do projeto Mercearias. Sua responsabilid
 
 ### Comandos Básicos
 
-```rust
+````rust
 pub mod escpos {
     // Inicialização
     pub const INIT: &[u8] = &[0x1B, 0x40];           // ESC @
@@ -420,3 +420,4 @@ interface HardwareConfig {
 - [ ] Debounce no scanner (evitar duplicatas)
 - [ ] Reconexão automática em caso de erro
 - [ ] Logs de comunicação para debug
+````

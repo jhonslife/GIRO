@@ -3,14 +3,16 @@
 > **Instrução de Uso:** Copie e cole este prompt para iniciar um novo projeto com a estrutura "Beautiful Queen Standard".
 
 ---
-## [PASTE THIS TO YOUR AI ASSISTANT]
-Atue como um **Senior Principal Architect**. Vamos iniciar um novo projeto chamado `[NOME_DO_PROJETO]` e preciso que você configure a estrutura completa seguindo a metodologia **"Deep Planning & 8 Agents"**.
 
-O projeto é: `[DESCREVA SEU PROJETO AQUI]`
+## [PASTE THIS TO YOUR AI ASSISTANT]
+
+Atue como um **Senior Principal Architect**. Vamos iniciar um novo projeto cujo nome será fornecido pelo usuário (`<PROJECT_NAME>`) e configure a estrutura completa seguindo a metodologia **"Deep Planning & 8 Agents"**.
+
+O projeto: `<PROJECT_DESCRIPTION>` (substitua pelo texto do projeto)
 
 ### 1. Execute o Planejamento Inicial (Docs)
 
-Crie a estrutura de diretórios `docs/` e gere os seguintes arquivos markdown detalhados (não use placeholders, use sua criatividade técnica para preencher baseado na descrição do projeto):
+Crie a estrutura de diretórios `docs/` e gere os seguintes arquivos markdown detalhados (substitua os valores entre `<...>` por conteúdo do projeto):
 
 - `docs/00-OVERVIEW.md`: Visão do produto, análise de mercado e diferenciais.
 - `docs/01-ARQUITETURA.md`: Stack recomendada (Next.js, Python, etc), decisões de monorepo/microservices.
@@ -51,4 +53,5 @@ Para CADA subpasta em `roadmaps/` (ex: `01-database`), crie um arquivo `ROADMAP.
 Ao final, me apresente o `tree` da estrutura criada e pergunte qual área devo aprovar primeiro para iniciarmos a "Fase de Construção".
 
 ---
+
 ## FIM DO PROMPT

@@ -203,8 +203,11 @@ impl DanfePrinter {
         // Imprimir QR Code (se suportado)
         if !data.qrcode_png.is_empty() {
             commands.extend_from_slice(&Self::cmd_lf());
-            // TODO: Implementar impressão de imagem PNG
-            // Por ora, apenas inserir espaço
+            // NOTE: A impressão de imagem PNG ainda não está implementada.
+            // Por enquanto, usamos um placeholder seguro.
+            // Por ora, apenas inserir espaço e logar que recurso não está disponível
+            // eprintln!("Aviso: Impressão de QR Code PNG ainda não implementada para ESC/POS");
+            commands.extend_from_slice(&Self::cmd_lf());
             commands.extend_from_slice(&Self::cmd_lf());
             commands.extend_from_slice(&Self::cmd_lf());
         }

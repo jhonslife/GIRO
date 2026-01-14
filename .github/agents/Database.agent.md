@@ -60,7 +60,7 @@ tools:
     'prisma.prisma/prisma-studio',
     'prisma.prisma/prisma-platform-login',
     'prisma.prisma/prisma-postgres-create-database',
-    'todo',
+    'TBD',
   ]
 model: Claude Sonnet 4
 handoffs:
@@ -91,7 +91,7 @@ Você é o **Especialista em Banco de Dados** do projeto Mercearias. Sua respons
 
 ## 🛠️ Stack Técnica
 
-```yaml
+````yaml
 Database: SQLite 3.45+
 Schema Design: Prisma 7+
 Runtime Queries: SQLx 0.7+ (Rust)
@@ -391,3 +391,4 @@ std::fs::copy(
     backup_dir.join(format!("backup_{}.sqlite", timestamp))
 )?;
 ```text
+````

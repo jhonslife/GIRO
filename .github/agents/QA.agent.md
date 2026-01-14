@@ -18,6 +18,7 @@ tools:
     'sequential-thinking/*',
     'github/*',
     'agent',
+    'pylance-mcp-server/*',
     'cweijan.vscode-database-client2/dbclient-getDatabases',
     'cweijan.vscode-database-client2/dbclient-getTables',
     'cweijan.vscode-database-client2/dbclient-executeQuery',
@@ -46,6 +47,9 @@ tools:
     'ms-python.python/getPythonExecutableCommand',
     'ms-python.python/installPythonPackage',
     'ms-python.python/configurePythonEnvironment',
+    'ms-toolsai.jupyter/configureNotebook',
+    'ms-toolsai.jupyter/listNotebookPackages',
+    'ms-toolsai.jupyter/installNotebookPackages',
     'ms-windows-ai-studio.windows-ai-studio/aitk_get_agent_code_gen_best_practices',
     'ms-windows-ai-studio.windows-ai-studio/aitk_get_ai_model_guidance',
     'ms-windows-ai-studio.windows-ai-studio/aitk_get_agent_model_code_sample',
@@ -60,7 +64,17 @@ tools:
     'prisma.prisma/prisma-studio',
     'prisma.prisma/prisma-platform-login',
     'prisma.prisma/prisma-postgres-create-database',
-    'todo',
+    'vscjava.vscode-java-debug/debugJavaApplication',
+    'vscjava.vscode-java-debug/setJavaBreakpoint',
+    'vscjava.vscode-java-debug/debugStepOperation',
+    'vscjava.vscode-java-debug/getDebugVariables',
+    'vscjava.vscode-java-debug/getDebugStackTrace',
+    'vscjava.vscode-java-debug/evaluateDebugExpression',
+    'vscjava.vscode-java-debug/getDebugThreads',
+    'vscjava.vscode-java-debug/removeJavaBreakpoints',
+    'vscjava.vscode-java-debug/stopDebugSession',
+    'vscjava.vscode-java-debug/getDebugSessionInfo',
+    'TBD',
   ]
 model: Claude Sonnet 4
 handoffs:
@@ -91,7 +105,7 @@ Você é o **Quality Assurance Engineer** do projeto Mercearias. Sua responsabil
 
 ## 🛠️ Stack de Testes
 
-```yaml
+````yaml
 # Frontend
 Unit: Vitest 1.0+
 Components: @testing-library/react
@@ -518,3 +532,4 @@ pnpm e2e:debug         # Debug mode
 - [ ] Cobertura não diminuiu
 - [ ] Todos os testes passando
 - [ ] Sem testes flaky (intermitentes)
+````

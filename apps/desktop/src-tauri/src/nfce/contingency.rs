@@ -99,3 +99,56 @@ impl ContingencyManager {
         self.storage_path.clone()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::env;
+    use std::fs;
+
+    fn create_tmp_manager() -> ContingencyManager {
+        let mut dir = env::temp_dir();
+        let ts = chrono::Utc::now().timestamp_nanos_opt().unwrap_or(0);
+        dir.push(format!("giro_test_nfce_{}", ts));
+        if dir.exists() {
+            let _ = fs::remove_dir_all(&dir);
+        }
+        fs::create_dir_all(&dir).expect("create tmp dir");
+
+        ContingencyManager { storage_path: dir }
+    }
+
+    #[test]
+    fn test_save_and_list_pending() {
+        let manager = create_tmp_manager();
+
+        let access_key = "35260100123456780001906500100000000111234567890";
+        let xml = "<NFe><infNFe Id=\"NFe1\"></infNFe></NFe>";
+
+        manager.save_note(access_key, xml).expect("save failed");
+
+        let notes = manager.list_pending_notes().expect("list failed");
+        assert_eq!(notes.len(), 1);
+        assert_eq!(notes[0].access_key, access_key.to_string());
+
+        // cleanup
+        let _ = fs::remove_dir_all(manager.get_storage_path());
+    }
+
+    #[test]
+    fn test_mark_as_transmitted() {
+        let manager = create_tmp_manager();
+        let access_key = "35260100123456780001906500100000000111234567891";
+        let xml = "<NFe><infNFe Id=\"NFe2\"></infNFe></NFe>";
+
+        manager.save_note(access_key, xml).expect("save failed");
+        manager
+            .mark_as_transmitted(access_key)
+            .expect("mark failed");
+
+        let notes = manager.list_pending_notes().expect("list failed");
+        assert!(notes.is_empty());
+
+        let _ = fs::remove_dir_all(manager.get_storage_path());
+    }
+}

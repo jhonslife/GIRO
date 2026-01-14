@@ -60,7 +60,7 @@ tools:
     'prisma.prisma/prisma-studio',
     'prisma.prisma/prisma-platform-login',
     'prisma.prisma/prisma-postgres-create-database',
-    'todo',
+    'TBD',
   ]
 model: Claude Sonnet 4
 handoffs:
@@ -93,7 +93,7 @@ Você é o **Debug Specialist** do projeto Mercearias. Sua missão é diagnostic
 
 ### 1. Coleta de Informações
 
-```text
+`````text
 □ Reproduzir o problema
 □ Coletar logs e stack traces
 □ Identificar quando começou
@@ -156,13 +156,13 @@ Você é o **Debug Specialist** do projeto Mercearias. Sua missão é diagnostic
   "context": "..."
 }
 ```text
-````
+`````
 
 ## 3. Análise
 
 ### Stack Trace
 
-```text
+````text
 [Se disponível]
 ```text
 ### Logs Relevantes
@@ -238,11 +238,11 @@ console.timeEnd('operation');
 
 // Debugger statement
 debugger;
-````
+```
 
 ### Backend (Rust/Tauri)
 
-```rust
+````rust
 // Logs estruturados
 use tracing::{info, warn, error, debug, instrument};
 
@@ -387,3 +387,4 @@ Antes de considerar resolvido:
 - [ ] Nenhum side effect
 - [ ] Documentação atualizada
 - [ ] Logs melhorados (se aplicável)
+````

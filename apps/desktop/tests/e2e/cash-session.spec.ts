@@ -211,18 +211,17 @@ test.describe('Sessão de Caixa E2E', () => {
     }
   });
 
-  test.skip('deve impedir fechamento sem permissão', async ({ page }) => {
-    // NOTA: Teste skipado - requer usuário operador (PIN 0000) que não está criado no seed
-    // TODO: Criar usuário operador no seed antes de habilitar este teste
+  test('deve impedir fechamento sem permissão', async ({ page }) => {
+    // Requer usuário operador (PIN 9999 - Caixa 1 no seed.sql)
 
     // Logout e login como operador (sem permissão de fechar)
     await page.goto('/');
 
-    // Login com 0000 (Operador)
-    await page.locator('button:has-text("0")').first().click();
-    await page.locator('button:has-text("0")').first().click();
-    await page.locator('button:has-text("0")').first().click();
-    await page.locator('button:has-text("0")').first().click();
+    // Login com 9999 (Operador)
+    await page.locator('button:has-text("9")').first().click();
+    await page.locator('button:has-text("9")').first().click();
+    await page.locator('button:has-text("9")').first().click();
+    await page.locator('button:has-text("9")').first().click();
 
     const loginButton = page.locator('button:has-text("Entrar")');
     await loginButton.click();
@@ -244,7 +243,7 @@ test.describe('Sessão de Caixa E2E', () => {
 
   test.skip('deve permitir múltiplas movimentações na mesma sessão', async ({ page }) => {
     // NOTA: Teste skipado - precisa de seletores mais específicos para histórico de movimentações
-    // TODO: Implementar data-testid nos componentes de histórico
+    // Requer implementação de data-testid nos componentes de histórico
 
     await page.goto('/cash');
     await page.waitForLoadState('networkidle');

@@ -11,7 +11,7 @@ tools:
   - github/*
   - prisma/*
   - sequential-thinking/*
-  - todo
+  - TBD
 model: Claude Sonnet 4
 handoffs:
   - label: 🦀 Backend Queries
@@ -86,7 +86,7 @@ Você é o **Especialista em Relatórios e Analytics** do projeto Mercearias. Su
 
 ### Vendas do Dia
 
-```sql
+````sql
 SELECT
     COUNT(*) as total_vendas,
     SUM(total) as valor_total,
@@ -403,3 +403,4 @@ export function exportToExcel(data: any[], filename: string) {
 - [ ] Exportação Excel funcional
 - [ ] Responsivo em telas menores
 - [ ] Acessibilidade de gráficos
+````

@@ -1,4 +1,4 @@
-# 🔐 Sistema de Autenticação - JÁ IMPLEMENTADO!
+# 🔐 Sistema de Autenticação - JÁ IMPLEMENTADO
 
 > **Descoberta:** 7 de Janeiro de 2026  
 > **Status:** 90% Completo (apenas falta conectar comandos reais)
@@ -17,7 +17,7 @@ Assim como o backend, o **sistema de autenticação também já está quase 100%
 
 #### 1. Models com EmployeeRole
 
-```rust
+````rust
 // src-tauri/src/models/employee.rs
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -57,8 +57,9 @@ impl EmployeeRepository {
     }
 
     pub async fn authenticate_pin(&self, pin: &str) -> AppResult<Option<Employee>> {
-        // TODO: Em produção, comparar PIN hasheado
-        self.find_by_pin(pin).await
+        // Hash PIN com SHA256 (compatível com seed)
+        let pin_hash = hash_pin(pin);
+        self.find_by_pin(&pin_hash).await
     }
 }
 ```text
@@ -391,7 +392,7 @@ const handleLogin = async () => {
 const employees = [
   {
     name: 'Administrador',
-    pin: '1234', // TODO: hash
+    pin: hashPin('1234'), // hashPin implementado
     role: 'ADMIN',
     isActive: true,
   },
@@ -532,3 +533,4 @@ O sistema de autenticação está **76.7% completo**!
 ---
 
 _Documento de descoberta - 7 de Janeiro de 2026 - Arkheion Corp_
+````

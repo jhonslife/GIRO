@@ -125,11 +125,11 @@ const webMockInvoke = async <T>(command: string, args?: Record<string, unknown>)
     }
     case 'has_admin': {
       const exists = db.employees.some((e) => e.role === 'ADMIN' && e.isActive);
-      return (exists as unknown) as T;
+      return exists as unknown as T;
     }
     case 'has_any_employee': {
       const any = db.employees.length > 0;
-      return (any as unknown) as T;
+      return any as unknown as T;
     }
     case 'get_employees': {
       return db.employees as T;

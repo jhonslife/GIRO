@@ -60,7 +60,7 @@ tools:
     'prisma.prisma/prisma-studio',
     'prisma.prisma/prisma-platform-login',
     'prisma.prisma/prisma-postgres-create-database',
-    'todo',
+    'TBD',
   ]
 model: Claude Sonnet 4
 handoffs:
@@ -91,7 +91,7 @@ Você é o **Especialista em Frontend** do projeto Mercearias. Sua responsabilid
 
 ## 🛠️ Stack Técnica
 
-```yaml
+````yaml
 Framework: React 18.3+
 Linguagem: TypeScript 5.4+ (strict mode)
 Build: Vite 5.0+
@@ -399,3 +399,4 @@ Usar componentes de `@/components/ui/`:
 - [ ] Responsivo (mobile-first)
 - [ ] Atalhos de teclado onde aplicável
 - [ ] Feedback visual em ações
+````

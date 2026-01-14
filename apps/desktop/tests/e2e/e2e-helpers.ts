@@ -1,14 +1,79 @@
 import type { Page } from '@playwright/test';
 
 export const dismissTutorialIfPresent = async (page: Page): Promise<void> => {
+  // Tenta fechar/pular o tutorial ou dialogos de onboarding que fiquem sobrepostos
   const skipButton = page.getByRole('button', { name: /Pular/i }).first();
-  if (await skipButton.isVisible().catch(() => false)) {
+  const closeButton = page.getByRole('button', { name: /Fechar tutorial|Fechar/i }).first();
+
+  try {
+    // Tentar esperar o botão por até 3s e clicar se aparecer
+    await skipButton.waitFor({ state: 'visible', timeout: 3000 });
     await skipButton.click();
     await page.waitForLoadState('domcontentloaded');
+  } catch {
+    // não está visível — ok
+  }
+
+  if (await closeButton.isVisible().catch(() => false)) {
+    await closeButton.click();
+    await page.waitForLoadState('domcontentloaded');
+    return;
+  }
+
+  // Como fallback, fecha dialogs com Escape (se houver)
+  try {
+    await page.keyboard.press('Escape');
+    await page.waitForLoadState('domcontentloaded', { timeout: 1000 }).catch(() => undefined);
+  } catch {
+    // ignore
+  }
+
+  // Se ainda estiver em telas de setup/ativação que bloqueiam o fluxo de login,
+  // tentamos forçar a rota de login para estabilizar os testes.
+  const activateHeading = page.locator('h3:has-text("Ativar Licença")');
+  const firstAdminHeading = page.locator('h3:has-text("Criar Primeiro Administrador")');
+  if (
+    (await activateHeading.isVisible().catch(() => false)) ||
+    (await firstAdminHeading.isVisible().catch(() => false))
+  ) {
+    try {
+      await page.goto('/login');
+      await page.waitForLoadState('domcontentloaded');
+    } catch {
+      // ignore navigation errors
+    }
   }
 };
 
+export const ensureLicensePresent = async (page: Page): Promise<void> => {
+  const licenseState = {
+    licenseKey: 'TEST-LOCAL-KEY',
+    licenseInfo: {
+      status: 'active',
+      expires_at: '2099-01-01T00:00:00.000Z',
+      metadata: {},
+    },
+    lastValidation: new Date().toISOString(),
+  };
+
+  // Inject localStorage and test bypass flag before any page scripts run
+  await page.context().addInitScript((state) => {
+    try {
+      // set license key in localStorage and a global bypass flag for test runs
+      localStorage.setItem('giro-license', JSON.stringify(state));
+      try {
+        (window as any).__E2E_BYPASS_LICENSE = true;
+      } catch {}
+    } catch {
+      // ignore
+    }
+  }, licenseState);
+};
+
 export const loginWithPin = async (page: Page, pin: string): Promise<void> => {
+  // Garantir que nenhum tutorial esteja bloqueando o teclado numérico
+  await dismissTutorialIfPresent(page);
+
   for (const digit of pin.split('')) {
     await page.locator(`button:has-text("${digit}")`).first().click();
   }

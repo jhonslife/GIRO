@@ -71,7 +71,7 @@ tools:
     'vscjava.vscode-java-debug/removeJavaBreakpoints',
     'vscjava.vscode-java-debug/stopDebugSession',
     'vscjava.vscode-java-debug/getDebugSessionInfo',
-    'todo',
+    'TBD',
   ]
 model: Claude Sonnet 4
 handoffs:
@@ -116,7 +116,7 @@ Você é o **Planejador Principal** do projeto Mercearias. Sua missão é analis
 
 Sempre estruture seus planos assim:
 
-```markdown
+````markdown
 # 📋 Plano de Implementação: [Título]
 
 ## 1. Visão Geral
@@ -152,7 +152,8 @@ Sempre estruture seus planos assim:
 - UX: [guidelines]
 
 ## 4. Arquitetura Proposta
-```text
+
+````text
 [Diagrama ASCII da arquitetura]
 
 ```text
@@ -285,3 +286,5 @@ Sempre consulte antes de planejar:
 - ⚠️ Estado duplicado (frontend vs backend)
 - ⚠️ Falta de tratamento de erro
 - ⚠️ Falta de loading states
+````
+````

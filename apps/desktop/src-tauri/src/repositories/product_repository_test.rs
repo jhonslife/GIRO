@@ -281,4 +281,62 @@ mod tests {
         assert_eq!(found.current_stock, 1.0);
         assert_eq!(found.min_stock, 20.0);
     }
+    #[tokio::test]
+    async fn test_find_with_category_filter() {
+        let pool = setup_test_db().await;
+        // Create another category
+        sqlx::query(
+            "INSERT INTO categories (id, name, is_active, created_at, updated_at) 
+             VALUES ('cat-filter-002', 'Filter Category', 1, datetime('now'), datetime('now'))",
+        )
+        .execute(&pool)
+        .await
+        .unwrap();
+
+        let repo = ProductRepository::new(&pool);
+
+        // Product in cat 1
+        let p1 = CreateProduct {
+            name: "P1".to_string(),
+            barcode: None,
+            internal_code: None,
+            category_id: "cat-test-001".to_string(),
+            sale_price: 10.0,
+            cost_price: None,
+            min_stock: None,
+            current_stock: None,
+            description: None,
+            unit: None,
+            is_weighted: None,
+        };
+        repo.create(p1).await.unwrap();
+
+        // Product in cat 2
+        let p2 = CreateProduct {
+            name: "P2".to_string(),
+            barcode: None,
+            internal_code: None,
+            category_id: "cat-filter-002".to_string(),
+            sale_price: 10.0,
+            cost_price: None,
+            min_stock: None,
+            current_stock: None,
+            description: None,
+            unit: None,
+            is_weighted: None,
+        };
+        repo.create(p2).await.unwrap();
+
+        // Filter by category 2
+        let filters = crate::models::ProductFilters {
+            category_id: Some("cat-filter-002".to_string()),
+            ..Default::default()
+        };
+
+        let result = repo.find_with_filters(&filters).await;
+        assert!(result.is_ok());
+        let products = result.unwrap();
+        assert_eq!(products.len(), 1);
+        assert_eq!(products[0].name, "P2");
+    }
 }
