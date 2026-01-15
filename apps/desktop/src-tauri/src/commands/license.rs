@@ -139,3 +139,13 @@ pub async fn get_server_time(state: State<'_, AppState>) -> Result<String, Strin
 
     Ok(time.to_rfc3339())
 }
+
+#[tauri::command]
+pub async fn restore_license(state: State<'_, AppState>) -> Result<Option<String>, String> {
+    let client = &state.license_client;
+    let hardware_id = &state.hardware_id;
+
+    let license_key = client.restore(hardware_id).await?;
+
+    Ok(license_key)
+}

@@ -859,3 +859,7 @@ export async function validateLicense(licenseKey: string): Promise<LicenseInfo> 
 export async function getStoredLicense(): Promise<any> {
   return tauriInvoke<any>('get_stored_license');
 }
+
+export async function restoreLicense(): Promise<string | null> {
+  return tauriInvoke<string | null>('restore_license');
+}

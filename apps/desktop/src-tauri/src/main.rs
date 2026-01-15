@@ -297,8 +297,10 @@ async fn main() {
             commands::activate_license,
             commands::validate_license,
             commands::get_stored_license,
+            commands::get_stored_license,
             commands::sync_metrics,
             commands::get_server_time,
+            commands::restore_license,
         ])
         .run(tauri::generate_context!())
         .expect("Erro ao executar aplicação Tauri");

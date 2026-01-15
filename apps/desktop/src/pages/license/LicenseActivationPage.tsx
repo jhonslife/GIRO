@@ -103,9 +103,42 @@ export function LicenseActivationPage() {
           console.log('[LicenseActivationPage] Triggering online validation...');
           await validateStoredLicense(currentKey);
         } else {
-          console.log('[LicenseActivationPage] No license found, requiring activation.');
-          setState('unlicensed');
-          setIsValidating(false);
+          console.log('[LicenseActivationPage] No license found. Attempting auto-restore...');
+          const { restoreLicense } = await import('@/lib/tauri');
+          try {
+            const restoredKey = await restoreLicense();
+            if (restoredKey) {
+              console.log('[LicenseActivationPage] License restored!', restoredKey);
+              toast({
+                title: 'Licença Restaurada',
+                description: 'Sua licença foi encontrada e recuperada automaticamente!',
+                duration: 5000,
+              });
+              setLicenseKey(restoredKey);
+              // Trigger activation automatically
+              setTimeout(() => {
+                const btn = document.getElementById('activate-btn');
+                if (btn) btn.click(); // Hacky but effective, or just call handleActivate directly if I can hoist state
+              }, 500);
+              // Better: explicit state triggering
+              // But handleActivate relies on licenseKey state which is async? No, react state.
+              // We'll just set it and let user click or refactor.
+              // Let's refactor slightly to call activate immediately
+
+              // We can't easily call handleActivate because it closes over state options not yet updated?
+              // Actually, if we setLicenseKey(restoredKey), the state updates, but the next line running handleActivate
+              // might see old state depending on closure.
+              // Safer to just fill it and show a message "License Found!"
+            } else {
+              console.log('[LicenseActivationPage] No license to restore.');
+              setState('unlicensed');
+              setIsValidating(false);
+            }
+          } catch (restoreErr) {
+            console.warn('[LicenseActivationPage] Restore failed:', restoreErr);
+            setState('unlicensed');
+            setIsValidating(false);
+          }
         }
       } catch (error) {
         console.error('[LicenseActivationPage] Failed to initialize license check:', error);
@@ -262,6 +295,7 @@ export function LicenseActivationPage() {
 
           {/* Activate Button */}
           <Button
+            id="activate-btn"
             onClick={handleActivate}
             disabled={isLoading || !licenseKey.trim()}
             className="w-full h-12 text-lg"

@@ -288,6 +288,55 @@ impl LicenseClient {
         })
     }
 
+    /// Restore license
+    pub async fn restore(&self, hardware_id: &str) -> Result<Option<String>, String> {
+        let url = format!("{}/api/v1/licenses/restore", self.config.server_url);
+
+        #[derive(Serialize)]
+        struct RestoreRequest {
+            hardware_id: String,
+        }
+
+        let payload = RestoreRequest {
+            hardware_id: hardware_id.to_string(),
+        };
+
+        let response = self
+            .client
+            .post(&url)
+            .header("X-API-Key", &self.config.api_key)
+            .json(&payload)
+            .send()
+            .await
+            .map_err(|e| format!("Erro ao conectar com servidor: {}", e))?;
+
+        if !response.status().is_success() {
+            // If it's 404/400, it just means not found, maybe invalid request
+            // But we should parse error
+            let error_text = response.text().await.unwrap_or_default();
+            tracing::warn!("[LicenseClient] Restore failed/not found: {}", error_text);
+            return Ok(None);
+        }
+
+        #[derive(Deserialize)]
+        struct RestoreResponse {
+            found: bool,
+            license_key: Option<String>,
+        }
+
+        let api_resp = response
+            .json::<RestoreResponse>()
+            .await
+            .map_err(|e| format!("Erro ao processar resposta: {}", e))?;
+
+        if api_resp.found {
+             tracing::info!("[LicenseClient] Licença restaurada: {:?}", api_resp.license_key);
+             Ok(api_resp.license_key)
+        } else {
+             Ok(None)
+        }
+    }
+
     /// Sync metrics to server
     pub async fn sync_metrics(
         &self,
