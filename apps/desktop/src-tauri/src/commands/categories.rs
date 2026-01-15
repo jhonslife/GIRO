@@ -1,13 +1,13 @@
 //! Comandos Tauri para Categorias
 
+use crate::audit_log;
 use crate::error::AppResult;
+use crate::middleware::audit::{AuditAction, AuditService};
+use crate::middleware::Permission;
 use crate::models::{Category, CategoryWithCount, CreateCategory, UpdateCategory};
 use crate::repositories::CategoryRepository;
-use crate::AppState;
-use crate::middleware::Permission;
 use crate::require_permission;
-use crate::middleware::audit::{AuditService, AuditAction};
-use crate::audit_log;
+use crate::AppState;
 use tauri::State;
 
 #[tauri::command]

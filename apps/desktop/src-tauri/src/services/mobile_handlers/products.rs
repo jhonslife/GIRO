@@ -2,12 +2,12 @@
 //!
 //! Processa ações: product.get, product.search, product.create, product.update
 
+use crate::middleware::audit::{AuditAction, AuditService, CreateAuditLog};
 use crate::models::{CreateProduct, UpdateProduct};
 use crate::repositories::ProductRepository;
 use crate::services::mobile_protocol::{
     MobileErrorCode, MobileResponse, ProductGetPayload, ProductSearchPayload,
 };
-use crate::middleware::audit::{AuditService, AuditAction, CreateAuditLog};
 use sqlx::SqlitePool;
 
 /// Handler de produtos

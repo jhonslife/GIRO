@@ -18,8 +18,28 @@ Para que o GitHub Actions consiga realizar o build e assinar os instaladores, vo
    - **Nome**: `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`
    - **Valor**: `giro_release_2026`
 
-3. **GITHUB_TOKEN**
-   - (Geralmente automático, mas verifique se `Settings > Actions > General > Workflow permissions` está com `Read and write permissions` ativado).
+3. **GH_TOKEN (Personal Access Token)**
+
+   - Este token permanente substitui o automático para garantir que todos os processos funcionem sem restrições.
+   - **Como criar o token:**
+     1. Vá em suas configurações de perfil: `Settings > Developer Settings > Personal access tokens > Tokens (classic)`.
+     2. Clique em **Generate new token (classic)**.
+     3. Nomeie como `GIRO_AUTOMATION`.
+     4. Selecione os escopos: `repo` (total) e `workflow`.
+     5. Clique em **Generate token** e **COPIE** o valor na hora.
+   - **Como adicionar ao repositório:**
+     1. No repositório, vá em `Settings > Secrets and variables > Actions`.
+     2. Clique em **New repository secret**.
+     3. **Nome**: `GH_TOKEN`
+     4. **Valor**: Cole o token que você copiou.
+
+4. **Workflow Permissions (Importante!)**
+   - Mesmo com o PAT, o GitHub precisa de permissão para rodar os workflows.
+   - Vá em `Settings > Actions > General`.
+   - Role até **Workflow permissions**.
+   - Selecione **"Read and write permissions"**.
+   - Marque **"Allow GitHub Actions to create and approve pull requests"**.
+   - Clique em **Save**.
 
 ## 🚀 Como gerar uma nova Release
 

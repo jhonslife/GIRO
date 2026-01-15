@@ -18,9 +18,10 @@ interface LicenseGuardProps {
 export const LicenseGuard: FC<LicenseGuardProps> = ({ children }) => {
   // Test-only bypass: when running E2E we can set a global flag before app scripts
   // load to skip license enforcement. This avoids modifying production behavior.
-  if (typeof globalThis !== 'undefined' && (globalThis as any).__E2E_BYPASS_LICENSE) {
-    return <>{children}</>;
-  }
+  const e2eBypass =
+    typeof globalThis !== 'undefined' &&
+    (globalThis as unknown as { __E2E_BYPASS_LICENSE?: boolean }).__E2E_BYPASS_LICENSE;
+
   const {
     licenseKey,
     state,
@@ -33,7 +34,14 @@ export const LicenseGuard: FC<LicenseGuardProps> = ({ children }) => {
   } = useLicenseStore();
 
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
+    if (e2eBypass) return;
+
+    const timeoutId = setTimeout(() => {
+      if (useLicenseStore.getState().state === 'loading') {
+        console.warn('[LicenseGuard] Stuck in loading for 10s, forcing unlicensed state');
+        setState('unlicensed');
+      }
+    }, 10000);
 
     const checkLicense = async () => {
       const currentStore = useLicenseStore.getState();
@@ -76,17 +84,9 @@ export const LicenseGuard: FC<LicenseGuardProps> = ({ children }) => {
       }
     };
 
-    // Safety fallback: if stuck in loading for 10s, force unlicensed
-    timeoutId = setTimeout(() => {
-      if (useLicenseStore.getState().state === 'loading') {
-        console.warn('[LicenseGuard] Stuck in loading for 10s, forcing unlicensed state');
-        setState('unlicensed');
-      }
-    }, 10000);
-
     checkLicense();
 
-    return () => clearTimeout(timeoutId);
+    return () => clearTimeout(timeoutId as unknown as number);
   }, [
     hydrateFromDisk,
     isWithinGracePeriod,
@@ -95,6 +95,7 @@ export const LicenseGuard: FC<LicenseGuardProps> = ({ children }) => {
     setLicenseInfo,
     setState,
     state,
+    e2eBypass,
     updateLastValidation,
   ]);
 

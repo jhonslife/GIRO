@@ -7,12 +7,12 @@ use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use tauri::{command, State};
 
+use crate::models::{FiscalSettings, UpdateFiscalSettings};
 use crate::nfce::contingency::ContingencyManager;
 use crate::nfce::{
     AccessKey, Certificate, DanfeData, DanfeItem, DanfePrinter, Environment, NfceData, NfceItem,
     NfceXmlBuilder, QrCodeGenerator, QrCodeParams, SefazClient, XmlSigner,
 };
-use crate::models::{FiscalSettings, UpdateFiscalSettings};
 use crate::AppState;
 
 #[derive(Debug, Deserialize)]
@@ -102,17 +102,26 @@ pub async fn emit_nfce(
     state: State<'_, AppState>,
 ) -> Result<EmissionResponse, String> {
     println!("Iniciando emissão de NFC-e...");
-    
+
     let pool = state.pool();
     let fiscal_repo = crate::repositories::FiscalRepository::new(pool);
-    let fiscal_settings = fiscal_repo.get().await.map_err(|e| format!("Erro ao carregar configurações fiscais: {}", e))?;
+    let fiscal_settings = fiscal_repo
+        .get()
+        .await
+        .map_err(|e| format!("Erro ao carregar configurações fiscais: {}", e))?;
 
     if !fiscal_settings.enabled {
         return Err("Módulo fiscal desativado nas configurações".to_string());
     }
 
-    let cert_path = fiscal_settings.cert_path.as_ref().ok_or("Arquivo de certificado não configurado")?;
-    let cert_password = fiscal_settings.cert_password.as_ref().ok_or("Senha do certificado não configurada")?;
+    let cert_path = fiscal_settings
+        .cert_path
+        .as_ref()
+        .ok_or("Arquivo de certificado não configurado")?;
+    let cert_password = fiscal_settings
+        .cert_password
+        .as_ref()
+        .ok_or("Senha do certificado não configurada")?;
 
     // 1. Carregar Certificado
     println!("Carregando certificado: {}", cert_path);
@@ -153,7 +162,7 @@ pub async fn emit_nfce(
     };
 
     let emitter_uf = fiscal_settings.uf.clone();
-    let emitter_cnpj = request.emitter_cnpj.clone(); 
+    let emitter_cnpj = request.emitter_cnpj.clone();
     let serie = fiscal_settings.serie as u16;
     let numero = fiscal_settings.next_number as u32;
 
@@ -203,7 +212,7 @@ pub async fn emit_nfce(
     let xml_builder = NfceXmlBuilder::new(data.clone(), access_key.clone());
     let xml = xml_builder.build()?;
 
-    let signer = XmlSigner::new(cert); 
+    let signer = XmlSigner::new(cert);
     let signed_xml = signer.sign(&xml)?;
 
     let client = SefazClient::new(
@@ -284,7 +293,7 @@ pub async fn emit_nfce(
             // 5. Salvar em Disco
             let manager = ContingencyManager::new(&app_handle);
             manager.save_note(&access_key, &signed_xml_off)?;
-            
+
             // 6. Incrementar número (nota emitida, mesmo offline)
             let _ = fiscal_repo.increment_number().await;
         }
@@ -493,9 +502,7 @@ pub async fn transmit_offline_note(
 }
 
 #[command]
-pub async fn get_fiscal_settings(
-    state: State<'_, AppState>,
-) -> Result<FiscalSettings, String> {
+pub async fn get_fiscal_settings(state: State<'_, AppState>) -> Result<FiscalSettings, String> {
     let repo = crate::repositories::FiscalRepository::new(state.pool());
     repo.get().await.map_err(|e| e.to_string())
 }

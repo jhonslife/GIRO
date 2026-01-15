@@ -74,11 +74,19 @@ const PRODUCTS: &[(&str, f64, &str)] = &[
     // Motopeças - Peças
     ("Filtro de Óleo Honda CG", 35.00, "Motopeças - Peças"),
     ("Pneu Traseiro 90/90-18", 189.90, "Motopeças - Peças"),
-    ("Kit Relação (Coroa/Pinhão/Corrente)", 150.00, "Motopeças - Peças"),
+    (
+        "Kit Relação (Coroa/Pinhão/Corrente)",
+        150.00,
+        "Motopeças - Peças",
+    ),
     ("Pastilha de Freio Dianteira", 45.00, "Motopeças - Peças"),
     ("Lâmpada Farol H4", 25.00, "Motopeças - Peças"),
     // Motopeças - Acessórios
-    ("Capacete Preto Fosco Tam 58", 299.00, "Motopeças - Acessórios"),
+    (
+        "Capacete Preto Fosco Tam 58",
+        299.00,
+        "Motopeças - Acessórios",
+    ),
     ("Capa de Chuva PVC G", 85.00, "Motopeças - Acessórios"),
 ];
 
@@ -187,8 +195,11 @@ pub async fn seed_database(state: State<'_, AppState>) -> AppResult<String> {
     // 4. Seed Products
     let mut products = Vec::new();
     for (name, price, cat_name) in PRODUCTS {
-        let cat_id = category_ids.get(*cat_name).expect("Category not found in map").clone();
-        
+        let cat_id = category_ids
+            .get(*cat_name)
+            .expect("Category not found in map")
+            .clone();
+
         let existing = sqlx::query_scalar::<_, String>("SELECT id FROM Product WHERE name = ?")
             .bind(name)
             .fetch_optional(pool)
@@ -197,29 +208,52 @@ pub async fn seed_database(state: State<'_, AppState>) -> AppResult<String> {
         let product = if let Some(id) = existing {
             product_repo.find_by_id(&id).await?.unwrap()
         } else {
-            product_repo.create(CreateProduct {
-                barcode: Some(format!("78900000{:04}", products.len())),
-                internal_code: None,
-                name: name.to_string(),
-                description: None,
-                unit: Some(ProductUnit::Unit),
-                is_weighted: Some(false),
-                sale_price: *price,
-                cost_price: Some(*price * 0.7),
-                current_stock: Some(100.0),
-                min_stock: Some(10.0),
-                category_id: cat_id,
-            }).await?
+            product_repo
+                .create(CreateProduct {
+                    barcode: Some(format!("78900000{:04}", products.len())),
+                    internal_code: None,
+                    name: name.to_string(),
+                    description: None,
+                    unit: Some(ProductUnit::Unit),
+                    is_weighted: Some(false),
+                    sale_price: *price,
+                    cost_price: Some(*price * 0.7),
+                    current_stock: Some(100.0),
+                    min_stock: Some(10.0),
+                    category_id: cat_id,
+                })
+                .await?
         };
         products.push(product);
     }
 
     // 4.1 Seed Services
     let services = &[
-        ("TRC01", "Troca de Óleo", "Troca de óleo e filtro", 25.0, 30, 90),
-        ("REV01", "Revisão Geral", "Revisão completa da motocicleta", 250.0, 240, 180),
+        (
+            "TRC01",
+            "Troca de Óleo",
+            "Troca de óleo e filtro",
+            25.0,
+            30,
+            90,
+        ),
+        (
+            "REV01",
+            "Revisão Geral",
+            "Revisão completa da motocicleta",
+            250.0,
+            240,
+            180,
+        ),
         ("LAV01", "Lavagem Simples", "Lavagem completa", 40.0, 60, 0),
-        ("FRE01", "Manutenção de Freios", "Troca de pastilhas e limpeza", 60.0, 90, 90),
+        (
+            "FRE01",
+            "Manutenção de Freios",
+            "Troca de pastilhas e limpeza",
+            60.0,
+            90,
+            90,
+        ),
     ];
 
     let service_repo = crate::repositories::ServiceOrderRepository::new(pool.clone());
@@ -230,69 +264,88 @@ pub async fn seed_database(state: State<'_, AppState>) -> AppResult<String> {
             .await?;
 
         if existing.is_none() {
-            service_repo.create_service(crate::models::CreateService {
-                code: code.to_string(),
-                name: name.to_string(),
-                description: Some(desc.to_string()),
-                default_price: *price,
-                estimated_time: Some(*time),
-                default_warranty_days: Some(*warranty),
-            }).await?;
+            service_repo
+                .create_service(crate::models::CreateService {
+                    code: code.to_string(),
+                    name: name.to_string(),
+                    description: Some(desc.to_string()),
+                    default_price: *price,
+                    estimated_time: Some(*time),
+                    default_warranty_days: Some(*warranty),
+                })
+                .await?;
         }
     }
 
     // 4.2 Seed Vehicles
     let vehicle_repo = crate::repositories::VehicleRepository::new(pool);
     for brand_name in VEHICLE_BRANDS {
-        let existing_brand = sqlx::query_scalar::<_, String>("SELECT id FROM VehicleBrand WHERE name = ?")
-            .bind(brand_name)
-            .fetch_optional(pool)
-            .await?;
+        let existing_brand =
+            sqlx::query_scalar::<_, String>("SELECT id FROM VehicleBrand WHERE name = ?")
+                .bind(brand_name)
+                .fetch_optional(pool)
+                .await?;
 
         let brand_id = if let Some(id) = existing_brand {
             id
         } else {
-            let b = vehicle_repo.create_brand(crate::models::CreateVehicleBrand {
-                name: brand_name.to_string(),
-                logo_url: None,
-            }).await?;
+            let b = vehicle_repo
+                .create_brand(crate::models::CreateVehicleBrand {
+                    name: brand_name.to_string(),
+                    logo_url: None,
+                })
+                .await?;
             b.id
         };
 
-        let models = if *brand_name == "Honda" { HONDA_MODELS } else if *brand_name == "Yamaha" { YAMAHA_MODELS } else { &[] };
+        let models = if *brand_name == "Honda" {
+            HONDA_MODELS
+        } else if *brand_name == "Yamaha" {
+            YAMAHA_MODELS
+        } else {
+            &[]
+        };
         for model_name in models {
-            let existing_model = sqlx::query_scalar::<_, String>("SELECT id FROM VehicleModel WHERE name = ? AND brand_id = ?")
-                .bind(model_name)
-                .bind(&brand_id)
-                .fetch_optional(pool)
-                .await?;
+            let existing_model = sqlx::query_scalar::<_, String>(
+                "SELECT id FROM VehicleModel WHERE name = ? AND brand_id = ?",
+            )
+            .bind(model_name)
+            .bind(&brand_id)
+            .fetch_optional(pool)
+            .await?;
 
             let model_id = if let Some(id) = existing_model {
                 id
             } else {
-                let m = vehicle_repo.create_model(crate::models::CreateVehicleModel {
-                    brand_id: brand_id.clone(),
-                    name: model_name.to_string(),
-                    category: Some("STREET".to_string()),
-                    engine_size: None,
-                }).await?;
+                let m = vehicle_repo
+                    .create_model(crate::models::CreateVehicleModel {
+                        brand_id: brand_id.clone(),
+                        name: model_name.to_string(),
+                        category: Some("STREET".to_string()),
+                        engine_size: None,
+                    })
+                    .await?;
                 m.id
             };
 
             // Seed some years
             for year in [2021, 2022, 2023, 2024] {
-                let existing_year = sqlx::query_scalar::<_, String>("SELECT id FROM VehicleYear WHERE model_id = ? AND year = ?")
-                    .bind(&model_id)
-                    .bind(year)
-                    .fetch_optional(pool)
-                    .await?;
+                let existing_year = sqlx::query_scalar::<_, String>(
+                    "SELECT id FROM VehicleYear WHERE model_id = ? AND year = ?",
+                )
+                .bind(&model_id)
+                .bind(year)
+                .fetch_optional(pool)
+                .await?;
 
                 if existing_year.is_none() {
-                    let _y = vehicle_repo.create_year(crate::models::CreateVehicleYear {
-                        model_id: model_id.clone(),
-                        year,
-                        year_label: year.to_string(),
-                    }).await?;
+                    let _y = vehicle_repo
+                        .create_year(crate::models::CreateVehicleYear {
+                            model_id: model_id.clone(),
+                            year,
+                            year_label: year.to_string(),
+                        })
+                        .await?;
                 }
             }
         }

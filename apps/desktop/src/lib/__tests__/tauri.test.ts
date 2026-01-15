@@ -21,10 +21,17 @@ Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 // Helper to set Tauri environment
 const setTauriEnv = (isTauri: boolean) => {
   if (isTauri) {
-    (window as any).__TAURI__ = {};
+    (globalThis as unknown as Record<string, unknown>).__TAURI__ = {};
   } else {
-    delete (window as any).__TAURI__;
+    delete (globalThis as unknown as Record<string, unknown>).__TAURI__;
   }
+};
+
+type TauriInvokeMock = {
+  mockResolvedValue: (v: unknown) => void;
+  mockRejectedValue?: (e: unknown) => void;
+  mockResolvedValueOnce?: (v: unknown) => void;
+  mockImplementation?: (...args: unknown[]) => unknown;
 };
 
 describe('tauri.ts', () => {
@@ -37,7 +44,7 @@ describe('tauri.ts', () => {
   describe('isTauriRuntime', () => {
     it('should return true when window.__TAURI__ is defined', async () => {
       setTauriEnv(true);
-      (tauriCoreInvoke as any).mockResolvedValue([]);
+      (tauriCoreInvoke as unknown as TauriInvokeMock).mockResolvedValue([]);
       await tauriLib.getProducts();
       expect(tauriCoreInvoke).toHaveBeenCalled();
     });
@@ -46,7 +53,7 @@ describe('tauri.ts', () => {
       setTauriEnv(false);
       try {
         await tauriLib.getProducts();
-      } catch (e) {
+      } catch {
         // Expected to fail because get_products is not in webMockInvoke
       }
       expect(tauriCoreInvoke).not.toHaveBeenCalled();
@@ -56,7 +63,7 @@ describe('tauri.ts', () => {
   describe('tauriInvoke (Tauri path)', () => {
     it('should call tauriCoreInvoke when in Tauri runtime', async () => {
       setTauriEnv(true);
-      (tauriCoreInvoke as any).mockResolvedValue([{ id: '1', name: 'Product 1' }]);
+      (tauriCoreInvoke as unknown as TauriInvokeMock).mockResolvedValue([{ id: '1', name: 'Product 1' }]);
 
       const result = await tauriLib.getProducts();
       expect(tauriCoreInvoke).toHaveBeenCalledWith('get_products', { filter: undefined });
@@ -164,7 +171,7 @@ describe('tauri.ts', () => {
   describe('All other wrappers', () => {
     it('should call tauriInvoke for various commands', async () => {
       setTauriEnv(true);
-      (tauriCoreInvoke as any).mockResolvedValue({});
+      (tauriCoreInvoke as unknown as TauriInvokeMock).mockResolvedValue({});
 
       const commands = [
         { fn: () => tauriLib.getProducts({}), cmd: 'get_products' },

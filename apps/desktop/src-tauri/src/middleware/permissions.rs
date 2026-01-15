@@ -3,7 +3,7 @@
 //! Define permissões por role e verifica antes de executar commands.
 
 use crate::error::{AppError, AppResult};
-use crate::models::{EmployeeRole, Employee};
+use crate::models::{Employee, EmployeeRole};
 use crate::repositories::EmployeeRepository;
 use sqlx::{Pool, Sqlite};
 

@@ -2,10 +2,10 @@
 //!
 //! Processa ações: stock.adjust, stock.list, stock.history
 
+use crate::middleware::audit::{AuditAction, AuditService, CreateAuditLog};
 use crate::models::{StockMovement, StockMovementType};
 use crate::repositories::{ProductRepository, StockRepository};
 use crate::services::mobile_protocol::{MobileErrorCode, MobileResponse, StockAdjustPayload};
-use crate::middleware::audit::{AuditService, AuditAction, CreateAuditLog};
 use sqlx::SqlitePool;
 
 /// Handler de estoque

@@ -30,7 +30,7 @@ test.describe('Autenticação E2E', () => {
       });
       // Print to stdout so Playwright captures it in the run log
       // (helps debugging when file write didn't occur)
-      // eslint-disable-next-line no-console
+
       console.log('DEBUG_LOCALSTORAGE:', JSON.stringify(storage));
       const outDir = path.resolve(process.cwd(), 'test-results');
       fs.mkdirSync(outDir, { recursive: true });
@@ -38,7 +38,7 @@ test.describe('Autenticação E2E', () => {
         path.join(outDir, 'debug-localstorage.json'),
         JSON.stringify(storage, null, 2)
       );
-    } catch (e) {
+    } catch {
       // ignore debug write failures
     }
   });

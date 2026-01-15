@@ -95,7 +95,12 @@ impl MobileServer {
             connections: Arc::new(RwLock::new(HashMap::new())),
             event_tx,
             shutdown_tx: RwLock::new(None),
-            system_handler: Arc::new(SystemHandler::new(pool.clone(), pdv_name, store_name, store_document)),
+            system_handler: Arc::new(SystemHandler::new(
+                pool.clone(),
+                pdv_name,
+                store_name,
+                store_document,
+            )),
         }
     }
 

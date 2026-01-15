@@ -74,9 +74,10 @@ impl<'a> EmployeeRepository<'a> {
 
     /// Verifica se existe algum admin cadastrado
     pub async fn has_admin(&self) -> AppResult<bool> {
-        let result: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM employees WHERE role = 'ADMIN' AND is_active = 1")
-            .fetch_one(self.pool)
-            .await?;
+        let result: (i64,) =
+            sqlx::query_as("SELECT COUNT(*) FROM employees WHERE role = 'ADMIN' AND is_active = 1")
+                .fetch_one(self.pool)
+                .await?;
         Ok(result.0 > 0)
     }
 

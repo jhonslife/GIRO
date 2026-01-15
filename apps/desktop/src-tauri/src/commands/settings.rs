@@ -1,13 +1,13 @@
 //! Comandos Tauri para Configurações
 
+use crate::audit_log;
 use crate::error::AppResult;
+use crate::middleware::audit::{AuditAction, AuditService};
+use crate::middleware::Permission;
 use crate::models::{SetSetting, Setting};
 use crate::repositories::SettingsRepository;
-use crate::AppState;
-use crate::middleware::Permission;
 use crate::require_permission;
-use crate::middleware::audit::{AuditService, AuditAction};
-use crate::audit_log;
+use crate::AppState;
 use tauri::State;
 
 #[tauri::command]

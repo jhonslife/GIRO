@@ -2,12 +2,12 @@
 //!
 //! Processa ações: expiration.list, expiration.action
 
+use crate::middleware::audit::{AuditAction, AuditService, CreateAuditLog};
 use crate::models::{ExpirationAction, ProductLotWithProduct};
 use crate::repositories::{ProductLotRepository, StockRepository};
 use crate::services::mobile_protocol::{
     ExpirationActionPayload, ExpirationListPayload, MobileErrorCode, MobileResponse,
 };
-use crate::middleware::audit::{AuditService, AuditAction, CreateAuditLog};
 use sqlx::SqlitePool;
 
 /// Handler de validades
@@ -187,7 +187,10 @@ impl ExpirationHandler {
                             AuditAction::StockAdjustment,
                             employee_id,
                             &lot.product_id,
-                            format!("Baixa de validade via mobile: lote={}, qtd={}", lot.id, lot.quantity),
+                            format!(
+                                "Baixa de validade via mobile: lote={}, qtd={}",
+                                lot.id, lot.quantity
+                            ),
                         )
                         .await;
 
@@ -229,7 +232,10 @@ impl ExpirationHandler {
                             AuditAction::ProductUpdated,
                             employee_id,
                             &lot.id,
-                            format!("Desconto de {}% aplicado via mobile ao lote {}", discount, lot.id),
+                            format!(
+                                "Desconto de {}% aplicado via mobile ao lote {}",
+                                discount, lot.id
+                            ),
                         )
                         .await;
 

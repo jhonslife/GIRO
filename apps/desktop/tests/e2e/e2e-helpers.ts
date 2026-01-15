@@ -11,7 +11,7 @@ export const dismissTutorialIfPresent = async (page: Page): Promise<void> => {
     await skipButton.click();
     await page.waitForLoadState('domcontentloaded');
   } catch {
-    // não está visível — ok
+    void 0;
   }
 
   if (await closeButton.isVisible().catch(() => false)) {
@@ -25,7 +25,7 @@ export const dismissTutorialIfPresent = async (page: Page): Promise<void> => {
     await page.keyboard.press('Escape');
     await page.waitForLoadState('domcontentloaded', { timeout: 1000 }).catch(() => undefined);
   } catch {
-    // ignore
+    void 0;
   }
 
   // Se ainda estiver em telas de setup/ativação que bloqueiam o fluxo de login,
@@ -40,7 +40,7 @@ export const dismissTutorialIfPresent = async (page: Page): Promise<void> => {
       await page.goto('/login');
       await page.waitForLoadState('domcontentloaded');
     } catch {
-      // ignore navigation errors
+      void 0;
     }
   }
 };
@@ -62,10 +62,12 @@ export const ensureLicensePresent = async (page: Page): Promise<void> => {
       // set license key in localStorage and a global bypass flag for test runs
       localStorage.setItem('giro-license', JSON.stringify(state));
       try {
-        (window as any).__E2E_BYPASS_LICENSE = true;
-      } catch {}
+        (globalThis as unknown as Record<string, unknown>).__E2E_BYPASS_LICENSE = true;
+      } catch {
+        void 0;
+      }
     } catch {
-      // ignore
+      void 0;
     }
   }, licenseState);
 
@@ -74,7 +76,9 @@ export const ensureLicensePresent = async (page: Page): Promise<void> => {
     try {
       const profile = { businessType: 'RETAIL', isConfigured: true };
       localStorage.setItem('giro-business-profile', JSON.stringify(profile));
-    } catch {}
+    } catch {
+      void 0;
+    }
   });
 };
 

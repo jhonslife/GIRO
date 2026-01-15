@@ -3,6 +3,7 @@
  */
 
 import App from '@/App';
+import type { ReactNode } from 'react';
 import { useHasAdmin } from '@/hooks/useSetup';
 import { useAuthStore } from '@/stores/auth-store';
 import { useLicenseStore } from '@/stores/license-store';
@@ -54,20 +55,22 @@ vi.mock('@/components/layout', () => ({
   ),
 }));
 vi.mock('@/components/guards', () => ({
-  LicenseGuard: ({ children }: any) => <div data-testid="license-guard">{children}</div>,
+  LicenseGuard: ({ children }: { children?: ReactNode }) => (
+    <div data-testid="license-guard">{children}</div>
+  ),
 }));
 
 describe('App', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(useLicenseStore).mockReturnValue({ state: 'valid' } as any);
-    vi.mocked(useHasAdmin).mockReturnValue({ data: true, isLoading: false } as any);
-    vi.mocked(useBusinessProfile).mockReturnValue({ isConfigured: true } as any);
-    vi.mocked(useAuthStore).mockReturnValue({ isAuthenticated: false } as any);
+    vi.mocked(useLicenseStore).mockReturnValue({ state: 'valid' });
+    vi.mocked(useHasAdmin).mockReturnValue({ data: true, isLoading: false });
+    vi.mocked(useBusinessProfile).mockReturnValue({ isConfigured: true });
+    vi.mocked(useAuthStore).mockReturnValue({ isAuthenticated: false });
   });
 
   it('should redirect to /setup if no admin exists', async () => {
-    vi.mocked(useHasAdmin).mockReturnValue({ data: false, isLoading: false } as any);
+    vi.mocked(useHasAdmin).mockReturnValue({ data: false, isLoading: false });
 
     render(
       <MemoryRouter initialEntries={['/']}>
@@ -81,7 +84,7 @@ describe('App', () => {
   });
 
   it('should redirect to /login if NOT authenticated in ProtectedRoute', async () => {
-    vi.mocked(useAuthStore).mockReturnValue({ isAuthenticated: false } as any);
+    vi.mocked(useAuthStore).mockReturnValue({ isAuthenticated: false });
 
     render(
       <MemoryRouter initialEntries={['/pdv']}>
@@ -98,7 +101,7 @@ describe('App', () => {
     vi.mocked(useAuthStore).mockReturnValue({
       isAuthenticated: true,
       employee: { role: 'ADMIN' },
-    } as any);
+    });
 
     render(
       <MemoryRouter initialEntries={['/pdv']}>
@@ -114,7 +117,7 @@ describe('App', () => {
   });
 
   it('should show loading state in AdminCheck', () => {
-    vi.mocked(useHasAdmin).mockReturnValue({ data: null, isLoading: true } as any);
+    vi.mocked(useHasAdmin).mockReturnValue({ data: null, isLoading: true });
 
     render(
       <MemoryRouter initialEntries={['/']}>
@@ -129,7 +132,7 @@ describe('App', () => {
     vi.mocked(useAuthStore).mockReturnValue({
       isAuthenticated: true,
       employee: { role: 'SELLER' },
-    } as any);
+    });
 
     render(
       <MemoryRouter initialEntries={['/employees']}>
@@ -146,8 +149,8 @@ describe('App', () => {
     vi.mocked(useAuthStore).mockReturnValue({
       isAuthenticated: true,
       employee: { role: 'ADMIN' },
-    } as any);
-    vi.mocked(useBusinessProfile).mockReturnValue({ isConfigured: false } as any);
+    });
+    vi.mocked(useBusinessProfile).mockReturnValue({ isConfigured: false });
 
     // InitialEntries point to dashboard which is protected, and we want to see it hitting RootRedirect
     // But dashboard is NOT RootRedirect. RootRedirect is at path="".
@@ -166,8 +169,8 @@ describe('App', () => {
     vi.mocked(useAuthStore).mockReturnValue({
       isAuthenticated: true,
       employee: { role: 'ADMIN' },
-    } as any);
-    vi.mocked(useBusinessProfile).mockReturnValue({ isConfigured: true } as any);
+    });
+    vi.mocked(useBusinessProfile).mockReturnValue({ isConfigured: true });
 
     render(
       <MemoryRouter initialEntries={['/wizard']}>

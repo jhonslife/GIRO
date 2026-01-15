@@ -368,11 +368,7 @@ impl DanfePrinter {
         let img = if width > target_width {
             let scale = target_width as f32 / width as f32;
             let new_h = (height as f32 * scale).max(1.0) as u32;
-            img.resize(
-                target_width,
-                new_h,
-                image::imageops::FilterType::Lanczos3,
-            )
+            img.resize(target_width, new_h, image::imageops::FilterType::Lanczos3)
         } else {
             img
         };

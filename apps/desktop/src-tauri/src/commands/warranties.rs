@@ -6,11 +6,10 @@ use tauri::State;
 
 use crate::error::AppResult;
 use crate::models::{
-    WarrantyClaim, WarrantyClaimWithDetails, WarrantyClaimSummary,
-    CreateWarrantyClaim, UpdateWarrantyClaim, ResolveWarrantyClaim,
-    WarrantyClaimFilters, WarrantyStats,
+    CreateWarrantyClaim, ResolveWarrantyClaim, UpdateWarrantyClaim, WarrantyClaim,
+    WarrantyClaimFilters, WarrantyClaimSummary, WarrantyClaimWithDetails, WarrantyStats,
 };
-use crate::repositories::{WarrantyRepository, Pagination, PaginatedResult};
+use crate::repositories::{PaginatedResult, Pagination, WarrantyRepository};
 use crate::AppState;
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -41,10 +40,7 @@ pub async fn get_warranties_paginated(
 ) -> AppResult<PaginatedResult<WarrantyClaimSummary>> {
     let repo = WarrantyRepository::new(state.pool().clone());
 
-    let pagination = Pagination::new(
-        page.unwrap_or(1),
-        per_page.unwrap_or(20),
-    );
+    let pagination = Pagination::new(page.unwrap_or(1), per_page.unwrap_or(20));
 
     let filters = WarrantyClaimFilters {
         status,

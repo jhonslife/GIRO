@@ -1,15 +1,15 @@
 //! Comandos Tauri para Funcionários
 
-use crate::error::AppResult;
-use crate::models::{CreateEmployee, Employee, SafeEmployee, UpdateEmployee, EmployeeRole};
-use crate::repositories::EmployeeRepository;
-use crate::AppState;
-use crate::middleware::Permission;
-use crate::require_permission;
-use crate::middleware::audit::{AuditService, AuditAction};
 use crate::audit_log;
-use tauri::State;
+use crate::error::AppResult;
+use crate::middleware::audit::{AuditAction, AuditService};
+use crate::middleware::Permission;
+use crate::models::{CreateEmployee, Employee, EmployeeRole, SafeEmployee, UpdateEmployee};
+use crate::repositories::EmployeeRepository;
+use crate::require_permission;
+use crate::AppState;
 use serde::Deserialize;
+use tauri::State;
 
 #[tauri::command]
 pub async fn get_employees(state: State<'_, AppState>) -> AppResult<Vec<SafeEmployee>> {
@@ -69,16 +69,22 @@ pub async fn create_first_admin(
     // Verifica se já existe admin
     let has_admin = repo.has_admin().await?;
     if has_admin {
-        return Err(crate::error::AppError::Duplicate("Já existe um administrador cadastrado".into()));
+        return Err(crate::error::AppError::Duplicate(
+            "Já existe um administrador cadastrado".into(),
+        ));
     }
 
     // Valida PIN: 4-6 dígitos numéricos
     if input.pin.len() < 4 || input.pin.len() > 6 {
-        return Err(crate::error::AppError::Validation("PIN deve ter entre 4 e 6 dígitos".into()));
+        return Err(crate::error::AppError::Validation(
+            "PIN deve ter entre 4 e 6 dígitos".into(),
+        ));
     }
 
     if !input.pin.chars().all(|c| c.is_ascii_digit()) {
-        return Err(crate::error::AppError::Validation("PIN deve conter apenas números".into()));
+        return Err(crate::error::AppError::Validation(
+            "PIN deve conter apenas números".into(),
+        ));
     }
 
     let create = CreateEmployee {

@@ -40,7 +40,7 @@ impl<'a> FiscalRepository<'a> {
                 cert_path = ?, 
                 cert_password = ?, 
                 updated_at = ? 
-            WHERE id = 1"
+            WHERE id = 1",
         )
         .bind(data.enabled.unwrap_or(current.enabled))
         .bind(data.uf.unwrap_or(current.uf))
@@ -61,12 +61,12 @@ impl<'a> FiscalRepository<'a> {
     pub async fn increment_number(&self) -> AppResult<i32> {
         let current = self.get().await?;
         let next = current.next_number + 1;
-        
+
         sqlx::query("UPDATE fiscal_settings SET next_number = ? WHERE id = 1")
             .bind(next)
             .execute(self.pool)
             .await?;
-            
+
         Ok(next)
     }
 }

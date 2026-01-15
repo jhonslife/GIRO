@@ -2,12 +2,12 @@
 //!
 //! Processa ações: inventory.start, inventory.count, inventory.finish, inventory.cancel, inventory.status
 
+use crate::middleware::audit::{AuditAction, AuditService, CreateAuditLog};
 use crate::models::{Inventory, InventoryItem, InventoryStatus};
 use crate::repositories::InventoryRepository;
 use crate::services::mobile_protocol::{
     InventoryCountPayload, InventoryStartPayload, MobileErrorCode, MobileResponse,
 };
-use crate::middleware::audit::{AuditService, AuditAction, CreateAuditLog};
 use sqlx::SqlitePool;
 
 /// Handler de inventário

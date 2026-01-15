@@ -477,13 +477,7 @@ pub fn parse_serial_input(bytes: &[u8]) -> Option<String> {
     // Trim whitespace and non-printable
     let s = bytes
         .iter()
-        .filter_map(|b| {
-            if b.is_ascii() {
-                Some(*b as char)
-            } else {
-                None
-            }
-        })
+        .filter_map(|b| if b.is_ascii() { Some(*b as char) } else { None })
         .collect::<String>();
 
     let trimmed = s.trim();
@@ -496,11 +490,18 @@ pub fn parse_serial_input(bytes: &[u8]) -> Option<String> {
 
 /// Inicia leitor serial para um scanner USB/Serial e envia eventos para o estado.
 /// Esta função roda em background em uma thread separada e retorna imediatamente.
-pub fn start_serial_scanner(state: Arc<ScannerServerState>, port: &str, baud: u32) -> HardwareResult<()> {
+pub fn start_serial_scanner(
+    state: Arc<ScannerServerState>,
+    port: &str,
+    baud: u32,
+) -> HardwareResult<()> {
     let port_path = port.to_string();
 
     std::thread::spawn(move || {
-        match serialport::new(&port_path, baud).timeout(std::time::Duration::from_millis(1000)).open() {
+        match serialport::new(&port_path, baud)
+            .timeout(std::time::Duration::from_millis(1000))
+            .open()
+        {
             Ok(mut sp) => {
                 let mut buf: Vec<u8> = vec![0; 1024];
                 loop {

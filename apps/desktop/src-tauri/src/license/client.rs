@@ -2,7 +2,7 @@
 //!
 //! Client for communicating with GIRO License Server
 
-use chrono::{DateTime, Utc, NaiveDate};
+use chrono::{DateTime, NaiveDate, Utc};
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
 
@@ -121,7 +121,10 @@ impl LicenseClient {
         license_key: &str,
         hardware_id: &str,
     ) -> Result<LicenseInfo, String> {
-        let url = format!("{}/api/v1/licenses/{}/activate", self.config.server_url, license_key);
+        let url = format!(
+            "{}/api/v1/licenses/{}/activate",
+            self.config.server_url, license_key
+        );
         tracing::info!("[LicenseClient] Ativando licença na URL: {}", url);
 
         let system_info = std::env::consts::OS;
@@ -129,9 +132,7 @@ impl LicenseClient {
 
         let payload = ActivateRequest {
             hardware_id: hardware_id.to_string(),
-            machine_name: hostname::get()
-                .ok()
-                .and_then(|h| h.into_string().ok()),
+            machine_name: hostname::get().ok().and_then(|h| h.into_string().ok()),
             os_version: Some(format!("{} {}", system_info, arch_info)),
             cpu_info: None,
         };
@@ -152,16 +153,21 @@ impl LicenseClient {
         if !response.status().is_success() {
             let status = response.status();
             let error_text = response.text().await.unwrap_or_default();
-            tracing::error!("[LicenseClient] Erro do servidor ({}): {}", status, error_text);
-            
+            tracing::error!(
+                "[LicenseClient] Erro do servidor ({}): {}",
+                status,
+                error_text
+            );
+
             let error: serde_json::Value = serde_json::from_str(&error_text)
                 .unwrap_or_else(|_| serde_json::json!({"error": "Erro desconhecido"}));
-            
-            let msg = error.get("message")
+
+            let msg = error
+                .get("message")
                 .or(error.get("error"))
                 .and_then(|v| v.as_str())
                 .unwrap_or("Erro ao ativar licença");
-            
+
             return Err(msg.to_string());
         }
 
@@ -208,7 +214,10 @@ impl LicenseClient {
         license_key: &str,
         hardware_id: &str,
     ) -> Result<LicenseInfo, String> {
-        let url = format!("{}/api/v1/licenses/{}/validate", self.config.server_url, license_key);
+        let url = format!(
+            "{}/api/v1/licenses/{}/validate",
+            self.config.server_url, license_key
+        );
 
         let payload = ValidateRequest {
             license_key: license_key.to_string(),
@@ -230,8 +239,9 @@ impl LicenseClient {
                 .json()
                 .await
                 .unwrap_or_else(|_| serde_json::json!({"error": "Erro desconhecido"}));
-            
-            let msg = error.get("message")
+
+            let msg = error
+                .get("message")
                 .or(error.get("error"))
                 .and_then(|v| v.as_str())
                 .unwrap_or("Licença inválida");
@@ -335,7 +345,8 @@ impl LicenseClient {
                 .json()
                 .await
                 .unwrap_or_else(|_| serde_json::json!({"error": "Erro desconhecido"}));
-            return Err(error.get("message")
+            return Err(error
+                .get("message")
                 .and_then(|v| v.as_str())
                 .unwrap_or("Erro ao sincronizar métricas")
                 .to_string());

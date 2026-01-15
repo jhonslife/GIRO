@@ -6,11 +6,10 @@ use sqlx::{Pool, Sqlite};
 
 use crate::error::{AppError, AppResult};
 use crate::models::{
-    WarrantyClaim, WarrantyClaimWithDetails, WarrantyClaimSummary,
-    CreateWarrantyClaim, UpdateWarrantyClaim, ResolveWarrantyClaim,
-    WarrantyClaimFilters, WarrantyStats,
+    CreateWarrantyClaim, ResolveWarrantyClaim, UpdateWarrantyClaim, WarrantyClaim,
+    WarrantyClaimFilters, WarrantyClaimSummary, WarrantyClaimWithDetails, WarrantyStats,
 };
-use crate::repositories::{new_id, Pagination, PaginatedResult};
+use crate::repositories::{new_id, PaginatedResult, Pagination};
 
 pub struct WarrantyRepository {
     pool: Pool<Sqlite>,
@@ -136,9 +135,21 @@ impl WarrantyRepository {
             where_clause, pagination.per_page, offset
         );
 
-        let rows = sqlx::query_as::<_, (String, String, Option<String>, String, Option<String>, String, String, String)>(&query)
-            .fetch_all(&self.pool)
-            .await?;
+        let rows = sqlx::query_as::<
+            _,
+            (
+                String,
+                String,
+                Option<String>,
+                String,
+                Option<String>,
+                String,
+                String,
+                String,
+            ),
+        >(&query)
+        .fetch_all(&self.pool)
+        .await?;
 
         let data: Vec<WarrantyClaimSummary> = rows
             .into_iter()
@@ -204,7 +215,10 @@ impl WarrantyRepository {
     }
 
     /// Busca garantia com detalhes
-    pub async fn find_by_id_with_details(&self, id: &str) -> AppResult<Option<WarrantyClaimWithDetails>> {
+    pub async fn find_by_id_with_details(
+        &self,
+        id: &str,
+    ) -> AppResult<Option<WarrantyClaimWithDetails>> {
         let claim = sqlx::query!(
             r#"
             SELECT
@@ -275,11 +289,15 @@ impl WarrantyRepository {
 
         // Validar source
         if input.source_type == "SALE" && input.sale_item_id.is_none() {
-            return Err(AppError::Validation("sale_item_id é obrigatório para garantia de venda".into()));
+            return Err(AppError::Validation(
+                "sale_item_id é obrigatório para garantia de venda".into(),
+            ));
         }
 
         if input.source_type == "SERVICE_ORDER" && input.order_item_id.is_none() {
-            return Err(AppError::Validation("order_item_id é obrigatório para garantia de OS".into()));
+            return Err(AppError::Validation(
+                "order_item_id é obrigatório para garantia de OS".into(),
+            ));
         }
 
         sqlx::query!(
@@ -306,7 +324,10 @@ impl WarrantyRepository {
 
         self.find_by_id(&id)
             .await?
-            .ok_or_else(|| AppError::NotFound { entity: "WarrantyClaim".to_string(), id: id.clone() })
+            .ok_or_else(|| AppError::NotFound {
+                entity: "WarrantyClaim".to_string(),
+                id: id.clone(),
+            })
     }
 
     /// Atualiza garantia
@@ -343,7 +364,10 @@ impl WarrantyRepository {
 
         self.find_by_id(id)
             .await?
-            .ok_or_else(|| AppError::NotFound { entity: "WarrantyClaim".to_string(), id: id.to_string() })
+            .ok_or_else(|| AppError::NotFound {
+                entity: "WarrantyClaim".to_string(),
+                id: id.to_string(),
+            })
     }
 
     /// Aprova garantia
@@ -358,7 +382,12 @@ impl WarrantyRepository {
     }
 
     /// Nega garantia
-    pub async fn deny(&self, id: &str, employee_id: &str, reason: String) -> AppResult<WarrantyClaim> {
+    pub async fn deny(
+        &self,
+        id: &str,
+        employee_id: &str,
+        reason: String,
+    ) -> AppResult<WarrantyClaim> {
         let input = UpdateWarrantyClaim {
             status: Some("DENIED".to_string()),
             resolution: Some(reason),
@@ -400,7 +429,10 @@ impl WarrantyRepository {
 
         self.find_by_id(id)
             .await?
-            .ok_or_else(|| AppError::NotFound { entity: "WarrantyClaim".to_string(), id: id.to_string() })
+            .ok_or_else(|| AppError::NotFound {
+                entity: "WarrantyClaim".to_string(),
+                id: id.to_string(),
+            })
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -408,7 +440,10 @@ impl WarrantyRepository {
     // ═══════════════════════════════════════════════════════════════════════
 
     /// Busca garantias por cliente
-    pub async fn find_by_customer(&self, customer_id: &str) -> AppResult<Vec<WarrantyClaimSummary>> {
+    pub async fn find_by_customer(
+        &self,
+        customer_id: &str,
+    ) -> AppResult<Vec<WarrantyClaimSummary>> {
         let filters = WarrantyClaimFilters {
             customer_id: Some(customer_id.to_string()),
             ..Default::default()
@@ -434,7 +469,11 @@ impl WarrantyRepository {
     }
 
     /// Estatísticas de garantias
-    pub async fn get_stats(&self, date_from: Option<String>, date_to: Option<String>) -> AppResult<WarrantyStats> {
+    pub async fn get_stats(
+        &self,
+        date_from: Option<String>,
+        date_to: Option<String>,
+    ) -> AppResult<WarrantyStats> {
         let mut where_conditions = vec!["1=1".to_string()];
 
         if let Some(ref from) = date_from {
@@ -470,9 +509,10 @@ impl WarrantyRepository {
             where_clause
         );
 
-        let stats = sqlx::query_as::<_, (i64, i64, i64, i64, i64, i64, f64, f64, Option<f64>)>(&query)
-            .fetch_one(&self.pool)
-            .await?;
+        let stats =
+            sqlx::query_as::<_, (i64, i64, i64, i64, i64, i64, f64, f64, Option<f64>)>(&query)
+                .fetch_one(&self.pool)
+                .await?;
 
         Ok(WarrantyStats {
             total_claims: stats.0,

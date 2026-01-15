@@ -57,9 +57,9 @@ async fn main() {
     #[cfg(not(debug_assertions))]
     let default_server_url = "https://giro-license-server-production.up.railway.app";
 
-    let license_server_url = std::env::var("LICENSE_SERVER_URL")
-        .unwrap_or_else(|_| default_server_url.to_string());
-        
+    let license_server_url =
+        std::env::var("LICENSE_SERVER_URL").unwrap_or_else(|_| default_server_url.to_string());
+
     let api_key = std::env::var("LICENSE_API_KEY").unwrap_or_else(|_| "dev-key".to_string());
 
     let app_state = AppState::new(
@@ -309,7 +309,7 @@ async fn main() {
 /// This creates a unique fingerprint for hardware binding
 fn generate_hardware_id() -> String {
     use sha2::{Digest, Sha256};
-    
+
     let cpu_id = get_cpu_id();
     let mb_serial = get_motherboard_serial();
     let mac_address = get_primary_mac_address();
@@ -455,8 +455,10 @@ fn get_primary_mac_address() -> String {
             let mut hasher = Sha256::new();
             hasher.update(format!("{}:{}", name, ip).as_bytes());
             let result = hasher.finalize();
-            return format!("{:02X}-{:02X}-{:02X}-{:02X}-{:02X}-{:02X}",
-                result[0], result[1], result[2], result[3], result[4], result[5]);
+            return format!(
+                "{:02X}-{:02X}-{:02X}-{:02X}-{:02X}-{:02X}",
+                result[0], result[1], result[2], result[3], result[4], result[5]
+            );
         }
     }
 
@@ -471,7 +473,10 @@ fn get_disk_serial() -> String {
         if let Ok(entries) = std::fs::read_dir("/dev/disk/by-id") {
             for entry in entries.flatten() {
                 let name = entry.file_name().to_string_lossy().to_string();
-                if name.starts_with("ata-") || name.starts_with("nvme-") || name.starts_with("scsi-") {
+                if name.starts_with("ata-")
+                    || name.starts_with("nvme-")
+                    || name.starts_with("scsi-")
+                {
                     // Extract serial from name
                     if let Some(serial) = name.split('_').last() {
                         return serial.chars().take(20).collect();

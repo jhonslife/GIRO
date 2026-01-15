@@ -328,10 +328,7 @@ impl ThermalPrinter {
             vec!["/dev/usb/lp0".to_string(), "/dev/lp0".to_string()]
         };
 
-        let Some(device_path) = candidates
-            .into_iter()
-            .find(|p| Path::new(p).exists())
-        else {
+        let Some(device_path) = candidates.into_iter().find(|p| Path::new(p).exists()) else {
             return Err(HardwareError::DeviceNotFound(
                 "Dispositivo USB da impressora não encontrado (tente configurar a porta, ex: /dev/usb/lp0)".into(),
             ));
@@ -342,7 +339,8 @@ impl ThermalPrinter {
             .open(&device_path)
             .map_err(HardwareError::IoError)?;
 
-        dev.write_all(&self.buffer).map_err(HardwareError::IoError)?;
+        dev.write_all(&self.buffer)
+            .map_err(HardwareError::IoError)?;
         dev.flush().map_err(HardwareError::IoError)?;
 
         Ok(())

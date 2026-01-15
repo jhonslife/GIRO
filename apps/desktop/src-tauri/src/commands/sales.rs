@@ -42,10 +42,10 @@ pub async fn create_sale(input: CreateSale, state: State<'_, AppState>) -> AppRe
     repo.create(input).await
 }
 
+use crate::audit_log;
+use crate::middleware::audit::{AuditAction, AuditService};
 use crate::middleware::Permission;
 use crate::require_permission;
-use crate::middleware::audit::{AuditService, AuditAction};
-use crate::audit_log;
 
 #[tauri::command]
 pub async fn cancel_sale(

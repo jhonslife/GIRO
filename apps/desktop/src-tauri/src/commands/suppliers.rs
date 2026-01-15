@@ -1,11 +1,11 @@
 //! Comandos Tauri para Fornecedores
 
 use crate::error::AppResult;
+use crate::middleware::Permission;
 use crate::models::{CreateSupplier, Supplier, UpdateSupplier};
 use crate::repositories::SupplierRepository;
-use crate::AppState;
-use crate::middleware::Permission;
 use crate::require_permission;
+use crate::AppState;
 use tauri::State;
 
 #[tauri::command]

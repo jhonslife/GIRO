@@ -54,7 +54,7 @@ impl SystemHandler {
         pool: SqlitePool,
         pdv_name: String,
         store_name: String,
-        store_document: Option<String>
+        store_document: Option<String>,
     ) -> Self {
         Self {
             pool,
@@ -176,7 +176,12 @@ mod tests {
             .await
             .unwrap();
 
-        let handler = SystemHandler::new(pool, "PDV-01".to_string(), "Mercearia Teste".to_string(), None);
+        let handler = SystemHandler::new(
+            pool,
+            "PDV-01".to_string(),
+            "Mercearia Teste".to_string(),
+            None,
+        );
 
         let response = handler.info(2);
         assert!(response.success);
