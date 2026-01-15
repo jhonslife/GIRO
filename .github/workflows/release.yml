@@ -77,6 +77,10 @@ jobs:
         working-directory: packages/database
         run: pnpm prisma generate
 
+      - name: Build Frontend
+        working-directory: apps/desktop
+        run: pnpm build
+
       - name: Build Desktop App
         uses: tauri-apps/tauri-action@v0
         env:
