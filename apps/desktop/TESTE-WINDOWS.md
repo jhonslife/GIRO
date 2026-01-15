@@ -4,7 +4,7 @@
 
 Após o build, você encontrará os arquivos em:
 
-```text
+````text
 apps/desktop/src-tauri/target/x86_64-pc-windows-msvc/release/
 ├── giro-desktop.exe          # Executável standalone
 └── bundle/nsis/
@@ -78,13 +78,13 @@ apps/desktop/src-tauri/target/x86_64-pc-windows-msvc/release/
 
 ## 📊 Funcionalidades Core para Testar
 
-- [ ] Login (PIN de funcionário)
-- [ ] Cadastro de produto
-- [ ] Busca por código de barras (scanner)
-- [ ] Venda rápida no PDV
-- [ ] Impressão de cupom (IT-100)
-- [ ] Abertura/fechamento de caixa
-- [ ] Relatórios básicos
+- ✅ Login (PIN de funcionário)
+- ✅ Cadastro de produto
+- ✅ Busca por código de barras (scanner)
+- ✅ Venda rápida no PDV
+- ✅ Impressão de cupom (IT-100)
+- ✅ Abertura/fechamento de caixa
+- ✅ Relatórios básicos
 
 ## ⚠️ Limitações Conhecidas
 
@@ -95,3 +95,4 @@ apps/desktop/src-tauri/target/x86_64-pc-windows-msvc/release/
 ---
 
 **Desenvolvido por Arkheion** | GIRO v1.0.0
+````

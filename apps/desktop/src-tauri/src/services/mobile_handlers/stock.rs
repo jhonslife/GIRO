@@ -5,6 +5,7 @@
 use crate::models::{StockMovement, StockMovementType};
 use crate::repositories::{ProductRepository, StockRepository};
 use crate::services::mobile_protocol::{MobileErrorCode, MobileResponse, StockAdjustPayload};
+use crate::middleware::audit::{AuditService, AuditAction, CreateAuditLog};
 use sqlx::SqlitePool;
 
 /// Handler de estoque
@@ -16,6 +17,26 @@ impl StockHandler {
     /// Cria novo handler
     pub fn new(pool: SqlitePool) -> Self {
         Self { pool }
+    }
+
+    async fn log_audit(
+        &self,
+        action: AuditAction,
+        employee_id: &str,
+        target_id: &str,
+        details: String,
+    ) {
+        let audit_service = AuditService::new(self.pool.clone());
+        let _ = audit_service
+            .log(CreateAuditLog {
+                action,
+                employee_id: employee_id.to_string(),
+                employee_name: "Mobile User".to_string(), // Idealmente buscar nome, mas employee_id já ajuda
+                target_type: Some("Product".to_string()),
+                target_id: Some(target_id.to_string()),
+                details: Some(details),
+            })
+            .await;
     }
 
     /// Ajusta estoque de produto
@@ -122,6 +143,24 @@ impl StockHandler {
                     new_stock,
                     payload.quantity
                 );
+
+                // Audit Log
+                let action = match movement_type {
+                    StockMovementType::Entry => AuditAction::StockEntry,
+                    StockMovementType::Transfer => AuditAction::StockTransfer,
+                    _ => AuditAction::StockAdjustment,
+                };
+
+                self.log_audit(
+                    action,
+                    employee_id,
+                    &payload.product_id,
+                    format!(
+                        "Ajuste mobile: {} (Anterior: {}, Novo: {})",
+                        payload.quantity, product.current_stock, new_stock
+                    ),
+                )
+                .await;
 
                 MobileResponse::success(
                     id,

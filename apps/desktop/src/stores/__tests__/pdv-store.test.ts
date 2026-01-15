@@ -59,6 +59,15 @@ describe('PDV Store', () => {
       expect(state.items[0]?.quantity).toBe(5);
     });
 
+    it('should update item quantity via updateItemQuantity wrapper', () => {
+      usePDVStore.getState().addItem(mockProduct);
+      const itemId = usePDVStore.getState().items[0]!.id;
+
+      usePDVStore.getState().updateItemQuantity(itemId, 3);
+
+      expect(usePDVStore.getState().items[0]?.quantity).toBe(3);
+    });
+
     it('should remove item when quantity is 0', () => {
       usePDVStore.getState().addItem(mockProduct);
       const itemId = usePDVStore.getState().items[0]!.id;
@@ -67,6 +76,53 @@ describe('PDV Store', () => {
 
       const state = usePDVStore.getState();
       expect(state.items).toHaveLength(0);
+    });
+
+    it('should add weighted items as separate rows', () => {
+      const weightedProduct = {
+        productId: 'prod-w',
+        productName: 'Tomate',
+        quantity: 0.5,
+        unitPrice: 10.0,
+        unit: 'KG',
+        isWeighted: true,
+      };
+
+      usePDVStore.getState().addItem(weightedProduct);
+      usePDVStore.getState().addItem(weightedProduct);
+
+      const state = usePDVStore.getState();
+      expect(state.items).toHaveLength(2);
+      expect(state.items[0]?.quantity).toBe(0.5);
+      expect(state.items[1]?.quantity).toBe(0.5);
+    });
+
+    it('should update item discount', () => {
+      usePDVStore.getState().addItem(mockProduct);
+      const itemId = usePDVStore.getState().items[0]!.id;
+
+      usePDVStore.getState().updateItemDiscount(itemId, 5);
+
+      const state = usePDVStore.getState();
+      expect(state.items[0]?.discount).toBe(5);
+    });
+
+    it('should not update other items quantity or discount', () => {
+      usePDVStore.getState().addItem(mockProduct);
+      usePDVStore.getState().addItem({ ...mockProduct, productId: 'prod-2' });
+
+      const state1 = usePDVStore.getState();
+      const id1 = state1.items[0]!.id;
+      const id2 = state1.items[1]!.id;
+
+      usePDVStore.getState().updateQuantity(id1, 10);
+      usePDVStore.getState().updateItemDiscount(id1, 2);
+
+      const state2 = usePDVStore.getState();
+      expect(state2.items.find((i) => i.id === id1)?.quantity).toBe(10);
+      expect(state2.items.find((i) => i.id === id1)?.discount).toBe(2);
+      expect(state2.items.find((i) => i.id === id2)?.quantity).toBe(mockProduct.quantity);
+      expect(state2.items.find((i) => i.id === id2)?.discount).toBe(0);
     });
   });
 
@@ -141,6 +197,33 @@ describe('PDV Store', () => {
       const total = usePDVStore.getState().getTotal();
       expect(total).toBe(0); // Não deve ser negativo
     });
+
+    it('should correctly calculate subtotal with item discounts', () => {
+      usePDVStore.getState().addItem({
+        productId: 'prod-1',
+        productName: 'Item 1',
+        quantity: 1,
+        unitPrice: 100.0,
+        unit: 'UN',
+        isWeighted: false,
+      });
+      const itemId = usePDVStore.getState().items[0]!.id;
+      usePDVStore.getState().updateItemDiscount(itemId, 10);
+
+      expect(usePDVStore.getState().getSubtotal()).toBe(90.0);
+    });
+
+    it('should return correct item count', () => {
+      usePDVStore.getState().addItem({
+        productId: 'prod-1',
+        productName: 'Item 1',
+        quantity: 5,
+        unitPrice: 10.0,
+        unit: 'UN',
+        isWeighted: false,
+      });
+      expect(usePDVStore.getState().getItemCount()).toBe(5);
+    });
   });
 
   describe('payment modal', () => {
@@ -157,13 +240,17 @@ describe('PDV Store', () => {
       expect(state.isPaymentModalOpen).toBe(false);
       expect(state.selectedPaymentMethod).toBeNull();
     });
-
     it('should set payment method', () => {
       usePDVStore.getState().setPaymentMethod('CASH');
 
       const state = usePDVStore.getState();
       expect(state.paymentMethod).toBe('CASH');
       expect(state.selectedPaymentMethod).toBe('CASH');
+    });
+
+    it('should set selected payment method directly', () => {
+      usePDVStore.getState().setSelectedPaymentMethod('DEBIT');
+      expect(usePDVStore.getState().selectedPaymentMethod).toBe('DEBIT');
     });
   });
 
@@ -187,6 +274,37 @@ describe('PDV Store', () => {
       expect(state.items).toHaveLength(0);
       expect(state.discount).toBe(0);
       expect(state.paymentMethod).toBeNull();
+      expect(state.isPaymentModalOpen).toBe(false);
+    });
+  });
+
+  describe('status and sessions', () => {
+    it('should handle processing status', () => {
+      usePDVStore.getState().setProcessing(true);
+      expect(usePDVStore.getState().isProcessing).toBe(true);
+    });
+
+    it('should set last sale id', () => {
+      usePDVStore.getState().setLastSaleId('sale-123');
+      expect(usePDVStore.getState().lastSaleId).toBe('sale-123');
+    });
+
+    it('should set cash session', () => {
+      const mockSession = { id: 'sess-1', status: 'OPEN' } as any;
+      usePDVStore.getState().setCashSession(mockSession);
+      expect(usePDVStore.getState().cashSession).toEqual(mockSession);
+    });
+
+    it('should reset payment state', () => {
+      usePDVStore.getState().setPaymentMethod('PIX');
+      usePDVStore.getState().setAmountPaid(50);
+      usePDVStore.getState().openPaymentModal();
+
+      usePDVStore.getState().resetPayment();
+
+      const state = usePDVStore.getState();
+      expect(state.paymentMethod).toBeNull();
+      expect(state.amountPaid).toBe(0);
       expect(state.isPaymentModalOpen).toBe(false);
     });
   });

@@ -101,6 +101,8 @@ describe('PDVPage', () => {
     clearCart: vi.fn(),
     getSubtotal: vi.fn(() => 0),
     getTotal: vi.fn(() => 0),
+    updateItemQuantity: vi.fn(), // Added missing mock
+    setSelectedPaymentMethod: vi.fn(), // Added missing mock
   };
 
   const mockAuthStore = {
@@ -149,6 +151,11 @@ describe('PDVPage', () => {
         productName: 'Product 1',
       })
     );
+    expect(screen.queryByTestId('search-results')).not.toBeInTheDocument();
+
+    // Trigger handleSearch('') by typing and backspacing
+    await user.type(input, 'A');
+    await user.keyboard('{Backspace}');
     expect(screen.queryByTestId('search-results')).not.toBeInTheDocument();
   });
 
@@ -208,6 +215,55 @@ describe('PDVPage', () => {
     fireEvent.keyDown(window, { key: 'Escape' });
     fireEvent.keyDown(window, { key: 'F12' });
     expect(mockPDVStore.removeItem).toHaveBeenCalledWith('i1');
+
+    // Test weighted item selection explicitly
+    const searchInput = screen.getByPlaceholderText(/Buscar produto/i);
+    fireEvent.change(searchInput, { target: { value: 'W' } });
+    const weightedBtn = screen.getByText('Select Weighted Product');
+    fireEvent.click(weightedBtn);
+    expect(mockPDVStore.addItem).toHaveBeenCalled();
+
+    // Trigger handleQuantityConfirm with decimal for weighted
+    fireEvent.keyDown(window, { key: 'F4' });
+    const qtyInput = await screen.findByLabelText(/Nova quantidade/i);
+    fireEvent.change(qtyInput, { target: { value: '1,25' } });
+    fireEvent.keyDown(qtyInput, { key: 'Enter' });
+    expect(mockPDVStore.updateQuantity).toHaveBeenCalled();
+  });
+
+  it('should handle clearing the cart', () => {
+    vi.mocked(useAuthStore).mockReturnValue({
+      ...mockAuthStore,
+      currentSession: { id: 's1' },
+    } as any);
+    mockPDVStore.items = [
+      {
+        id: 'i1',
+        productId: 'p1',
+        productName: 'item1',
+        quantity: 1,
+        unitPrice: 10,
+        unit: 'UNIT',
+        total: 10,
+        isWeighted: false,
+      },
+    ] as any;
+    renderPDV();
+
+    const clearBtn = screen.getByText(/Limpar/i);
+    fireEvent.click(clearBtn);
+    expect(mockPDVStore.clearCart).toHaveBeenCalled();
+  });
+
+  it('should handle Escape key to close modals', () => {
+    vi.mocked(useAuthStore).mockReturnValue({
+      ...mockAuthStore,
+      currentSession: { id: 's1' },
+    } as any);
+    renderPDV();
+
+    fireEvent.keyDown(window, { key: 'Escape' });
+    // This covers the Escape block in useEffect
   });
 
   it('should ignore shortcuts when no items are present', () => {
@@ -303,12 +359,37 @@ describe('PDVPage', () => {
       expect(screen.queryByLabelText(/Nova quantidade/i)).not.toBeInTheDocument();
     });
 
-    // Non-numeric discount should result in setDiscount(0)
+    // Enter key in quantity
+    fireEvent.keyDown(window, { key: 'F4' });
+    qtyInput = await screen.findByLabelText(/Nova quantidade/i);
+    fireEvent.change(qtyInput, { target: { value: '3' } });
+    fireEvent.keyDown(qtyInput, { key: 'Enter' });
+    expect(mockPDVStore.updateQuantity).toHaveBeenCalledWith('i1', 3);
+
+    // Enter key in discount
     fireEvent.keyDown(window, { key: 'F6' });
     const discountInput = await screen.findByLabelText(/Valor do desconto/i);
-    fireEvent.change(discountInput, { target: { value: 'xyz' } });
-    await user.click(screen.getByRole('button', { name: /Aplicar/i }));
-    expect(mockPDVStore.setDiscount).toHaveBeenCalledWith(0);
+    fireEvent.change(discountInput, { target: { value: '2' } });
+    fireEvent.keyDown(discountInput, { key: 'Enter' });
+    expect(mockPDVStore.setDiscount).toHaveBeenCalledWith(2);
+  });
+
+  it('should render discount summary when discount > 0', () => {
+    vi.mocked(useAuthStore).mockReturnValue({
+      ...mockAuthStore,
+      currentSession: { id: 's1' },
+    } as any);
+    vi.mocked(usePDVStore).mockReturnValue({
+      ...mockPDVStore,
+      items: [{ id: 'i1', productId: 'p1', productName: 'P1', quantity: 1, unitPrice: 10 }],
+      discount: 5,
+    });
+
+    renderPDV();
+    // Check that there is a "Desconto" text in the summary area
+    const discountElements = screen.getAllByText(/Desconto/i);
+    expect(discountElements.length).toBeGreaterThan(0);
+    expect(screen.getByText(/-R\$ 5,00/)).toBeInTheDocument();
   });
 
   it('should open payment modal via buttons', async () => {

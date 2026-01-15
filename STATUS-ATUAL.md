@@ -15,7 +15,9 @@
 - ✅ Database SQLite com WAL mode
 - ✅ Seed scripts funcionais
 - ✅ Localização: `~/.local/share/Mercearias/mercearias.db`
+
 ## Entidades:
+
 - Product, Category, Supplier, ProductLot
 - Employee (RBAC: Admin, Manager, Cashier, Viewer)
 - Sale, SaleItem, CashSession, CashMovement
@@ -35,8 +37,10 @@
 - ✅ **Aliases de compatibilidade** com frontend
 
 **Localização:** `apps/desktop/src-tauri/`
+
 ## Comandos Implementados (90+):
-```rust
+
+````rust
 // Produtos (8)
 get_products, get_product_by_id, get_product_by_barcode,
 search_products, create_product, update_product, delete_product,
@@ -141,8 +145,8 @@ open_cash_session, close_cash_session, add_cash_movement
 
 ### 🔌 Fase 2: Integrations (Após Auth)
 
-**Prioridade:** Alta  
-**Tasks:** 0/30 (0%)  
+**Prioridade:** Alta
+**Tasks:** 0/30 (0%)
 **Estimativa:** 3-4 dias
 ## Hardware já implementado no backend:
 - ✅ Impressora térmica (commands prontos)
@@ -157,8 +161,8 @@ open_cash_session, close_cash_session, add_cash_movement
 
 ### 🧪 Fase 3: Testing
 
-**Status:** 🔒 Bloqueado  
-**Tasks:** 0/24 (0%)  
+**Status:** 🔒 Bloqueado
+**Tasks:** 0/24 (0%)
 **Estimativa:** 2-3 dias
 ## Tipos de Testes:
 - Unit tests (Rust repositories)
@@ -168,8 +172,8 @@ open_cash_session, close_cash_session, add_cash_movement
 
 ### 🚀 Fase 4: DevOps (Paralelo)
 
-**Status:** ⏸️ Aguardando (pode iniciar setup)  
-**Tasks:** 0/25 (0%)  
+**Status:** ⏸️ Aguardando (pode iniciar setup)
+**Tasks:** 0/25 (0%)
 **Estimativa:** 1-2 dias para setup inicial
 ## Ações Imediatas:
 - DEVOPS-000: Estrutura de monorepo ✅ (já existe)
@@ -180,7 +184,7 @@ open_cash_session, close_cash_session, add_cash_movement
 
 ### 🎨 Fase 5: Design (Paralelo/Opcional)
 
-**Status:** ⏸️ Aguardando  
+**Status:** ⏸️ Aguardando
 **Tasks:** 0/20 (0%)
 ## Ações:
 - Brand guidelines
@@ -257,6 +261,40 @@ open_cash_session, close_cash_session, add_cash_movement
 | 🧪 Testing      | 🔒 Bloqueado  | 0%        | 0/24  | 🟡 P2      |
 | 🚀 DevOps       | ⏸️ Aguardando | 0%        | 0/25  | 🟢 P3      |
 | 🎨 Design       | ⏸️ Aguardando | 0%        | 0/20  | 🟢 P4      |
+| 🌐 Landing Page | 🚀 Próximo    | 0%        | 0/30  | 🔴 P0      |
+
+---
+
+## 🌐 Próxima Fase: Landing Page & Checkout
+
+**Objetivo:** Criar presença web profissional e automatizar vendas.
+
+### Plano de Ação (6 Semanas)
+
+- [ ] **S1: Fundação**: Projeto Next.js 16 + Screenshots 4K.
+- [ ] **S2: Visual**: Hero Section cinematográfico + Mockups 3D.
+- [ ] **S3: Features**: Showcase de funcionalidades e Preços.
+- [ ] **S4: Checkout**: Integração Mercado Pago + Webhooks.
+- [ ] **S5: Cliente**: Área logada para download e licenças.
+- [ ] **S6: Launch**: SEO, Analytics e Go-live comercial.
+
+**Detalhes técnicos:** Next.js, Framer Motion, Three.js, Mercado Pago SDK.
+
+---
+
+## 🛠️ Outras Pendências Priorizadas
+
+### 🔐 Licensing & Auth
+
+- [ ] **Email Transacional**: Configurar SendGrid/Resend para envio de chaves.
+- [ ] **Área do Cliente**: Dashboard web para clientes gerenciarem licenças.
+- [ ] **Offline Logic**: Lógica para transição de licenças lifetime para offline após 5 anos.
+- [ ] **Cleanup**: Padronizar nomenclatura de planos em toda a codebase.
+
+### 🧪 Testes & Validação
+
+- [ ] **E2E Real**: Testar fluxo completo com licença real (não mockada).
+- [ ] **Hardware Real**: Validar scanner e impressora em ambiente Windows real.
 
 ---
 
@@ -265,7 +303,9 @@ open_cash_session, close_cash_session, add_cash_movement
 ### 1. Frontend (já rodando)
 
 Acesse: http://localhost:1420
+
 ## Funcionalidades testáveis (com mocks):
+
 - ✅ PDV (adicionar produtos ao carrinho)
 - ✅ Pesquisa de produtos
 - ✅ Navegação entre páginas
@@ -273,13 +313,17 @@ Acesse: http://localhost:1420
 - ✅ UI completo
 
 ### 2. Backend + Frontend Integrado
+
 ## Terminal 1 (Frontend):
+
 ```bash
 cd apps/desktop
 npm run dev
-````
+```
+
 ## Terminal 2 (Tauri):
-```bash
+
+````bash
 cd apps/desktop
 npm run tauri dev
 ```text
@@ -414,3 +458,4 @@ Configurar CI/CD básico enquanto Auth está sendo desenvolvido.
 ---
 
 _Atualizado em 7 de Janeiro de 2026, 20:50 - Arkheion Corp_
+````

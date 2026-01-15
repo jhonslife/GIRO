@@ -29,6 +29,7 @@ describe('useVehicles', () => {
     vi.mocked(invoke).mockResolvedValue(mockResults);
 
     const { result } = renderHook(() => useVehicles(), { wrapper: queryWrapper });
+    await waitFor(() => expect(result.current.isLoadingBrands).toBe(false));
 
     let found;
     await act(async () => {
@@ -41,6 +42,7 @@ describe('useVehicles', () => {
 
   it('should reset state', async () => {
     const { result } = renderHook(() => useVehicles(), { wrapper: queryWrapper });
+    await waitFor(() => expect(result.current.isLoadingBrands).toBe(false));
 
     act(() => {
       result.current.reset();

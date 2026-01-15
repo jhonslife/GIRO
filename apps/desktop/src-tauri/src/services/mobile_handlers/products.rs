@@ -7,6 +7,7 @@ use crate::repositories::ProductRepository;
 use crate::services::mobile_protocol::{
     MobileErrorCode, MobileResponse, ProductGetPayload, ProductSearchPayload,
 };
+use crate::middleware::audit::{AuditService, AuditAction, CreateAuditLog};
 use sqlx::SqlitePool;
 
 /// Handler de produtos
@@ -18,6 +19,26 @@ impl ProductsHandler {
     /// Cria novo handler
     pub fn new(pool: SqlitePool) -> Self {
         Self { pool }
+    }
+
+    async fn log_audit(
+        &self,
+        action: AuditAction,
+        employee_id: Option<&str>,
+        target_id: &str,
+        details: String,
+    ) {
+        let audit_service = AuditService::new(self.pool.clone());
+        let _ = audit_service
+            .log(CreateAuditLog {
+                action,
+                employee_id: employee_id.unwrap_or("mobile_system").to_string(),
+                employee_name: "Mobile User".to_string(),
+                target_type: Some("Product".to_string()),
+                target_id: Some(target_id.to_string()),
+                details: Some(details),
+            })
+            .await;
     }
 
     /// Busca produto por barcode
@@ -111,6 +132,7 @@ impl ProductsHandler {
         &self,
         id: u64,
         payload: serde_json::Value,
+        employee_id: &str,
         employee_role: &str,
     ) -> MobileResponse {
         // Verificar permissão
@@ -139,6 +161,15 @@ impl ProductsHandler {
         match repo.create(input).await {
             Ok(product) => {
                 tracing::info!("Produto criado via mobile: {}", product.name);
+
+                self.log_audit(
+                    AuditAction::ProductCreated,
+                    Some(employee_id),
+                    &product.id,
+                    format!("Produto criado via mobile: {}", product.name),
+                )
+                .await;
+
                 MobileResponse::success(id, product)
             }
             Err(e) => {
@@ -153,6 +184,7 @@ impl ProductsHandler {
         &self,
         id: u64,
         payload: serde_json::Value,
+        employee_id: &str,
         employee_role: &str,
     ) -> MobileResponse {
         // Verificar permissão
@@ -192,6 +224,15 @@ impl ProductsHandler {
         match repo.update(&product_id, input).await {
             Ok(product) => {
                 tracing::info!("Produto atualizado via mobile: {}", product.name);
+
+                self.log_audit(
+                    AuditAction::ProductUpdated,
+                    Some(employee_id),
+                    &product.id,
+                    format!("Produto atualizado via mobile: {}", product.name),
+                )
+                .await;
+
                 MobileResponse::success(id, product)
             }
             Err(e) => {

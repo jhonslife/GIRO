@@ -23,21 +23,24 @@ pub struct QrCodeParams {
 pub struct QrCodeGenerator;
 
 impl QrCodeGenerator {
-    /// Gera URL do QR Code
+    /// Gera URL do QR Code (Versão 2 - NFC-e 4.00)
     pub fn generate_url(params: &QrCodeParams) -> Result<String, String> {
         // URL base por UF e ambiente
         let base_url = Self::get_base_url(&params.uf, params.environment)?;
 
-        // Montar parâmetros
+        // Versão 2 do QR Code (NT 2019.001)
+        // chNFe=ChaveAcesso
+        // nVersao=2
+        // tpAmb=Ambiente
+        // cIdToken=IdToken (CSC ID)
+        // cHashQRCode=Hash(chNFe + nVersao + tpAmb + cIdToken + CSC)
+
+        let n_versao = "2";
+        let hash = Self::generate_hash_v2(params, n_versao)?;
+
         let url_params = format!(
-            "chNFe={}&nVersao=100&tpAmb={}&cDest=&dhEmi={}&vNF={:.2}&vICMS=0.00&digVal={}&cIdToken={}&cHashQRCode={}",
-            params.access_key,
-            params.environment,
-            Self::encode_date(&params.emission_date)?,
-            params.total_value,
-            Self::url_encode(&params.digest_value),
-            params.csc_id,
-            Self::generate_hash(params)?
+            "chNFe={}&nVersao={}&tpAmb={}&cIdToken={:0>6}&cHashQRCode={}",
+            params.access_key, n_versao, params.environment, params.csc_id, hash
         );
 
         Ok(format!("{}?{}", base_url, url_params))
@@ -83,49 +86,44 @@ impl QrCodeGenerator {
     }
 
     fn get_base_url(uf: &str, environment: u8) -> Result<String, String> {
-        // URLs por UF conforme NT 2019.001
+        // URLs de consulta QR Code por UF conforme NT 2019.001 v1.60
         let url = match (uf, environment) {
             // Produção
             ("SP", 1) => "https://nfe.fazenda.sp.gov.br/NFCeConsultaPublica/Paginas/ConsultaQRCode.aspx",
             ("RJ", 1) => "http://www4.fazenda.rj.gov.br/consultaNFCe/QRCode",
             ("MG", 1) => "http://nfce.fazenda.mg.gov.br/portalnfce/sistema/qrcode.xhtml",
             ("RS", 1) => "https://www.sefaz.rs.gov.br/NFCE/NFCE-COM.aspx",
+            ("PR", 1) => "http://www.fazenda.pr.gov.br/nfce/qrcode",
 
             // Homologação
             ("SP", 2) => "https://homologacao.nfe.fazenda.sp.gov.br/NFCeConsultaPublica/Paginas/ConsultaQRCode.aspx",
             ("RJ", 2) => "http://www4.fazenda.rj.gov.br/consultaNFCe/QRCode",
             ("MG", 2) => "http://nfce.fazenda.mg.gov.br/portalnfce/sistema/qrcode.xhtml",
             ("RS", 2) => "https://www.sefaz.rs.gov.br/NFCE/NFCE-COM.aspx",
+            ("PR", 2) => "http://www.fazenda.pr.gov.br/nfce/qrcode",
 
-            _ => return Err(format!("UF {} não suportada", uf)),
+            _ => "https://nfce.svrs.rs.gov.br/ws/NFeConsultaQRCode/NFeConsultaQRCode.asn", // Fallback SVRS
         };
 
         Ok(url.to_string())
     }
 
-    fn encode_date(date: &str) -> Result<String, String> {
-        // Converter formato ISO para formato esperado (URL encoded)
-        // YYYY-MM-DDTHH:MM:SS -> YYYY-MM-DDTHH%3AMM%3ASS
-        Ok(date.replace(':', "%3A"))
-    }
+    fn generate_hash_v2(params: &QrCodeParams, versao: &str) -> Result<String, String> {
+        // cHashQRCode = SHA-1(chNFe + nVersao + tpAmb + cIdToken + CSC)
+        // cIdToken deve ter 6 caracteres (zeros à esquerda)
+        let c_id_token = format!("{:0>6}", params.csc_id);
 
-    fn url_encode(value: &str) -> String {
-        value
-            .replace('+', "%2B")
-            .replace('/', "%2F")
-            .replace('=', "%3D")
-    }
-
-    fn generate_hash(params: &QrCodeParams) -> Result<String, String> {
-        // Hash = SHA1(chNFe|cIdToken|CSC)
-        let data = format!("{}|{}|{}", params.access_key, params.csc_id, params.csc);
+        let data = format!(
+            "{}{}{}{}{}",
+            params.access_key, versao, params.environment, c_id_token, params.csc
+        );
 
         let mut hasher = Sha1::new();
         hasher.update(data.as_bytes());
         let hash = hasher.finalize();
 
-        // Converter para hexadecimal
-        Ok(hex::encode(hash).to_uppercase())
+        // Hexadecimal em minúsculas (conforme NT)
+        Ok(hex::encode(hash))
     }
 }
 
@@ -153,35 +151,18 @@ mod tests {
 
         assert!(url.contains("chNFe=35260100123456780001906500100000000111234567890"));
         assert!(url.contains("tpAmb=2"));
-        assert!(url.contains("vNF=100.50"));
-        assert!(url.contains("cIdToken=1"));
+        assert!(url.contains("cIdToken=000001"));
         assert!(url.contains("cHashQRCode="));
     }
 
     #[test]
-    fn test_generate_hash() {
+    fn test_generate_hash_v2() {
         let params = create_test_params();
-        let hash = QrCodeGenerator::generate_hash(&params).unwrap();
+        let hash = QrCodeGenerator::generate_hash_v2(&params, "2").unwrap();
 
         // Hash deve ser hexadecimal de 40 caracteres (SHA1)
         assert_eq!(hash.len(), 40);
         assert!(hash.chars().all(|c| c.is_ascii_hexdigit()));
-    }
-
-    #[test]
-    fn test_encode_date() {
-        let date = "2026-01-02T10:30:00";
-        let encoded = QrCodeGenerator::encode_date(date).unwrap();
-
-        assert_eq!(encoded, "2026-01-02T10%3A30%3A00");
-    }
-
-    #[test]
-    fn test_url_encode() {
-        let value = "ABC+/=";
-        let encoded = QrCodeGenerator::url_encode(value);
-
-        assert_eq!(encoded, "ABC%2B%2F%3D");
     }
 
     #[test]

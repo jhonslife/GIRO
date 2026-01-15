@@ -2,8 +2,17 @@
  * @file settings-store.test.ts - Testes para Settings store
  */
 
-import { useSettingsStore } from '@/stores/settings-store';
+import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  useCompany,
+  usePDVConfig,
+  usePrinter,
+  useScale,
+  useSettingsStore,
+  useSidebar,
+  useTheme,
+} from '../settings-store';
 
 // Mock do DOM para setTheme
 const mockClassList = {
@@ -170,6 +179,27 @@ describe('Settings Store', () => {
       expect(scale.baudRate).toBe(4800);
     });
   });
+  describe('fiscal config', () => {
+    it('should have sensible fiscal defaults', () => {
+      const fiscal = useSettingsStore.getState().fiscal;
+      expect(fiscal.enabled).toBe(false);
+      expect(fiscal.environment).toBe(2);
+      expect(fiscal.uf).toBe('SP');
+    });
+
+    it('should update fiscal config', () => {
+      useSettingsStore.getState().setFiscalConfig({
+        enabled: true,
+        csc: 'ABCD',
+        serie: 2,
+      });
+
+      const fiscal = useSettingsStore.getState().fiscal;
+      expect(fiscal.enabled).toBe(true);
+      expect(fiscal.csc).toBe('ABCD');
+      expect(fiscal.serie).toBe(2);
+    });
+  });
 
   describe('pdv config', () => {
     it('should have sensible PDV defaults', () => {
@@ -228,8 +258,65 @@ describe('Settings Store', () => {
     });
   });
 
-  // Note: Compatibility aliases (companyInfo, printerConfig, scaleConfig) use
-  // getters that internally call get(). In tests with persist middleware,
-  // these may not reflect immediate updates. The main properties (company,
-  // printer, scale) are tested above and work correctly.
+  describe('Hooks', () => {
+    it('useTheme should return theme and setTheme', () => {
+      const { result } = renderHook(() => useTheme());
+
+      expect(result.current.theme).toBe('system');
+      act(() => {
+        result.current.setTheme('dark');
+      });
+      expect(useSettingsStore.getState().theme).toBe('dark');
+    });
+
+    it('useSidebar should return sidebar state', () => {
+      const { result } = renderHook(() => useSidebar());
+
+      expect(result.current.collapsed).toBe(false);
+      act(() => {
+        result.current.toggle();
+      });
+      expect(result.current.collapsed).toBe(true);
+    });
+
+    it('useCompany should return company state', () => {
+      const { result } = renderHook(() => useCompany());
+
+      expect(result.current.company.name).toBe('Minha Mercearia');
+      act(() => {
+        result.current.setCompany({ name: 'Hook Test' });
+      });
+      expect(result.current.company.name).toBe('Hook Test');
+    });
+
+    it('usePrinter should return printer state', () => {
+      const { result } = renderHook(() => usePrinter());
+
+      expect(result.current.isEnabled).toBe(false);
+      act(() => {
+        result.current.setPrinter({ enabled: true });
+      });
+      expect(result.current.isEnabled).toBe(true);
+    });
+
+    it('useScale should return scale state', () => {
+      const { result } = renderHook(() => useScale());
+
+      expect(result.current.isEnabled).toBe(false);
+      act(() => {
+        result.current.setScale({ enabled: true });
+      });
+      expect(result.current.isEnabled).toBe(true);
+    });
+
+    it('usePDVConfig should return pdv config and setConfig', () => {
+      const { result } = renderHook(() => usePDVConfig());
+
+      expect(result.current.allowNegativeStock).toBe(false);
+      act(() => {
+        result.current.setConfig({ allowNegativeStock: true });
+      });
+      expect(result.current.allowNegativeStock).toBe(true);
+    });
+  });
 });

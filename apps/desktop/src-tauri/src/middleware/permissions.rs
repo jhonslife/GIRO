@@ -3,7 +3,7 @@
 //! Define permissões por role e verifica antes de executar commands.
 
 use crate::error::{AppError, AppResult};
-use crate::models::EmployeeRole;
+use crate::models::{EmployeeRole, Employee};
 use crate::repositories::EmployeeRepository;
 use sqlx::{Pool, Sqlite};
 
@@ -179,7 +179,7 @@ pub async fn check_permission(
     pool: &Pool<Sqlite>,
     employee_id: &str,
     permission: Permission,
-) -> AppResult<()> {
+) -> AppResult<Employee> {
     let repo = EmployeeRepository::new(pool);
 
     let employee = repo
@@ -203,7 +203,7 @@ pub async fn check_permission(
     };
 
     if Permission::has_permission(role, permission) {
-        Ok(())
+        Ok(employee)
     } else {
         Err(AppError::PermissionDenied)
     }

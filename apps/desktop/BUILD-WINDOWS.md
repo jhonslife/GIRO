@@ -127,11 +127,11 @@ Instruções rápidas: copie o ZIP para uma máquina Windows, extraia, instale o
 
 ### Checklist Pós-Build
 
-- [ ] Instalador `.exe` gerado em `bundle/nsis/`
-- [ ] Tamanho do instalador entre 80-150MB
-- [ ] Executável `giro-desktop.exe` em `release/`
-- [ ] Sem erros de compilação nos logs
-- [ ] Hash SHA256 gerado para distribuição
+- ✅ Instalador `.exe` gerado em `bundle/nsis/`
+- ✅ Tamanho do instalador entre 80-150MB
+- ✅ Executável `giro-desktop.exe` em `release/`
+- ✅ Sem erros de compilação nos logs
+- ✅ Hash SHA256 gerado para distribuição
 
 ### Gerar Hash SHA256
 
@@ -246,14 +246,14 @@ signtool verify /pa GIRO_1.0.0_x64-setup.exe
 ```text
 ### Checklist de Distribuição
 
-- [ ] Build em modo `--release`
-- [ ] Sem credenciais hardcoded
-- [ ] Sem dados de desenvolvimento
-- [ ] Hash SHA256 gerado
-- [ ] Assinatura digital aplicada
-- [ ] Testes em ambiente limpo
-- [ ] Changelog atualizado
-- [ ] Documentação de versão
+- ✅ Build em modo `--release`
+- ✅ Sem credenciais hardcoded
+- ✅ Sem dados de desenvolvimento
+- ✅ Hash SHA256 gerado
+- ✅ Assinatura digital aplicada
+- ✅ Testes em ambiente limpo
+- ✅ Changelog atualizado
+- ✅ Documentação de versão
 
 ---
 

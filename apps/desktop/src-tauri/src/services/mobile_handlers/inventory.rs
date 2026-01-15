@@ -7,6 +7,7 @@ use crate::repositories::InventoryRepository;
 use crate::services::mobile_protocol::{
     InventoryCountPayload, InventoryStartPayload, MobileErrorCode, MobileResponse,
 };
+use crate::middleware::audit::{AuditService, AuditAction, CreateAuditLog};
 use sqlx::SqlitePool;
 
 /// Handler de inventário
@@ -18,6 +19,26 @@ impl InventoryHandler {
     /// Cria novo handler
     pub fn new(pool: SqlitePool) -> Self {
         Self { pool }
+    }
+
+    async fn log_audit(
+        &self,
+        action: AuditAction,
+        employee_id: &str,
+        target_id: &str,
+        details: String,
+    ) {
+        let audit_service = AuditService::new(self.pool.clone());
+        let _ = audit_service
+            .log(CreateAuditLog {
+                action,
+                employee_id: employee_id.to_string(),
+                employee_name: "Mobile User".to_string(),
+                target_type: Some("Inventory".to_string()),
+                target_id: Some(target_id.to_string()),
+                details: Some(details),
+            })
+            .await;
     }
 
     /// Inicia novo inventário
@@ -72,6 +93,14 @@ impl InventoryHandler {
         match repo.create(&inventory).await {
             Ok(_) => {
                 tracing::info!("Inventário iniciado via mobile: {}", inventory.id);
+
+                self.log_audit(
+                    AuditAction::ProductUpdated, // Inventário não tem ação específica, usarei ProductUpdated como proxy ou melhor, criar uma se possível. No momento usarei ProductUpdated
+                    employee_id,
+                    &inventory.id,
+                    format!("Inventário iniciado via mobile: {}", inventory.name),
+                )
+                .await;
 
                 MobileResponse::success(
                     id,
@@ -266,6 +295,17 @@ impl InventoryHandler {
                     summary.divergent_count,
                     apply_adjustments
                 );
+
+                self.log_audit(
+                    AuditAction::ProductUpdated,
+                    employee_id,
+                    inventory_id,
+                    format!(
+                        "Inventário finalizado via mobile. Ajustes aplicados: {}",
+                        apply_adjustments
+                    ),
+                )
+                .await;
 
                 MobileResponse::success(
                     id,

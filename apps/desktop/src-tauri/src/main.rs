@@ -290,6 +290,8 @@ async fn main() {
             nfce::commands::check_sefaz_status,
             nfce::commands::list_offline_notes,
             nfce::commands::transmit_offline_note,
+            nfce::commands::get_fiscal_settings,
+            nfce::commands::update_fiscal_settings,
             // License
             commands::get_hardware_id,
             commands::activate_license,

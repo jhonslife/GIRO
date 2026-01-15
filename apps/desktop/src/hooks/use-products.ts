@@ -20,6 +20,18 @@ import type { CreateProductInput, ProductFilter, UpdateProductInput } from '@/ty
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 // ════════════════════════════════════════════════════════════════════════════
+// QUERY KEYS
+// ════════════════════════════════════════════════════════════════════════════
+
+export const productKeys = {
+  all: ['products'] as const,
+  lists: () => [...productKeys.all, 'list'] as const,
+  list: (filters?: ProductFilter) => [...productKeys.lists(), filters] as const,
+  details: () => [...productKeys.all, 'detail'] as const,
+  detail: (id: string) => [...productKeys.details(), id] as const,
+};
+
+// ════════════════════════════════════════════════════════════════════════════
 // QUERIES
 // ════════════════════════════════════════════════════════════════════════════
 

@@ -10,7 +10,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { useSettingsStore } from '@/stores/settings-store';
 import { invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-dialog';
 import { CheckCircle2, FileCode, Loader2, ShieldCheck, Wifi, XCircle } from 'lucide-react';
@@ -18,57 +17,72 @@ import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 export const FiscalSettings = () => {
-  const { fiscal, setFiscalConfig } = useSettingsStore();
-
-  // Local state
-  const [enabled, setEnabled] = useState(fiscal.enabled);
-  const [environment, setEnvironment] = useState(fiscal.environment.toString());
-  const [serie, setSerie] = useState(fiscal.serie.toString());
-  const [nextNumber, setNextNumber] = useState(fiscal.nextNumber.toString());
-  const [cscId, setCscId] = useState(fiscal.cscId);
-  const [csc, setCsc] = useState(fiscal.csc);
-  const [certPath, setCertPath] = useState(fiscal.certPath);
-  const [certPassword, setCertPassword] = useState(fiscal.certPassword);
+  // Estados locais sincronizados com o banco
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [enabled, setEnabled] = useState(false);
+  const [uf, setUf] = useState('SP');
+  const [environment, setEnvironment] = useState('2');
+  const [serie, setSerie] = useState('1');
+  const [nextNumber, setNextNumber] = useState('1');
+  const [cscId, setCscId] = useState('');
+  const [csc, setCsc] = useState('');
+  const [certPath, setCertPath] = useState('');
+  const [certPassword, setCertPassword] = useState('');
 
   // Estado do teste de conexão
   const [testingConnection, setTestingConnection] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
-  // Update local state when store changes
+  // Carregar configurações iniciais do backend
   useEffect(() => {
-    setEnabled(fiscal.enabled);
-    setEnvironment(fiscal.environment.toString());
-    setSerie(fiscal.serie.toString());
-    setNextNumber(fiscal.nextNumber.toString());
-    setCscId(fiscal.cscId);
-    setCsc(fiscal.csc);
-    setCertPath(fiscal.certPath);
-    setCertPassword(fiscal.certPassword);
-  }, [fiscal]);
+    const loadSettings = async () => {
+      try {
+        const settings = await invoke<any>('get_fiscal_settings');
+        setEnabled(settings.enabled);
+        setUf(settings.uf);
+        setEnvironment(settings.environment.toString());
+        setSerie(settings.serie.toString());
+        setNextNumber(settings.nextNumber.toString());
+        setCscId(settings.cscId || '');
+        setCsc(settings.csc || '');
+        setCertPath(settings.certPath || '');
+        setCertPassword(settings.certPassword || '');
+      } catch (err) {
+        toast.error('Erro ao carregar configurações fiscais');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadSettings();
+  }, []);
 
-  // Sync to store on change
-  useEffect(() => {
-    setFiscalConfig({
-      enabled,
-      environment: parseInt(environment),
-      serie: parseInt(serie),
-      nextNumber: parseInt(nextNumber),
-      cscId,
-      csc,
-      certPath,
-      certPassword,
-    });
-  }, [
-    enabled,
-    environment,
-    serie,
-    nextNumber,
-    cscId,
-    csc,
-    certPath,
-    certPassword,
-    setFiscalConfig,
-  ]);
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await invoke('update_fiscal_settings', {
+        data: {
+          enabled,
+          uf,
+          environment: parseInt(environment),
+          serie: parseInt(serie),
+          nextNumber: parseInt(nextNumber),
+          cscId: cscId || null,
+          csc: csc || null,
+          certPath: certPath || null,
+          certPassword: certPassword || null,
+        },
+      });
+      toast.success('Configurações fiscais salvas!');
+    } catch (err) {
+      toast.error('Falha ao salvar configurações', {
+        description: String(err),
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleSelectCert = async () => {
     try {
@@ -97,8 +111,8 @@ export const FiscalSettings = () => {
 
     try {
       // UF padrão - em produção deveria vir das configurações da empresa
-      const uf = fiscal.uf || 'SP';
-
+      // const uf = fiscal.uf || 'SP'; // Old line
+      // Using local state `uf`
       const response = await invoke<{
         active: boolean;
         statusCode: string;
@@ -130,6 +144,14 @@ export const FiscalSettings = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-12">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <Card>
@@ -148,19 +170,36 @@ export const FiscalSettings = () => {
         {enabled && (
           <CardContent className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Ambiente e Série */}
+              {/* UF e Ambiente */}
               <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Ambiente de Emissão</Label>
-                  <Select value={environment} onValueChange={setEnvironment}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="2">Homologação (Testes)</SelectItem>
-                      <SelectItem value="1">Produção (Validade Jurídica)</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Estado (UF)</Label>
+                    <Select value={uf} onValueChange={setUf}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="SP">São Paulo (SP)</SelectItem>
+                        <SelectItem value="RJ">Rio de Janeiro (RJ)</SelectItem>
+                        <SelectItem value="MG">Minas Gerais (MG)</SelectItem>
+                        <SelectItem value="RS">Rio Grande do Sul (RS)</SelectItem>
+                        <SelectItem value="PR">Paraná (PR)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Ambiente</Label>
+                    <Select value={environment} onValueChange={setEnvironment}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="2">Homologação</SelectItem>
+                        <SelectItem value="1">Produção</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -229,39 +268,52 @@ export const FiscalSettings = () => {
               </div>
             </div>
 
-            {/* Botão Testar Conexão */}
-            <div className="flex items-center gap-4 pt-4 border-t">
-              <Button
-                variant="outline"
-                onClick={handleTestConnection}
-                disabled={testingConnection}
-                className="gap-2"
-              >
-                {testingConnection ? (
+            {/* Ações */}
+            <div className="flex items-center justify-between pt-4 border-t">
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="outline"
+                  onClick={handleTestConnection}
+                  disabled={testingConnection}
+                  className="gap-2"
+                >
+                  {testingConnection ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Testando...
+                    </>
+                  ) : connectionStatus === 'success' ? (
+                    <>
+                      <CheckCircle2 className="h-4 w-4 text-green-500" />
+                      Conectado
+                    </>
+                  ) : connectionStatus === 'error' ? (
+                    <>
+                      <XCircle className="h-4 w-4 text-red-500" />
+                      Testar Novamente
+                    </>
+                  ) : (
+                    <>
+                      <Wifi className="h-4 w-4" />
+                      Testar Conexão SEFAZ
+                    </>
+                  )}
+                </Button>
+                <span className="text-sm text-muted-foreground hidden md:inline">
+                  Verifica status do serviço na SEFAZ
+                </span>
+              </div>
+
+              <Button onClick={handleSave} disabled={saving} className="min-w-[120px]">
+                {saving ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Testando...
-                  </>
-                ) : connectionStatus === 'success' ? (
-                  <>
-                    <CheckCircle2 className="h-4 w-4 text-green-500" />
-                    Conectado
-                  </>
-                ) : connectionStatus === 'error' ? (
-                  <>
-                    <XCircle className="h-4 w-4 text-red-500" />
-                    Testar Novamente
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Salvando...
                   </>
                 ) : (
-                  <>
-                    <Wifi className="h-4 w-4" />
-                    Testar Conexão SEFAZ
-                  </>
+                  'Salvar Alterações'
                 )}
               </Button>
-              <span className="text-sm text-muted-foreground">
-                Verifica se a SEFAZ está disponível para emissão
-              </span>
             </div>
 
             <div className="flex items-center gap-2 p-3 bg-yellow-500/10 text-yellow-600 rounded-md text-sm">

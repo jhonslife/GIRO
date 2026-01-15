@@ -14,7 +14,7 @@ const mockCategories = [
 ];
 
 // Mock hooks
-vi.mock('@/hooks/useProducts', () => ({
+vi.mock('@/hooks/use-products', () => ({
   useProduct: (id?: string) => ({
     data: id
       ? {
@@ -49,9 +49,9 @@ vi.mock('@/hooks/useProducts', () => ({
 
 // Mock toast
 vi.mock('@/hooks/use-toast', () => ({
-  useToast: () => ({
+  useToast: vi.fn(() => ({
     toast: vi.fn(),
-  }),
+  })),
 }));
 
 // Mock PriceHistoryCard

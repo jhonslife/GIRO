@@ -1,3 +1,4 @@
+import { useAuthStore } from '@/stores/auth-store';
 import { createQueryWrapper } from '@/test/queryWrapper';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -61,10 +62,7 @@ vi.mock('@/lib/tauri', () => ({
 
 // Mock Auth Store
 vi.mock('@/stores/auth-store', () => ({
-  useAuthStore: () => ({
-    employee: { id: 'emp-1', name: 'Test User' },
-    hasPermission: () => true,
-  }),
+  useAuthStore: vi.fn(),
 }));
 
 describe('CashControlPage', () => {
@@ -72,6 +70,10 @@ describe('CashControlPage', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(useAuthStore).mockReturnValue({
+      employee: { id: 'emp-1', name: 'Test User' },
+      hasPermission: () => true,
+    } as any);
     mockUseCurrentCashSession.data = null;
     mockUseCashMovements.data = [];
     mockUseCashSessionSummary.data = null;
@@ -98,10 +100,26 @@ describe('CashControlPage', () => {
 
     // The button inside dialog also says "Abrir Caixa"
     const confirmButtons = screen.getAllByRole('button', { name: 'Abrir Caixa' });
-    fireEvent.click(confirmButtons[confirmButtons.length - 1]);
+    const lastButton = confirmButtons[confirmButtons.length - 1];
+    if (lastButton) fireEvent.click(lastButton);
 
     await waitFor(() => {
       expect(mockUseOpenCashSession.mutateAsync).toHaveBeenCalledWith({ openingBalance: 100 });
+    });
+  });
+
+  it('should handle session opening failure', async () => {
+    mockUseOpenCashSession.mutateAsync.mockRejectedValue(new Error('Open Fail'));
+    render(<CashControlPage />, { wrapper: queryWrapper.Wrapper });
+
+    fireEvent.click(screen.getByTestId('open-cash'));
+    fireEvent.change(screen.getByTestId('opening-balance-input'), { target: { value: '100' } });
+    const confirmButtons = screen.getAllByRole('button', { name: /Abrir Caixa/i });
+    const lastButton = confirmButtons[confirmButtons.length - 1];
+    if (lastButton) fireEvent.click(lastButton);
+
+    await waitFor(() => {
+      expect(mockUseOpenCashSession.mutateAsync).toHaveBeenCalled();
     });
   });
 
@@ -116,11 +134,27 @@ describe('CashControlPage', () => {
     (mockUseCashMovements as any).data = [
       {
         id: 'mov-1',
-        type: 'INCOME',
+        type: 'DEPOSIT',
         amount: 50,
-        description: 'Venda 1',
-        createdAt: '2025-01-01T11:00:00.000Z',
-        created_at: '2025-01-01T11:00:00.000Z',
+        description: 'Suprimento',
+        createdAt: new Date().toISOString(),
+        employeeName: 'Admin',
+      },
+      {
+        id: 'mov-2',
+        type: 'SUPPLY',
+        amount: 20,
+        description: 'Troco',
+        createdAt: new Date().toISOString(),
+        employeeName: 'Admin',
+      },
+      {
+        id: 'mov-3',
+        type: 'WITHDRAWAL',
+        amount: 30,
+        description: 'Sangria',
+        createdAt: new Date().toISOString(),
+        employeeName: 'Admin',
       },
     ];
     (mockUseCashSessionSummary as any).data = {
@@ -146,9 +180,11 @@ describe('CashControlPage', () => {
       expect(screen.getByTestId('opening-balance')).toHaveTextContent(/100,00/);
     });
     expect(screen.getByTestId('cash-balance')).toHaveTextContent(/130,00/);
-    expect(screen.getByText('Venda 1')).toBeInTheDocument();
+    const suprimentoElements = screen.getAllByText(/Suprimento/i);
+    expect(suprimentoElements.length).toBeGreaterThan(0);
+    const sangriaElements = screen.getAllByText(/Sangria/i);
+    expect(sangriaElements.length).toBeGreaterThan(0);
   });
-
   it('should handle adding a cash movement (Suprimento)', async () => {
     mockUseCurrentCashSession.data = {
       id: 'sess-1',
@@ -177,7 +213,6 @@ describe('CashControlPage', () => {
     const motiveInput = screen.getByTestId('movement-reason-input');
     fireEvent.change(motiveInput, { target: { value: 'Troco extra' } });
 
-    console.log('Clicking confirm-supply');
     fireEvent.click(screen.getByTestId('confirm-supply'));
 
     await waitFor(
@@ -193,6 +228,57 @@ describe('CashControlPage', () => {
       },
       { timeout: 3000 }
     );
+  });
+
+  it('should handle adding a cash movement (Sangria)', async () => {
+    mockUseCurrentCashSession.data = {
+      id: 'sess-1',
+      status: 'OPEN',
+      openedAt: '2025-01-01T10:00:00Z',
+    } as any;
+    mockInvoke.mockResolvedValue({ success: true });
+
+    render(<CashControlPage />, { wrapper: queryWrapper.Wrapper });
+
+    fireEvent.click(screen.getByTestId('cash-withdrawal'));
+
+    const amountInput = await screen.findByTestId('withdrawal-amount-input');
+    fireEvent.change(amountInput, { target: { value: '50' } });
+
+    const motiveInput = screen.getByTestId('withdrawal-reason-input');
+    fireEvent.change(motiveInput, { target: { value: 'Pagamento fornecedor' } });
+
+    fireEvent.click(screen.getByTestId('confirm-withdrawal'));
+
+    await waitFor(() => {
+      expect(mockInvoke).toHaveBeenCalledWith('add_cash_movement', {
+        input: expect.objectContaining({
+          type: 'WITHDRAWAL',
+          amount: 50,
+          description: 'Pagamento fornecedor',
+          sessionId: 'sess-1',
+        }),
+      });
+    });
+  });
+
+  it('should handle movement registration failure', async () => {
+    mockUseCurrentCashSession.data = {
+      id: 'sess-1',
+      status: 'OPEN',
+      openedAt: new Date().toISOString(),
+    } as any;
+    mockInvoke.mockRejectedValue(new Error('API Fail'));
+
+    render(<CashControlPage />, { wrapper: queryWrapper.Wrapper });
+
+    fireEvent.click(screen.getByTestId('cash-supply'));
+    fireEvent.change(await screen.findByTestId('supply-amount-input'), { target: { value: '10' } });
+    fireEvent.click(screen.getByTestId('confirm-supply'));
+
+    await waitFor(() => {
+      expect(mockInvoke).toHaveBeenCalled();
+    });
   });
 
   it('should handle closing a cash session', async () => {
@@ -228,6 +314,44 @@ describe('CashControlPage', () => {
     });
   });
 
+  it('should show "Caixa conferido" when balance matches', async () => {
+    (mockUseCurrentCashSession as any).data = {
+      id: 'sess-1',
+      status: 'OPEN',
+      openedAt: '2025-01-01T10:00:00.000Z',
+    };
+    (mockUseCashSessionSummary as any).data = {
+      cashInDrawer: 100,
+      salesByMethod: [{ method: 'CASH', amount: 100 }],
+    } as any;
+
+    render(<CashControlPage />, { wrapper: queryWrapper.Wrapper });
+
+    fireEvent.click(screen.getByTestId('close-cash'));
+
+    const input = await screen.findByLabelText(/valor contado/i);
+    fireEvent.change(input, { target: { value: '100' } });
+
+    expect(screen.getByText(/Caixa conferido corretamente/i)).toBeInTheDocument();
+  });
+
+  it('should disable close button if no permission', () => {
+    vi.mocked(useAuthStore).mockReturnValue({
+      employee: { id: 'emp-1', name: 'No Perm User' },
+      hasPermission: (p: string) => p !== 'cash.close',
+    } as any);
+
+    (mockUseCurrentCashSession as any).data = {
+      id: 'sess-1',
+      status: 'OPEN',
+      openedAt: new Date().toISOString(),
+    };
+
+    render(<CashControlPage />, { wrapper: queryWrapper.Wrapper });
+
+    expect(screen.getByTestId('close-cash').closest('button')).toBeDisabled();
+  });
+
   it('should render summary cards with correct data', () => {
     (mockUseCurrentCashSession as any).data = {
       id: 'sess-1',
@@ -242,8 +366,8 @@ describe('CashControlPage', () => {
       pix: 200,
       expectedBalance: 500,
       salesByMethod: [
-        { method: 'CASH', total: 500, count: 5 },
-        { method: 'PIX', total: 500, count: 5 },
+        { method: 'CASH', total: 500, count: 5, amount: 500 },
+        { method: 'PIX', total: 500, count: 5, amount: 500 },
       ],
       movements: [],
     };

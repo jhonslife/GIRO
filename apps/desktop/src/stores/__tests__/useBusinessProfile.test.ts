@@ -2,8 +2,9 @@
  * @file useBusinessProfile.test.ts - Testes para o store de perfil de negócio
  */
 
-import { useBusinessProfileStore } from '@/stores/useBusinessProfile';
+import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
+import { useBusinessProfile, useBusinessProfileStore } from '../useBusinessProfile';
 
 describe('useBusinessProfileStore', () => {
   beforeEach(() => {
@@ -76,5 +77,35 @@ describe('useBusinessProfileStore', () => {
     const label = store.getLabel('product');
     expect(typeof label).toBe('string');
     expect(label.length).toBeGreaterThan(0);
+  });
+
+  describe('useBusinessProfile hook', () => {
+    it('should return store state and actions', () => {
+      const { result } = renderHook(() => useBusinessProfile());
+
+      expect(result.current.businessType).toBe('GROCERY');
+      expect(result.current.isConfigured).toBe(false);
+
+      act(() => {
+        result.current.setBusinessType('MOTOPARTS');
+      });
+
+      expect(result.current.businessType).toBe('MOTOPARTS');
+
+      act(() => {
+        result.current.markAsConfigured();
+      });
+
+      expect(result.current.isConfigured).toBe(true);
+      expect(result.current.isFeatureEnabled('pdv')).toBe(true);
+      expect(result.current.getLabel('product')).toBeDefined();
+
+      act(() => {
+        result.current.resetProfile();
+      });
+
+      expect(result.current.businessType).toBe('GROCERY');
+      expect(result.current.isConfigured).toBe(false);
+    });
   });
 });

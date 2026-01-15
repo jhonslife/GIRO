@@ -154,11 +154,11 @@ jobs:
             "platforms": {
               "windows-x86_64": {
                 "signature": "",
-                "url": "https://github.com/arkheion/mercearias/releases/download/${VERSION}/Mercearias_${VERSION_NUM}_x64-setup.nsis.zip"
+                "url": "https://github.com/jhonslife/GIRO/releases/download/${VERSION}/GIRO_${VERSION_NUM}_x64-setup.nsis.zip"
               },
               "linux-x86_64": {
                 "signature": "",
-                "url": "https://github.com/arkheion/mercearias/releases/download/${VERSION}/Mercearias_${VERSION_NUM}_amd64.AppImage.tar.gz"
+                "url": "https://github.com/jhonslife/GIRO/releases/download/${VERSION}/giro_${VERSION_NUM}_amd64.AppImage.tar.gz"
               }
             }
           }

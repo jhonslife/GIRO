@@ -3,6 +3,7 @@
  * Centraliza todas as chamadas ao backend Rust
  */
 
+import { useAuthStore } from '@/stores/auth-store';
 import type {
   Alert,
   CashMovement,
@@ -295,23 +296,37 @@ export async function searchProducts(query: string): Promise<Product[]> {
 }
 
 export async function createProduct(input: CreateProductInput): Promise<Product> {
-  return tauriInvoke<Product>('create_product', { input });
+  const employeeId = useAuthStore.getState().employee?.id;
+  if (!employeeId) throw new Error('Operação requer um funcionário autenticado');
+  return tauriInvoke<Product>('create_product', { input, employee_id: employeeId });
 }
 
 export async function updateProduct(input: UpdateProductInput): Promise<Product> {
-  return tauriInvoke<Product>('update_product', { input });
+  const employeeId = useAuthStore.getState().employee?.id;
+  if (!employeeId) throw new Error('Operação requer um funcionário autenticado');
+  return tauriInvoke<Product>('update_product', {
+    id: input.id,
+    input,
+    employee_id: employeeId,
+  });
 }
 
 export async function deleteProduct(id: string): Promise<void> {
-  return tauriInvoke<void>('delete_product', { id });
+  const employeeId = useAuthStore.getState().employee?.id;
+  if (!employeeId) throw new Error('Operação requer um funcionário autenticado');
+  return tauriInvoke<void>('delete_product', { id, employee_id: employeeId });
 }
 
 export async function deactivateProduct(id: string): Promise<void> {
-  return tauriInvoke<void>('deactivate_product', { id });
+  const employeeId = useAuthStore.getState().employee?.id;
+  if (!employeeId) throw new Error('Operação requer um funcionário autenticado');
+  return tauriInvoke<void>('deactivate_product', { id, employee_id: employeeId });
 }
 
 export async function reactivateProduct(id: string): Promise<Product> {
-  return tauriInvoke<Product>('reactivate_product', { id });
+  const employeeId = useAuthStore.getState().employee?.id;
+  if (!employeeId) throw new Error('Operação requer um funcionário autenticado');
+  return tauriInvoke<Product>('reactivate_product', { id, employee_id: employeeId });
 }
 
 export async function getAllProducts(includeInactive = false): Promise<Product[]> {
@@ -336,23 +351,33 @@ export async function createCategory(input: {
   icon?: string;
   parentId?: string;
 }): Promise<Category> {
-  return tauriInvoke<Category>('create_category', { input });
+  const employeeId = useAuthStore.getState().employee?.id;
+  if (!employeeId) throw new Error('Operação requer um funcionário autenticado');
+  return tauriInvoke<Category>('create_category', { input, employee_id: employeeId });
 }
 
 export async function updateCategory(id: string, input: Partial<Category>): Promise<Category> {
-  return tauriInvoke<Category>('update_category', { id, input });
+  const employeeId = useAuthStore.getState().employee?.id;
+  if (!employeeId) throw new Error('Operação requer um funcionário autenticado');
+  return tauriInvoke<Category>('update_category', { id, input, employee_id: employeeId });
 }
 
 export async function deleteCategory(id: string): Promise<void> {
-  return tauriInvoke<void>('delete_category', { id });
+  const employeeId = useAuthStore.getState().employee?.id;
+  if (!employeeId) throw new Error('Operação requer um funcionário autenticado');
+  return tauriInvoke<void>('delete_category', { id, employee_id: employeeId });
 }
 
 export async function deactivateCategory(id: string): Promise<void> {
-  return tauriInvoke<void>('deactivate_category', { id });
+  const employeeId = useAuthStore.getState().employee?.id;
+  if (!employeeId) throw new Error('Operação requer um funcionário autenticado');
+  return tauriInvoke<void>('deactivate_category', { id, employee_id: employeeId });
 }
 
 export async function reactivateCategory(id: string): Promise<Category> {
-  return tauriInvoke<Category>('reactivate_category', { id });
+  const employeeId = useAuthStore.getState().employee?.id;
+  if (!employeeId) throw new Error('Operação requer um funcionário autenticado');
+  return tauriInvoke<Category>('reactivate_category', { id, employee_id: employeeId });
 }
 
 export async function getAllCategories(): Promise<Category[]> {
@@ -380,7 +405,9 @@ export async function createSale(input: CreateSaleInput): Promise<Sale> {
 }
 
 export async function cancelSale(id: string, reason: string): Promise<Sale> {
-  return tauriInvoke<Sale>('cancel_sale', { id, reason });
+  const employeeId = useAuthStore.getState().employee?.id;
+  if (!employeeId) throw new Error('Operação requer um funcionário autenticado');
+  return tauriInvoke<Sale>('cancel_sale', { id, canceled_by: employeeId, reason });
 }
 
 export async function getTodaySales(): Promise<Sale[]> {
@@ -464,19 +491,27 @@ export async function hasAnyEmployee(): Promise<boolean> {
 export async function createEmployee(
   input: Omit<Employee, 'id' | 'createdAt' | 'updatedAt'>
 ): Promise<Employee> {
-  return tauriInvoke<Employee>('create_employee', { input });
+  const employeeId = useAuthStore.getState().employee?.id;
+  if (!employeeId) throw new Error('Operação requer um funcionário autenticado');
+  return tauriInvoke<Employee>('create_employee', { input, employee_id: employeeId });
 }
 
 export async function updateEmployee(id: string, input: Partial<Employee>): Promise<Employee> {
-  return tauriInvoke<Employee>('update_employee', { id, input });
+  const employeeId = useAuthStore.getState().employee?.id;
+  if (!employeeId) throw new Error('Operação requer um funcionário autenticado');
+  return tauriInvoke<Employee>('update_employee', { id, input, employee_id: employeeId });
 }
 
 export async function deactivateEmployee(id: string): Promise<void> {
-  return tauriInvoke<void>('deactivate_employee', { id });
+  const employeeId = useAuthStore.getState().employee?.id;
+  if (!employeeId) throw new Error('Operação requer um funcionário autenticado');
+  return tauriInvoke<void>('deactivate_employee', { id, employee_id: employeeId });
 }
 
 export async function reactivateEmployee(id: string): Promise<Employee> {
-  return tauriInvoke<Employee>('reactivate_employee', { id });
+  const employeeId = useAuthStore.getState().employee?.id;
+  if (!employeeId) throw new Error('Operação requer um funcionário autenticado');
+  return tauriInvoke<Employee>('reactivate_employee', { id, employee_id: employeeId });
 }
 
 export async function getInactiveEmployees(): Promise<Employee[]> {
@@ -488,7 +523,13 @@ export async function getInactiveEmployees(): Promise<Employee[]> {
 // ────────────────────────────────────────────────────────────────────────────
 
 export async function getStockMovements(productId?: string): Promise<StockMovement[]> {
-  return tauriInvoke<StockMovement[]>('get_stock_movements', { productId });
+  if (productId) {
+    return tauriInvoke<StockMovement[]>('get_product_stock_movements', {
+      product_id: productId,
+      limit: 100,
+    });
+  }
+  return tauriInvoke<StockMovement[]>('get_recent_stock_movements', { limit: 100 });
 }
 
 export async function addStockEntry(
@@ -498,12 +539,20 @@ export async function addStockEntry(
   lotNumber?: string,
   expirationDate?: string
 ): Promise<void> {
-  return tauriInvoke<void>('add_stock_entry', {
-    productId,
-    quantity,
-    costPrice,
-    lotNumber,
-    expirationDate,
+  const employeeId = useAuthStore.getState().employee?.id;
+  if (!employeeId) throw new Error('Operação requer um funcionário autenticado');
+
+  return tauriInvoke<void>('create_stock_movement', {
+    input: {
+      productId,
+      quantity,
+      type: 'INPUT',
+      reason: 'Entrada de Estoque',
+      costPrice,
+      lotNumber,
+      expirationDate,
+    },
+    employee_id: employeeId,
   });
 }
 
@@ -512,7 +561,18 @@ export async function adjustStock(
   newQuantity: number,
   reason: string
 ): Promise<void> {
-  return tauriInvoke<void>('adjust_stock', { productId, newQuantity, reason });
+  const employeeId = useAuthStore.getState().employee?.id;
+  if (!employeeId) throw new Error('Operação requer um funcionário autenticado');
+
+  return tauriInvoke<void>('create_stock_movement', {
+    input: {
+      productId,
+      quantity: newQuantity, // Dependendo de como a repo trata 'Adjust', se for delta ou absoluto
+      type: 'ADJUSTMENT',
+      reason,
+    },
+    employee_id: employeeId,
+  });
 }
 
 export async function getLowStockProducts(): Promise<Product[]> {
@@ -562,23 +622,33 @@ export async function getSuppliers(): Promise<Supplier[]> {
 export async function createSupplier(
   input: Omit<Supplier, 'id' | 'createdAt' | 'updatedAt'>
 ): Promise<Supplier> {
-  return tauriInvoke<Supplier>('create_supplier', { input });
+  const employeeId = useAuthStore.getState().employee?.id;
+  if (!employeeId) throw new Error('Operação requer um funcionário autenticado');
+  return tauriInvoke<Supplier>('create_supplier', { input, employee_id: employeeId });
 }
 
 export async function updateSupplier(id: string, input: Partial<Supplier>): Promise<Supplier> {
-  return tauriInvoke<Supplier>('update_supplier', { id, input });
+  const employeeId = useAuthStore.getState().employee?.id;
+  if (!employeeId) throw new Error('Operação requer um funcionário autenticado');
+  return tauriInvoke<Supplier>('update_supplier', { id, input, employee_id: employeeId });
 }
 
 export async function deleteSupplier(id: string): Promise<void> {
-  return tauriInvoke<void>('delete_supplier', { id });
+  const employeeId = useAuthStore.getState().employee?.id;
+  if (!employeeId) throw new Error('Operação requer um funcionário autenticado');
+  return tauriInvoke<void>('delete_supplier', { id, employee_id: employeeId });
 }
 
 export async function deactivateSupplier(id: string): Promise<void> {
-  return tauriInvoke<void>('deactivate_supplier', { id });
+  const employeeId = useAuthStore.getState().employee?.id;
+  if (!employeeId) throw new Error('Operação requer um funcionário autenticado');
+  return tauriInvoke<void>('deactivate_supplier', { id, employee_id: employeeId });
 }
 
 export async function reactivateSupplier(id: string): Promise<Supplier> {
-  return tauriInvoke<Supplier>('reactivate_supplier', { id });
+  const employeeId = useAuthStore.getState().employee?.id;
+  if (!employeeId) throw new Error('Operação requer um funcionário autenticado');
+  return tauriInvoke<Supplier>('reactivate_supplier', { id, employee_id: employeeId });
 }
 
 export async function getAllSuppliers(): Promise<Supplier[]> {
@@ -605,12 +675,15 @@ export async function getSetting(key: string): Promise<string | null> {
 }
 
 export async function setSetting(key: string, value: string, type?: string): Promise<void> {
+  const employeeId = useAuthStore.getState().employee?.id;
+  if (!employeeId) throw new Error('Operação requer um funcionário autenticado');
   return tauriInvoke<void>('set_setting', {
     input: {
       key,
       value,
       valueType: type,
     },
+    employee_id: employeeId,
   });
 }
 

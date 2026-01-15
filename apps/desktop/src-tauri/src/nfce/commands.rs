@@ -12,6 +12,7 @@ use crate::nfce::{
     AccessKey, Certificate, DanfeData, DanfeItem, DanfePrinter, Environment, NfceData, NfceItem,
     NfceXmlBuilder, QrCodeGenerator, QrCodeParams, SefazClient, XmlSigner,
 };
+use crate::models::{FiscalSettings, UpdateFiscalSettings};
 use crate::AppState;
 
 #[derive(Debug, Deserialize)]
@@ -37,6 +38,8 @@ pub struct EmitNfceRequest {
     pub emitter_uf: String,
     pub emitter_cep: String,
     pub emitter_phone: Option<String>,
+    pub recipient_cpf: Option<String>,
+    pub recipient_name: Option<String>,
 
     // Configuração NFC-e
     pub serie: u16,
@@ -96,20 +99,31 @@ pub struct StatusResponse {
 pub async fn emit_nfce(
     app_handle: tauri::AppHandle,
     request: EmitNfceRequest,
-    _state: State<'_, AppState>,
+    state: State<'_, AppState>,
 ) -> Result<EmissionResponse, String> {
     println!("Iniciando emissão de NFC-e...");
+    
+    let pool = state.pool();
+    let fiscal_repo = crate::repositories::FiscalRepository::new(pool);
+    let fiscal_settings = fiscal_repo.get().await.map_err(|e| format!("Erro ao carregar configurações fiscais: {}", e))?;
+
+    if !fiscal_settings.enabled {
+        return Err("Módulo fiscal desativado nas configurações".to_string());
+    }
+
+    let cert_path = fiscal_settings.cert_path.as_ref().ok_or("Arquivo de certificado não configurado")?;
+    let cert_password = fiscal_settings.cert_password.as_ref().ok_or("Senha do certificado não configurada")?;
 
     // 1. Carregar Certificado
-    println!("Carregando certificado: {}", request.cert_path);
-    let cert = Certificate::from_pfx(&request.cert_path, &request.cert_password)?;
+    println!("Carregando certificado: {}", cert_path);
+    let cert = Certificate::from_pfx(cert_path, cert_password)?;
 
     // Verificar validade
     if !cert.is_valid() {
         return Err("Certificado digital expirado ou inválido".to_string());
     }
 
-    // Preparar Itens (compartilhado)
+    // Preparar Itens
     let nfce_items: Vec<NfceItem> = request
         .items
         .iter()
@@ -132,16 +146,26 @@ pub async fn emit_nfce(
         })
         .collect();
 
+    let environment = if fiscal_settings.environment == 1 {
+        Environment::Production
+    } else {
+        Environment::Homologation
+    };
+
+    let emitter_uf = fiscal_settings.uf.clone();
+    let emitter_cnpj = request.emitter_cnpj.clone(); 
+    let serie = fiscal_settings.serie as u16;
+    let numero = fiscal_settings.next_number as u32;
+
     // TENTATIVA 1: Emissão Normal (Online)
-    // ----------------------------------------------------
     let emission_date = Utc::now();
     let access_key_gen = AccessKey::generate(
-        &request.emitter_uf,
+        &emitter_uf,
         emission_date.naive_utc(),
-        &request.emitter_cnpj,
+        &emitter_cnpj,
         65, // Modelo 65 = NFC-e
-        request.serie,
-        request.numero,
+        serie,
+        numero,
         1, // Tipo emissão normal
     )?;
 
@@ -149,12 +173,13 @@ pub async fn emit_nfce(
     println!("Chave gerada (Normal): {}", access_key);
 
     let mut data = NfceData {
-        uf: request.emitter_uf.clone(),
-        cnpj: request.emitter_cnpj.clone(),
-        serie: request.serie,
-        numero: request.numero,
+        uf: emitter_uf.clone(),
+        cnpj: emitter_cnpj.clone(),
+        serie,
+        numero,
         emission_date,
         emission_type: 1, // Normal
+        environment: fiscal_settings.environment as u8,
         emitter_name: request.emitter_name.clone(),
         emitter_trade_name: request.emitter_trade_name.clone(),
         emitter_ie: request.emitter_ie.clone(),
@@ -163,38 +188,29 @@ pub async fn emit_nfce(
         emitter_city_code: request.emitter_city_code.clone(),
         emitter_state: request.emitter_state.clone(),
         emitter_cep: request.emitter_cep.clone(),
-        recipient_cpf: None,
-        recipient_name: None,
+        recipient_cpf: request.recipient_cpf,
+        recipient_name: request.recipient_name,
         items: nfce_items.clone(),
         total_products: request.total,
         total_discount: request.discount,
         total_note: request.total - request.discount,
         payment_method: map_payment_method(&request.payment_method),
         payment_value: request.payment_value,
-        csc_id: request.csc_id.clone(),
-        csc: request.csc.clone(),
+        csc_id: fiscal_settings.csc_id.clone().unwrap_or_default(),
+        csc: fiscal_settings.csc.clone().unwrap_or_default(),
     };
 
     let xml_builder = NfceXmlBuilder::new(data.clone(), access_key.clone());
     let xml = xml_builder.build()?;
 
-    let signer = XmlSigner::new(cert); // Cert moved here? No, clone or ref needed if used again. XmlSigner takes ownership? Let's check.
-                                       // XmlSigner::new(cert) consumes cert. We need to be able to reuse cert for contingency.
-                                       // Certificate doesn't derive Clone easily because of PKey.
-                                       // We will reload certificate for contingency if needed, or modify logic.
-                                       // Reloading is safer/easier than making Certificate clonable right now.
+    let signer = XmlSigner::new(cert); 
     let signed_xml = signer.sign(&xml)?;
 
-    let environment = if request.environment == 1 {
-        Environment::Production
-    } else {
-        Environment::Homologation
-    };
     let client = SefazClient::new(
-        request.emitter_uf.clone(),
+        emitter_uf.clone(),
         environment,
-        Some(&request.cert_path),
-        Some(&request.cert_password),
+        Some(cert_path),
+        Some(cert_password),
     )?;
 
     println!("Enviando para SEFAZ...");
@@ -214,13 +230,13 @@ pub async fn emit_nfce(
             if response.status_code == "100" {
                 // SUCESSO ONLINE
                 protocol = response.protocol;
+                // Incrementar número apenas em caso de sucesso
+                let _ = fiscal_repo.increment_number().await;
             } else {
-                // REJEIÇÃO (Dados inválidos, não erro de rede)
-                // Retornar Erro ao usuário, NÃO entrar em contingência
                 return Ok(EmissionResponse {
                     success: false,
                     message: format!(
-                        "Rejeição: {} - {}",
+                        "Rejeição SEFAZ: {} - {}",
                         response.status_code, response.status_message
                     ),
                     access_key: Some(access_key),
@@ -232,24 +248,24 @@ pub async fn emit_nfce(
             }
         }
         Err(err_msg) => {
-            // ERRO DE COMUNICAÇÃO (Timeout, DNS, etc) -> CONTINGÊNCIA
+            // ERRO DE COMUNICAÇÃO -> CONTINGÊNCIA
             println!(
                 "Erro de comunicação com SEFAZ: {}. Iniciando Contingência Offline...",
                 err_msg
             );
             is_contingency = true;
 
-            // 1. Recarregar Certificado (pois o anterior foi consumido)
-            let cert_offline = Certificate::from_pfx(&request.cert_path, &request.cert_password)?;
+            // 1. Recarregar Certificado para a nova assinatura
+            let cert_offline = Certificate::from_pfx(cert_path, cert_password)?;
 
             // 2. Gerar Nova Chave (tpEmis = 9)
             let access_key_offline = AccessKey::generate(
-                &request.emitter_uf,
+                &emitter_uf,
                 emission_date.naive_utc(),
-                &request.emitter_cnpj,
+                &emitter_cnpj,
                 65,
-                request.serie,
-                request.numero,
+                serie,
+                numero,
                 9, // Contingência Offline
             )?;
             access_key = access_key_offline.key;
@@ -268,23 +284,25 @@ pub async fn emit_nfce(
             // 5. Salvar em Disco
             let manager = ContingencyManager::new(&app_handle);
             manager.save_note(&access_key, &signed_xml_off)?;
+            
+            // 6. Incrementar número (nota emitida, mesmo offline)
+            let _ = fiscal_repo.increment_number().await;
         }
     }
 
-    // 7. Gerar QR Code (Para Normal ou Contingência)
-    // Se for contingência, o digest já é do XML offline
-    // Hack: digest fake por enquanto pois não temos parser XML fácil aqui
-    let digest_value = "DIGEST_CALCULADO";
+    // 7. Gerar QR Code
+    // Extrair digest realizado no XML assinado
+    let digest_value = extract_digest_from_xml(&success_xml).unwrap_or_else(|| "ERROR".to_string());
 
     let qr_params = QrCodeParams {
         access_key: access_key.clone(),
-        uf: request.emitter_uf.clone(),
-        environment: request.environment,
+        uf: emitter_uf.clone(),
+        environment: data.environment,
         emission_date: emission_date.to_rfc3339(),
         total_value: data.total_note,
-        digest_value: digest_value.to_string(),
-        csc_id: request.csc_id.clone(),
-        csc: request.csc.clone(),
+        digest_value,
+        csc_id: data.csc_id.clone(),
+        csc: data.csc.clone(),
     };
 
     let qrcode_url = QrCodeGenerator::generate_url(&qr_params)?;
@@ -317,10 +335,10 @@ pub async fn emit_nfce(
         emitter_ie: request.emitter_ie,
         emitter_address: request.emitter_address,
         emitter_city: request.emitter_city,
-        emitter_uf: request.emitter_uf,
+        emitter_uf: emitter_uf,
         emitter_phone: request.emitter_phone,
-        number: request.numero,
-        series: request.serie,
+        number: numero,
+        series: serie,
         emission_date,
         access_key: access_key.clone(),
         protocol: protocol.clone(),
@@ -351,6 +369,18 @@ pub async fn emit_nfce(
         danfe_escpos: Some(escpos_bytes),
         qrcode_url: Some(qrcode_url),
     })
+}
+
+fn extract_digest_from_xml(xml: &str) -> Option<String> {
+    use roxmltree::Document;
+    if let Ok(doc) = Document::parse(xml) {
+        for node in doc.descendants() {
+            if node.tag_name().name() == "DigestValue" {
+                return node.text().map(|s| s.to_string());
+            }
+        }
+    }
+    None
 }
 
 /// Consulta status da SEFAZ
@@ -460,6 +490,23 @@ pub async fn transmit_offline_note(
             qrcode_url: None,
         })
     }
+}
+
+#[command]
+pub async fn get_fiscal_settings(
+    state: State<'_, AppState>,
+) -> Result<FiscalSettings, String> {
+    let repo = crate::repositories::FiscalRepository::new(state.pool());
+    repo.get().await.map_err(|e| e.to_string())
+}
+
+#[command]
+pub async fn update_fiscal_settings(
+    state: State<'_, AppState>,
+    data: UpdateFiscalSettings,
+) -> Result<FiscalSettings, String> {
+    let repo = crate::repositories::FiscalRepository::new(state.pool());
+    repo.update(data).await.map_err(|e| e.to_string())
 }
 
 fn map_payment_method(method: &str) -> String {

@@ -4,6 +4,10 @@ use crate::error::AppResult;
 use crate::models::{CreateEmployee, Employee, SafeEmployee, UpdateEmployee, EmployeeRole};
 use crate::repositories::EmployeeRepository;
 use crate::AppState;
+use crate::middleware::Permission;
+use crate::require_permission;
+use crate::middleware::audit::{AuditService, AuditAction};
+use crate::audit_log;
 use tauri::State;
 use serde::Deserialize;
 
@@ -100,10 +104,25 @@ pub async fn has_any_employee(state: State<'_, AppState>) -> AppResult<bool> {
 #[tauri::command]
 pub async fn create_employee(
     input: CreateEmployee,
+    employee_id: String,
     state: State<'_, AppState>,
 ) -> AppResult<SafeEmployee> {
+    let employee = require_permission!(state.pool(), &employee_id, Permission::CreateEmployees);
     let repo = EmployeeRepository::new(state.pool());
     let emp = repo.create(input).await?;
+
+    // Audit Log
+    let audit_service = AuditService::new(state.pool().clone());
+    audit_log!(
+        audit_service,
+        AuditAction::EmployeeCreated,
+        &employee.id,
+        &employee.name,
+        "Employee",
+        &emp.id,
+        format!("Nome: {}, Cargo: {:?}", emp.name, emp.role)
+    );
+
     Ok(SafeEmployee::from(emp))
 }
 
@@ -111,25 +130,59 @@ pub async fn create_employee(
 pub async fn update_employee(
     id: String,
     input: UpdateEmployee,
+    employee_id: String,
     state: State<'_, AppState>,
 ) -> AppResult<SafeEmployee> {
+    let employee = require_permission!(state.pool(), &employee_id, Permission::UpdateEmployees);
     let repo = EmployeeRepository::new(state.pool());
     let emp = repo.update(&id, input).await?;
+
+    // Audit Log
+    let audit_service = AuditService::new(state.pool().clone());
+    audit_log!(
+        audit_service,
+        AuditAction::EmployeeUpdated,
+        &employee.id,
+        &employee.name,
+        "Employee",
+        &id
+    );
+
     Ok(SafeEmployee::from(emp))
 }
 
 #[tauri::command]
-pub async fn deactivate_employee(id: String, state: State<'_, AppState>) -> AppResult<()> {
+pub async fn deactivate_employee(
+    id: String,
+    employee_id: String,
+    state: State<'_, AppState>,
+) -> AppResult<()> {
+    let employee = require_permission!(state.pool(), &employee_id, Permission::DeleteEmployees);
     let repo = EmployeeRepository::new(state.pool());
-    repo.deactivate(&id).await
+    repo.deactivate(&id).await?;
+
+    // Audit Log
+    let audit_service = AuditService::new(state.pool().clone());
+    audit_log!(
+        audit_service,
+        AuditAction::EmployeeDeactivated,
+        &employee.id,
+        &employee.name,
+        "Employee",
+        &id
+    );
+
+    Ok(())
 }
 
 /// Reativa um funcionário desativado
 #[tauri::command]
 pub async fn reactivate_employee(
     id: String,
+    employee_id: String,
     state: State<'_, AppState>,
 ) -> AppResult<SafeEmployee> {
+    require_permission!(state.pool(), &employee_id, Permission::UpdateEmployees);
     let repo = EmployeeRepository::new(state.pool());
     let emp = repo.reactivate(&id).await?;
     Ok(SafeEmployee::from(emp))

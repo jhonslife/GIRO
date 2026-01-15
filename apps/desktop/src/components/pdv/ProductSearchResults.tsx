@@ -5,7 +5,7 @@
 
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useProducts } from '@/hooks/useProducts';
+import { useProducts } from '@/hooks/use-products';
 import { cn, formatCurrency } from '@/lib/utils';
 import { type Product } from '@/types';
 import { AlertTriangle, Loader2, Package } from 'lucide-react';

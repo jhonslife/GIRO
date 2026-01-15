@@ -16,8 +16,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import { useCreateProduct, useProduct, useUpdateProduct } from '@/hooks/use-products';
 import { useToast } from '@/hooks/use-toast';
-import { useCategories, useCreateProduct, useProduct, useUpdateProduct } from '@/hooks/useProducts';
+import { useCategories } from '@/hooks/useCategories';
 import { calculateMargin, formatCurrency } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeft, BarChart3, DollarSign, Package, Save } from 'lucide-react';
@@ -91,13 +92,21 @@ export const ProductFormPage: FC = () => {
   const onSubmit = async (data: ProductFormData) => {
     try {
       if (isEditing && id) {
-        await updateProduct.mutateAsync({ id, ...data });
+        await updateProduct.mutateAsync({
+          id,
+          ...data,
+          unit: data.unit as any,
+        });
         toast({
           title: 'Produto atualizado',
           description: 'As alterações foram salvas com sucesso.',
         });
       } else {
-        await createProduct.mutateAsync(data);
+        await createProduct.mutateAsync({
+          ...data,
+          costPrice: data.costPrice ?? 0,
+          unit: data.unit as any,
+        });
         toast({
           title: 'Produto criado',
           description: 'O produto foi cadastrado com sucesso.',

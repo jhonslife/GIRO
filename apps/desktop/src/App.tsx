@@ -1,4 +1,4 @@
-import { LicenseGuard } from '@/components/guards';
+import { LicenseGuard, SessionGuard } from '@/components/guards';
 import { AppShell } from '@/components/layout';
 import { BusinessProfileWizard } from '@/components/shared';
 import { UpdateChecker } from '@/components/UpdateChecker';
@@ -128,7 +128,7 @@ const App: FC = () => {
   useHelpHotkey();
 
   return (
-    <>
+    <SessionGuard timeoutMinutes={30}>
       {isAuthenticated && <UpdateChecker />}
       <Routes>
         <Route index element={<AdminCheck />} />
@@ -257,7 +257,7 @@ const App: FC = () => {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>
-    </>
+    </SessionGuard>
   );
 };
 

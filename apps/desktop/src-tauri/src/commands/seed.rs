@@ -1,6 +1,7 @@
 use crate::error::AppResult;
 use crate::models::{
     CreateEmployee, CreateProduct, CreateSaleItem, CreateSupplier, EmployeeRole, PaymentMethod,
+    ProductUnit,
 };
 use crate::repositories::{
     new_id, CashRepository, CategoryRepository, EmployeeRepository, ProductRepository,
@@ -184,6 +185,32 @@ pub async fn seed_database(state: State<'_, AppState>) -> AppResult<String> {
     }
 
     // 4. Seed Products
+    let mut products = Vec::new();
+    for (name, price, cat_name) in PRODUCTS {
+        let cat_id = category_ids.get(*cat_name).expect("Category not found in map").clone();
+        
+        let existing = sqlx::query_scalar::<_, String>("SELECT id FROM Product WHERE name = ?")
+            .bind(name)
+            .fetch_optional(pool)
+            .await?;
+
+        let product = if let Some(id) = existing {
+            product_repo.find_by_id(&id).await?.unwrap()
+        } else {
+            product_repo.create(CreateProduct {
+                barcode: Some(format!("78900000{:04}", products.len())),
+                internal_code: None,
+                name: name.to_string(),
+                description: None,
+                unit: Some(ProductUnit::Unit),
+                is_weighted: Some(false),
+                sale_price: *price,
+                cost_price: Some(*price * 0.7),
+                current_stock: Some(100.0),
+                min_stock: Some(10.0),
+                category_id: cat_id,
+            }).await?
+        };
         products.push(product);
     }
 
@@ -227,7 +254,6 @@ pub async fn seed_database(state: State<'_, AppState>) -> AppResult<String> {
         } else {
             let b = vehicle_repo.create_brand(crate::models::CreateVehicleBrand {
                 name: brand_name.to_string(),
-                description: None,
                 logo_url: None,
             }).await?;
             b.id
@@ -247,7 +273,8 @@ pub async fn seed_database(state: State<'_, AppState>) -> AppResult<String> {
                 let m = vehicle_repo.create_model(crate::models::CreateVehicleModel {
                     brand_id: brand_id.clone(),
                     name: model_name.to_string(),
-                    vehicle_type: "Motorcycle".to_string(),
+                    category: Some("STREET".to_string()),
+                    engine_size: None,
                 }).await?;
                 m.id
             };
@@ -261,11 +288,10 @@ pub async fn seed_database(state: State<'_, AppState>) -> AppResult<String> {
                     .await?;
 
                 if existing_year.is_none() {
-                    vehicle_repo.create_year(crate::models::CreateVehicleYear {
+                    let _y = vehicle_repo.create_year(crate::models::CreateVehicleYear {
                         model_id: model_id.clone(),
                         year,
-                        fipe_code: None,
-                        reference_price: None,
+                        year_label: year.to_string(),
                     }).await?;
                 }
             }

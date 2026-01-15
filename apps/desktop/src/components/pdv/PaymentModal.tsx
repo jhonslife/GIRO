@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -575,6 +576,9 @@ export const PaymentModal: FC<PaymentModalProps> = ({ open, onClose, total }) =>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">Finalizar Venda</DialogTitle>
+          <DialogDescription>
+            Selecione a forma de pagamento e informe o valor para concluir a venda.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="py-4">

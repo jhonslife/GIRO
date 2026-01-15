@@ -4,6 +4,8 @@ use crate::error::AppResult;
 use crate::models::{CreateSupplier, Supplier, UpdateSupplier};
 use crate::repositories::SupplierRepository;
 use crate::AppState;
+use crate::middleware::Permission;
+use crate::require_permission;
 use tauri::State;
 
 #[tauri::command]
@@ -33,8 +35,10 @@ pub async fn search_suppliers(
 #[tauri::command]
 pub async fn create_supplier(
     input: CreateSupplier,
+    employee_id: String,
     state: State<'_, AppState>,
 ) -> AppResult<Supplier> {
+    require_permission!(state.pool(), &employee_id, Permission::ManageSuppliers);
     let repo = SupplierRepository::new(state.pool());
     repo.create(input).await
 }
@@ -43,28 +47,45 @@ pub async fn create_supplier(
 pub async fn update_supplier(
     id: String,
     input: UpdateSupplier,
+    employee_id: String,
     state: State<'_, AppState>,
 ) -> AppResult<Supplier> {
+    require_permission!(state.pool(), &employee_id, Permission::ManageSuppliers);
     let repo = SupplierRepository::new(state.pool());
     repo.update(&id, input).await
 }
 
 #[tauri::command]
-pub async fn delete_supplier(id: String, state: State<'_, AppState>) -> AppResult<()> {
+pub async fn delete_supplier(
+    id: String,
+    employee_id: String,
+    state: State<'_, AppState>,
+) -> AppResult<()> {
+    require_permission!(state.pool(), &employee_id, Permission::ManageSuppliers);
     let repo = SupplierRepository::new(state.pool());
     repo.delete(&id).await
 }
 
 /// Desativa um fornecedor (alias para delete)
 #[tauri::command]
-pub async fn deactivate_supplier(id: String, state: State<'_, AppState>) -> AppResult<()> {
+pub async fn deactivate_supplier(
+    id: String,
+    employee_id: String,
+    state: State<'_, AppState>,
+) -> AppResult<()> {
+    require_permission!(state.pool(), &employee_id, Permission::ManageSuppliers);
     let repo = SupplierRepository::new(state.pool());
     repo.delete(&id).await
 }
 
 /// Reativa um fornecedor desativado
 #[tauri::command]
-pub async fn reactivate_supplier(id: String, state: State<'_, AppState>) -> AppResult<Supplier> {
+pub async fn reactivate_supplier(
+    id: String,
+    employee_id: String,
+    state: State<'_, AppState>,
+) -> AppResult<Supplier> {
+    require_permission!(state.pool(), &employee_id, Permission::ManageSuppliers);
     let repo = SupplierRepository::new(state.pool());
     repo.reactivate(&id).await
 }

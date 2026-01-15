@@ -26,6 +26,7 @@ describe('Footer', () => {
 
   it('should render footer element', async () => {
     render(<Footer />);
+    await screen.findByText(/v1.0.0/); // Wait for initial render and version
     const footer = document.querySelector('footer');
     expect(footer).toBeInTheDocument();
   });

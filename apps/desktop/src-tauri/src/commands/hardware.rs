@@ -142,7 +142,7 @@ pub async fn test_printer(state: State<'_, HardwareState>) -> AppResult<()> {
     }
 
     let mut printer = ThermalPrinter::new(config.clone());
-    printer.test_print()?;
+    printer.test_print().await?;
 
     match config.connection {
         crate::hardware::printer::PrinterConnection::Usb => {

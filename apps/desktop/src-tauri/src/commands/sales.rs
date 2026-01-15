@@ -42,6 +42,11 @@ pub async fn create_sale(input: CreateSale, state: State<'_, AppState>) -> AppRe
     repo.create(input).await
 }
 
+use crate::middleware::Permission;
+use crate::require_permission;
+use crate::middleware::audit::{AuditService, AuditAction};
+use crate::audit_log;
+
 #[tauri::command]
 pub async fn cancel_sale(
     id: String,
@@ -49,8 +54,23 @@ pub async fn cancel_sale(
     reason: String,
     state: State<'_, AppState>,
 ) -> AppResult<Sale> {
+    let employee = require_permission!(state.pool(), &canceled_by, Permission::CancelSales);
     let repo = SaleRepository::new(state.pool());
-    repo.cancel(&id, &canceled_by, &reason).await
+    let result = repo.cancel(&id, &canceled_by, &reason).await?;
+
+    // Audit Log
+    let audit_service = AuditService::new(state.pool().clone());
+    audit_log!(
+        audit_service,
+        AuditAction::SaleCanceled,
+        &employee.id,
+        &employee.name,
+        "Sale",
+        &id,
+        format!("Razão: {}", reason)
+    );
+
+    Ok(result)
 }
 
 #[tauri::command]

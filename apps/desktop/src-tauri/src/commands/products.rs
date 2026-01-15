@@ -4,6 +4,10 @@ use crate::error::AppResult;
 use crate::models::{CreateProduct, Product, UpdateProduct};
 use crate::repositories::ProductRepository;
 use crate::AppState;
+use crate::middleware::Permission;
+use crate::require_permission;
+use crate::middleware::audit::{AuditService, AuditAction};
+use crate::audit_log;
 use tauri::State;
 
 #[tauri::command]
@@ -45,38 +49,98 @@ pub async fn get_low_stock_products(state: State<'_, AppState>) -> AppResult<Vec
 #[tauri::command]
 pub async fn create_product(
     input: CreateProduct,
+    employee_id: String,
     state: State<'_, AppState>,
 ) -> AppResult<Product> {
+    let employee = require_permission!(state.pool(), &employee_id, Permission::CreateProducts);
     let repo = ProductRepository::new(state.pool());
-    repo.create(input).await
+    let result = repo.create(input).await?;
+
+    // Audit Log
+    let audit_service = AuditService::new(state.pool().clone());
+    audit_log!(
+        audit_service,
+        AuditAction::ProductCreated,
+        &employee.id,
+        &employee.name,
+        "Product",
+        &result.id,
+        format!("Nome: {}, Preço: {}", result.name, result.sale_price)
+    );
+
+    Ok(result)
 }
 
 #[tauri::command]
 pub async fn update_product(
     id: String,
     input: UpdateProduct,
+    employee_id: String,
     state: State<'_, AppState>,
 ) -> AppResult<Product> {
+    let employee = require_permission!(state.pool(), &employee_id, Permission::UpdateProducts);
     let repo = ProductRepository::new(state.pool());
-    repo.update(&id, input).await
+    let result = repo.update(&id, input).await?;
+
+    // Audit Log
+    let audit_service = AuditService::new(state.pool().clone());
+    audit_log!(
+        audit_service,
+        AuditAction::ProductUpdated,
+        &employee.id,
+        &employee.name,
+        "Product",
+        &id,
+        format!("Alterações: {:?}", result) // Simplificado
+    );
+
+    Ok(result)
 }
 
 #[tauri::command]
-pub async fn delete_product(id: String, state: State<'_, AppState>) -> AppResult<()> {
+pub async fn delete_product(
+    id: String,
+    employee_id: String,
+    state: State<'_, AppState>,
+) -> AppResult<()> {
+    let employee = require_permission!(state.pool(), &employee_id, Permission::DeleteProducts);
     let repo = ProductRepository::new(state.pool());
-    repo.soft_delete(&id).await
+    repo.soft_delete(&id).await?;
+
+    // Audit Log
+    let audit_service = AuditService::new(state.pool().clone());
+    audit_log!(
+        audit_service,
+        AuditAction::ProductDeleted,
+        &employee.id,
+        &employee.name,
+        "Product",
+        &id
+    );
+
+    Ok(())
 }
 
 /// Desativa um produto (soft delete) - alias para consistência com frontend
 #[tauri::command]
-pub async fn deactivate_product(id: String, state: State<'_, AppState>) -> AppResult<()> {
+pub async fn deactivate_product(
+    id: String,
+    employee_id: String,
+    state: State<'_, AppState>,
+) -> AppResult<()> {
+    require_permission!(state.pool(), &employee_id, Permission::UpdateProducts);
     let repo = ProductRepository::new(state.pool());
     repo.soft_delete(&id).await
 }
 
 /// Reativa um produto que foi desativado
 #[tauri::command]
-pub async fn reactivate_product(id: String, state: State<'_, AppState>) -> AppResult<Product> {
+pub async fn reactivate_product(
+    id: String,
+    employee_id: String,
+    state: State<'_, AppState>,
+) -> AppResult<Product> {
+    require_permission!(state.pool(), &employee_id, Permission::UpdateProducts);
     let repo = ProductRepository::new(state.pool());
     repo.reactivate(&id).await
 }

@@ -3,6 +3,7 @@
 use crate::error::{AppError, AppResult};
 use crate::services::{MdnsConfig, MdnsService, MobileServer, MobileServerConfig};
 use crate::AppState;
+use crate::repositories::SettingsRepository;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tauri::State;
@@ -124,13 +125,27 @@ pub async fn start_mobile_server(
         connection_timeout_secs: 300,
     };
 
+    // Buscar configurações da loja
+    let settings_repo = SettingsRepository::new(app_state.pool());
+    let store_name = settings_repo
+        .get_value("store.name")
+        .await
+        .ok()
+        .flatten()
+        .unwrap_or_else(|| "GIRO PDV".to_string());
+    let store_document = settings_repo
+        .get_value("store.document")
+        .await
+        .ok()
+        .flatten();
+
     // Criar servidor
     let server = Arc::new(MobileServer::new(
         app_state.pool().clone(),
         server_config,
-        "GIRO PDV".to_string(),
-        "Loja".to_string(),
-        None,
+        "GIRO PDV".to_string(), // Nome do PDV
+        store_name,
+        store_document,
     ));
 
     // Iniciar servidor em background

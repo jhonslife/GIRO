@@ -20,21 +20,30 @@ impl XmlSigner {
 
     pub fn sign(&self, xml: &str) -> Result<String, String> {
         let doc = Document::parse(xml).map_err(|e| format!("Parse error: {}", e))?;
-        let inf_nfe = self.extract_inf_nfe(&doc)?;
-        let canonical_xml = self.canonicalize(&inf_nfe)?;
+        let (inf_nfe_xml, id) = self.extract_inf_nfe(&doc)?;
+
+        let canonical_xml = self.canonicalize(&inf_nfe_xml)?;
         let digest_value = self.calculate_digest(&canonical_xml)?;
-        let signed_info = self.create_signed_info(&digest_value, "infNFe")?;
+
+        // SignedInfo deve ser canônico
+        let signed_info = self.create_signed_info(&digest_value, &id)?;
         let canonical_signed_info = self.canonicalize(&signed_info)?;
+
         let signature_value = self.sign_with_private_key(&canonical_signed_info)?;
-        let signature = self.create_signature_element(&digest_value, &signature_value)?;
-        self.insert_signature(xml, &signature)
+        let signature_element =
+            self.create_signature_element(&digest_value, &signature_value, &id)?;
+
+        self.insert_signature(xml, &signature_element)
     }
 
-    fn extract_inf_nfe(&self, doc: &Document) -> Result<String, String> {
+    fn extract_inf_nfe<'a>(&self, doc: &'a Document) -> Result<(String, String), String> {
         for node in doc.descendants() {
             if node.tag_name().name() == "infNFe" {
+                let id = node
+                    .attribute("Id")
+                    .ok_or("infNFe Id attribute not found")?;
                 let xml = self.node_to_xml(doc.input_text(), node.range());
-                return Ok(xml);
+                return Ok((xml, id.to_string()));
             }
         }
         Err(String::from("infNFe not found"))
@@ -45,21 +54,19 @@ impl XmlSigner {
     }
 
     fn canonicalize(&self, xml: &str) -> Result<String, String> {
+        // Exclusive C14N simples para NFe/NFCe:
+        // 1. Remover quebras de linha e retornos de carro
+        // 2. Remover espaços entre tags
+        // 3. Manter espaços dentro de conteúdos de tags (importante!)
         let mut result = xml.to_string();
         result = result.replace("\n", "").replace("\r", "");
-        result = regex::Regex::new(r">\s+<")
-            .unwrap()
-            .replace_all(&result, "><")
-            .to_string();
-        result = regex::Regex::new(r">\s+")
-            .unwrap()
-            .replace_all(&result, ">")
-            .to_string();
-        result = regex::Regex::new(r"\s+<")
-            .unwrap()
-            .replace_all(&result, "<")
-            .to_string();
-        Ok(result)
+
+        // Regex para espaços entre tags: ">  <" -> "><"
+        let re_between = regex::Regex::new(r">\s+<").unwrap();
+        result = re_between.replace_all(&result, "><").to_string();
+
+        // Remover espaços após o último fechamento de tag e antes da primeira abertura (trim)
+        Ok(result.trim().to_string())
     }
 
     fn calculate_digest(&self, data: &str) -> Result<String, String> {
@@ -71,6 +78,7 @@ impl XmlSigner {
 
     fn create_signed_info(&self, digest_value: &str, reference_id: &str) -> Result<String, String> {
         let uri = format!("#{}", reference_id);
+        // SignedInfo exato conforme exigido pela SEFAZ
         let signed_info = format!(
             "<SignedInfo xmlns=\"http://www.w3.org/2000/09/xmldsig#\">\
 <CanonicalizationMethod Algorithm=\"http://www.w3.org/2001/10/xml-exc-c14n#\"/>\
@@ -90,6 +98,7 @@ impl XmlSigner {
     }
 
     fn sign_with_private_key(&self, data: &str) -> Result<String, String> {
+        // SEFAZ exige RSA-SHA1 para a assinatura do SignedInfo
         let mut signer = OpensslSigner::new(MessageDigest::sha1(), &self.certificate.private_key)
             .map_err(|e| format!("Signer error: {}", e))?;
         signer
@@ -105,6 +114,7 @@ impl XmlSigner {
         &self,
         digest_value: &str,
         signature_value: &str,
+        reference_id: &str,
     ) -> Result<String, String> {
         let cert_der = self
             .certificate
@@ -112,12 +122,13 @@ impl XmlSigner {
             .to_der()
             .map_err(|e| format!("Certificate DER error: {}", e))?;
         let cert_base64 = STANDARD.encode(&cert_der);
+
         let signature = format!(
             "<Signature xmlns=\"http://www.w3.org/2000/09/xmldsig#\">\
 <SignedInfo>\
 <CanonicalizationMethod Algorithm=\"http://www.w3.org/2001/10/xml-exc-c14n#\"/>\
 <SignatureMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#rsa-sha1\"/>\
-<Reference URI=\"#infNFe\">\
+<Reference URI=\"#{}\">\
 <Transforms>\
 <Transform Algorithm=\"http://www.w3.org/2000/09/xmldsig#enveloped-signature\"/>\
 <Transform Algorithm=\"http://www.w3.org/2001/10/xml-exc-c14n#\"/>\
@@ -133,22 +144,21 @@ impl XmlSigner {
 </X509Data>\
 </KeyInfo>\
 </Signature>",
-            digest_value, signature_value, cert_base64
+            reference_id, digest_value, signature_value, cert_base64
         );
         Ok(signature)
     }
 
     fn insert_signature(&self, xml: &str, signature: &str) -> Result<String, String> {
-        let signature_trimmed = signature.trim();
         match xml.find("</infNFe>") {
             Some(pos) => {
                 let mut result = String::new();
                 result.push_str(&xml[..pos + 9]);
-                result.push_str(signature_trimmed);
+                result.push_str(signature);
                 result.push_str(&xml[pos + 9..]);
                 Ok(result)
             }
-            None => Err(String::from("infNFe_tag_not_found")),
+            None => Err(String::from("infNFe tag not found")),
         }
     }
 }

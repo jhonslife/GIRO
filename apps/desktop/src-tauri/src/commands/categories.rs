@@ -4,6 +4,10 @@ use crate::error::AppResult;
 use crate::models::{Category, CategoryWithCount, CreateCategory, UpdateCategory};
 use crate::repositories::CategoryRepository;
 use crate::AppState;
+use crate::middleware::Permission;
+use crate::require_permission;
+use crate::middleware::audit::{AuditService, AuditAction};
+use crate::audit_log;
 use tauri::State;
 
 #[tauri::command]
@@ -32,38 +36,85 @@ pub async fn get_category_by_id(
 #[tauri::command]
 pub async fn create_category(
     input: CreateCategory,
+    employee_id: String,
     state: State<'_, AppState>,
 ) -> AppResult<Category> {
+    let employee = require_permission!(state.pool(), &employee_id, Permission::ManageCategories);
     let repo = CategoryRepository::new(state.pool());
-    repo.create(input).await
+    let result = repo.create(input).await?;
+
+    // Audit Log
+    let audit_service = AuditService::new(state.pool().clone());
+    audit_log!(
+        audit_service,
+        AuditAction::ProductUpdated, // Proxied for now
+        &employee.id,
+        &employee.name,
+        "Category",
+        &result.id,
+        format!("Categoria Criada: {}", result.name)
+    );
+
+    Ok(result)
 }
 
 #[tauri::command]
 pub async fn update_category(
     id: String,
     input: UpdateCategory,
+    employee_id: String,
     state: State<'_, AppState>,
 ) -> AppResult<Category> {
+    let employee = require_permission!(state.pool(), &employee_id, Permission::ManageCategories);
     let repo = CategoryRepository::new(state.pool());
-    repo.update(&id, input).await
+    let result = repo.update(&id, input).await?;
+
+    // Audit Log
+    let audit_service = AuditService::new(state.pool().clone());
+    audit_log!(
+        audit_service,
+        AuditAction::ProductUpdated, // Proxied for now
+        &employee.id,
+        &employee.name,
+        "Category",
+        &id,
+        format!("Categoria Atualizada: {}", result.name)
+    );
+
+    Ok(result)
 }
 
 #[tauri::command]
-pub async fn delete_category(id: String, state: State<'_, AppState>) -> AppResult<()> {
+pub async fn delete_category(
+    id: String,
+    employee_id: String,
+    state: State<'_, AppState>,
+) -> AppResult<()> {
+    require_permission!(state.pool(), &employee_id, Permission::ManageCategories);
     let repo = CategoryRepository::new(state.pool());
     repo.delete(&id).await
 }
 
 /// Desativa uma categoria (alias para delete)
 #[tauri::command]
-pub async fn deactivate_category(id: String, state: State<'_, AppState>) -> AppResult<()> {
+pub async fn deactivate_category(
+    id: String,
+    employee_id: String,
+    state: State<'_, AppState>,
+) -> AppResult<()> {
+    require_permission!(state.pool(), &employee_id, Permission::ManageCategories);
     let repo = CategoryRepository::new(state.pool());
     repo.delete(&id).await
 }
 
 /// Reativa uma categoria desativada
 #[tauri::command]
-pub async fn reactivate_category(id: String, state: State<'_, AppState>) -> AppResult<Category> {
+pub async fn reactivate_category(
+    id: String,
+    employee_id: String,
+    state: State<'_, AppState>,
+) -> AppResult<Category> {
+    require_permission!(state.pool(), &employee_id, Permission::ManageCategories);
     let repo = CategoryRepository::new(state.pool());
     repo.reactivate(&id).await
 }

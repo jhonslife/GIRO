@@ -17,6 +17,7 @@ pub struct NfceData {
     pub numero: u32,
     pub emission_date: DateTime<Utc>,
     pub emission_type: u8, // 1=Normal, 9=Contingência
+    pub environment: u8,   // 1=Produção, 2=Homologação
 
     // Emitente
     pub emitter_name: String,
@@ -159,11 +160,15 @@ impl NfceXmlBuilder {
             .map_err(|e| e.to_string())?;
 
         self.write_element(writer, "cUF", &self.get_uf_code())?;
-        self.write_element(
-            writer,
-            "cNF",
-            &format!("{:08}", rand::random::<u32>() % 100000000),
-        )?;
+
+        // cNF (8 dígitos aleatórios) - Extrair da chave (pos 35-42) para consistência
+        let cnf = if self.access_key.len() == 44 {
+            &self.access_key[35..43]
+        } else {
+            "00000000"
+        };
+
+        self.write_element(writer, "cNF", cnf)?;
         self.write_element(writer, "natOp", "VENDA")?;
         self.write_element(writer, "mod", "65")?; // 65 = NFC-e
         self.write_element(writer, "serie", &self.data.serie.to_string())?;
@@ -179,7 +184,7 @@ impl NfceXmlBuilder {
             "cDV",
             &self.access_key.chars().last().unwrap().to_string(),
         )?;
-        self.write_element(writer, "tpAmb", "2")?; // 2 = Homologação (trocar para 1 em produção)
+        self.write_element(writer, "tpAmb", &self.data.environment.to_string())?;
         self.write_element(writer, "finNFe", "1")?; // 1 = NF-e normal
         self.write_element(writer, "indFinal", "1")?; // 1 = Consumidor final
         self.write_element(writer, "indPres", "1")?; // 1 = Operação presencial
@@ -501,6 +506,7 @@ mod tests {
             total_products: 10.0,
             total_discount: 0.0,
             total_note: 10.0,
+            environment: 2,
             payment_method: "01".to_string(),
             payment_value: 10.0,
             csc_id: "1".to_string(),

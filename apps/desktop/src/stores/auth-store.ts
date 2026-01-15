@@ -54,10 +54,12 @@ interface AuthState {
   currentUser: Employee | null; // deprecated alias
   currentSession: CashSession | null;
   isAuthenticated: boolean;
+  lastActivity: number;
 
   // Ações de autenticação
   login: (user: Employee) => void;
   logout: () => void;
+  updateActivity: () => void;
 
   // Ações de sessão de caixa
   openCashSession: (session: CashSession) => void;
@@ -91,6 +93,7 @@ export const useAuthStore = create<AuthState>()(
       currentUser: null,
       currentSession: null,
       isAuthenticated: false,
+      lastActivity: 0,
 
       login: (user) => {
         set({
@@ -98,6 +101,7 @@ export const useAuthStore = create<AuthState>()(
           currentEmployee: user,
           currentUser: user,
           isAuthenticated: true,
+          lastActivity: Date.now(),
         });
       },
 
@@ -107,7 +111,12 @@ export const useAuthStore = create<AuthState>()(
           currentUser: null,
           currentSession: null,
           isAuthenticated: false,
+          lastActivity: 0,
         });
+      },
+
+      updateActivity: () => {
+        set({ lastActivity: Date.now() });
       },
 
       openCashSession: (session) => {

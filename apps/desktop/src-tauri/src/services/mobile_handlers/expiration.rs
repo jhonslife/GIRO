@@ -7,6 +7,7 @@ use crate::repositories::{ProductLotRepository, StockRepository};
 use crate::services::mobile_protocol::{
     ExpirationActionPayload, ExpirationListPayload, MobileErrorCode, MobileResponse,
 };
+use crate::middleware::audit::{AuditService, AuditAction, CreateAuditLog};
 use sqlx::SqlitePool;
 
 /// Handler de validades
@@ -18,6 +19,26 @@ impl ExpirationHandler {
     /// Cria novo handler
     pub fn new(pool: SqlitePool) -> Self {
         Self { pool }
+    }
+
+    async fn log_audit(
+        &self,
+        action: AuditAction,
+        employee_id: &str,
+        target_id: &str,
+        details: String,
+    ) {
+        let audit_service = AuditService::new(self.pool.clone());
+        let _ = audit_service
+            .log(CreateAuditLog {
+                action,
+                employee_id: employee_id.to_string(),
+                employee_name: "Mobile User".to_string(),
+                target_type: Some("ProductLot".to_string()),
+                target_id: Some(target_id.to_string()),
+                details: Some(details),
+            })
+            .await;
     }
 
     /// Lista produtos por situação de validade
@@ -162,6 +183,14 @@ impl ExpirationHandler {
                             lot.product_id
                         );
 
+                        self.log_audit(
+                            AuditAction::StockAdjustment,
+                            employee_id,
+                            &lot.product_id,
+                            format!("Baixa de validade via mobile: lote={}, qtd={}", lot.id, lot.quantity),
+                        )
+                        .await;
+
                         MobileResponse::success(
                             id,
                             serde_json::json!({
@@ -196,6 +225,14 @@ impl ExpirationHandler {
                             discount
                         );
 
+                        self.log_audit(
+                            AuditAction::ProductUpdated,
+                            employee_id,
+                            &lot.id,
+                            format!("Desconto de {}% aplicado via mobile ao lote {}", discount, lot.id),
+                        )
+                        .await;
+
                         MobileResponse::success(
                             id,
                             serde_json::json!({
@@ -227,6 +264,14 @@ impl ExpirationHandler {
                     Ok(_) => {
                         tracing::info!("Lote marcado para transferência: {}", lot.id);
 
+                        self.log_audit(
+                            AuditAction::ProductUpdated,
+                            employee_id,
+                            &lot.id,
+                            format!("Lote marcado para transferência via mobile: {}", lot.id),
+                        )
+                        .await;
+
                         MobileResponse::success(
                             id,
                             serde_json::json!({
@@ -253,6 +298,14 @@ impl ExpirationHandler {
                 match lot_repo.mark_verified(&lot.id, employee_id).await {
                     Ok(_) => {
                         tracing::info!("Lote verificado e ignorado: {}", lot.id);
+
+                        self.log_audit(
+                            AuditAction::ProductUpdated,
+                            employee_id,
+                            &lot.id,
+                            format!("Lote verificado e ignorado via mobile: {}", lot.id),
+                        )
+                        .await;
 
                         MobileResponse::success(
                             id,

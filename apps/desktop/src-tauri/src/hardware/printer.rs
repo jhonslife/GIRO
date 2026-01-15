@@ -369,8 +369,17 @@ impl ThermalPrinter {
         Ok(())
     }
 
+    /// Envia para a impressora usando a conexão configurada
+    pub async fn print(&self) -> HardwareResult<()> {
+        match self.config.connection {
+            PrinterConnection::Usb => self.print_usb(),
+            PrinterConnection::Serial => self.print_serial(),
+            PrinterConnection::Network => self.print_network().await,
+        }
+    }
+
     /// Imprime página de teste
-    pub fn test_print(&mut self) -> HardwareResult<()> {
+    pub async fn test_print(&mut self) -> HardwareResult<()> {
         self.init();
 
         self.align(TextAlign::Center);
@@ -416,7 +425,7 @@ impl ThermalPrinter {
             self.feed(4);
         }
 
-        self.print_serial()
+        self.print().await
     }
 }
 

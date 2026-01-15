@@ -12,7 +12,7 @@ import {
   getStockReport,
 } from '@/lib/tauri';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { productKeys } from './useProducts';
+import { productKeys } from './use-products';
 
 // ────────────────────────────────────────────────────────────────────────────
 // QUERY KEYS

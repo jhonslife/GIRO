@@ -484,12 +484,12 @@ async fn process_request(
         }
         MobileAction::ProductCreate => {
             products_handler
-                .create(id, request.payload.clone(), &employee_role)
+                .create(id, request.payload.clone(), &employee_id, &employee_role)
                 .await
         }
         MobileAction::ProductUpdate => {
             products_handler
-                .update(id, request.payload.clone(), &employee_role)
+                .update(id, request.payload.clone(), &employee_id, &employee_role)
                 .await
         }
 
