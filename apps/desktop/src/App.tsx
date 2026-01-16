@@ -7,7 +7,7 @@ import { useHasAdmin } from '@/hooks/useSetup';
 import { useAuthStore } from '@/stores/auth-store';
 import { useLicenseStore } from '@/stores/license-store';
 import { useBusinessProfile } from '@/stores/useBusinessProfile';
-import { type FC, useEffect } from 'react';
+import { type FC, useEffect, useState } from 'react';
 import { Navigate, Outlet, Route, Routes, useNavigate } from 'react-router-dom';
 
 // Pages - usando named exports
@@ -99,8 +99,42 @@ const AdminCheck: FC = () => {
   const { data: hasAdmin, isLoading, error } = useHasAdmin();
   const { isAuthenticated, logout } = useAuthStore();
   const { isConfigured, resetProfile } = useBusinessProfile();
+  const [isCleaningUp, setIsCleaningUp] = useState(false);
+  const [cleanupDone, setCleanupDone] = useState(false);
 
-  if (isLoading) {
+  // Cleanup stale localStorage state when database has no admin
+  useEffect(() => {
+    if (isLoading) return;
+
+    if (hasAdmin === false && !cleanupDone) {
+      console.log('[AdminCheck] No admin in DB. Checking for stale state...');
+      let needsCleanup = false;
+
+      if (isAuthenticated) {
+        console.log('[AdminCheck] Cleaning stale auth state...');
+        needsCleanup = true;
+      }
+      if (isConfigured) {
+        console.log('[AdminCheck] Cleaning stale business profile...');
+        needsCleanup = true;
+      }
+
+      if (needsCleanup) {
+        setIsCleaningUp(true);
+        // Use setTimeout to avoid React state update during render
+        setTimeout(() => {
+          if (isAuthenticated) logout();
+          if (isConfigured) resetProfile();
+          setIsCleaningUp(false);
+          setCleanupDone(true);
+        }, 0);
+      } else {
+        setCleanupDone(true);
+      }
+    }
+  }, [hasAdmin, isLoading, isAuthenticated, isConfigured, logout, resetProfile, cleanupDone]);
+
+  if (isLoading || isCleaningUp) {
     return (
       <div className="flex h-screen items-center justify-center">
         <div className="text-center">
@@ -120,19 +154,8 @@ const AdminCheck: FC = () => {
     );
   }
 
-  // Se não há admin no banco, mas o localStorage diz que está autenticado ou configurado,
-  // significa que os dados foram limpos. Precisamos resetar o estado do localStorage também.
+  // After cleanup is done, redirect appropriately
   if (!hasAdmin) {
-    if (isAuthenticated) {
-      console.log(
-        '[AdminCheck] No admin in DB but localStorage says authenticated. Logging out...'
-      );
-      logout();
-    }
-    if (isConfigured) {
-      console.log('[AdminCheck] No admin in DB but business profile is configured. Resetting...');
-      resetProfile();
-    }
     return <Navigate to="/setup" replace />;
   }
 

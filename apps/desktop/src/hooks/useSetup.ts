@@ -14,7 +14,9 @@ export function useHasAdmin() {
     queryFn: async () => {
       return await invoke<boolean>('has_admin');
     },
-    staleTime: 1000 * 60, // 1 minute
+    staleTime: 0, // Always consider data stale
+    gcTime: 0, // Don't cache at all
+    refetchOnMount: 'always', // Always refetch when component mounts
   });
 }
 
