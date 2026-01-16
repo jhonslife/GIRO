@@ -27,6 +27,7 @@ import type {
   SaleFilter,
 } from '@/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { format, startOfWeek, startOfMonth } from 'date-fns';
 
 // ────────────────────────────────────────────────────────────────────────────
 // QUERY KEYS
@@ -287,53 +288,109 @@ export function useSalesReport(params?: {
       // Default to today if not provided (though enabled check prevents execution)
       const start = params?.startDate ?? new Date().toISOString();
       const end = params?.endDate ?? new Date().toISOString();
+      const groupBy = params?.groupBy ?? 'day';
 
       const [report, topProductsList] = await Promise.all([
         getSalesReport(start, end),
-        getTopProducts(10),
+        // request a larger set for better approximations
+        getTopProducts(100),
       ]);
 
-      const totalRevenue = report.totalRevenue;
+      const totalRevenue = report.totalRevenue ?? 0;
+      const salesCountTotal = report.totalSales ?? 0;
+      const averageTicket =
+        report.averageTicket ?? (salesCountTotal > 0 ? totalRevenue / salesCountTotal : 0);
+
+      // Estimate total items from top products as a fallback (may be partial)
+      const totalItems = topProductsList.reduce((s, p) => s + (p.quantity ?? 0), 0);
+
+      // Estimate gross profit using top products (approximation)
+      const grossProfit = topProductsList.reduce((s, p) => {
+        const cost = p.product?.costPrice ?? 0;
+        const profit = (p.revenue ?? 0) - p.quantity * cost;
+        return s + profit;
+      }, 0);
+
+      const profitMargin = totalRevenue > 0 ? (grossProfit / totalRevenue) * 100 : 0;
+
+      // Normalize buckets: backend may return salesByHour keyed by hour or date
+      const buckets: Record<string, number> = (report.salesByHour ?? {}) as Record<string, number>;
+
+      const keys = Object.keys(buckets);
+      const keysLookLikeDates = keys.some((k) => /^\d{4}-\d{2}-\d{2}/.test(k));
+
+      // Aggregate according to groupBy when possible
+      const aggregated: Record<string, number> = {};
+
+      if (keysLookLikeDates && ['day', 'week', 'month'].includes(groupBy)) {
+        for (const [key, value] of Object.entries(buckets)) {
+          const d = new Date(key);
+          let bucketKey = key;
+          if (groupBy === 'day') {
+            bucketKey = format(d, 'yyyy-MM-dd');
+          } else if (groupBy === 'week') {
+            const start = startOfWeek(d, { weekStartsOn: 1 });
+            bucketKey = format(start, 'yyyy-MM-dd');
+          } else if (groupBy === 'month') {
+            const start = startOfMonth(d);
+            bucketKey = format(start, 'yyyy-MM');
+          }
+
+          aggregated[bucketKey] = (aggregated[bucketKey] ?? 0) + (value ?? 0);
+        }
+      } else {
+        // fallback: use raw buckets
+        Object.assign(aggregated, buckets);
+      }
+
+      const periodEntries = Object.entries(aggregated).sort(([a], [b]) => (a > b ? 1 : -1));
+
+      const totalForPercentage = periodEntries.reduce((s, [, v]) => s + (v ?? 0), 0);
+
+      const periods = periodEntries.map(([k, v]) => {
+        const revenue = v ?? 0;
+        // estimate salesCount per period by dividing revenue by averageTicket when possible
+        const salesCount = averageTicket > 0 ? Math.round(revenue / averageTicket) : 0;
+        const percentage = totalForPercentage > 0 ? (revenue / totalForPercentage) * 100 : 0;
+        return {
+          label: k,
+          date: k,
+          salesCount,
+          revenue,
+          count: salesCount,
+          amount: revenue,
+          averageTicket: averageTicket,
+          percentage,
+        };
+      });
+
+      const topProducts = topProductsList.map((item, index) => ({
+        id: item.product?.id ?? `product-${index}`,
+        name: item.product?.name ?? '—',
+        quantity: item.quantity,
+        amount: item.revenue,
+      }));
+
+      const paymentArr = Object.entries(report.salesByPaymentMethod ?? {});
+      const paymentTotal = paymentArr.reduce((s, [, v]) => s + (v as number), 0);
+      const paymentBreakdown = paymentArr.map(([method, value]) => ({
+        method,
+        label: method,
+        amount: value as number,
+        count: Math.round((value as number) / (averageTicket || 1)),
+        percentage: paymentTotal > 0 ? ((value as number) / paymentTotal) * 100 : 0,
+      }));
+
       return {
         totalAmount: totalRevenue,
-        salesCount: report.totalSales,
-        averageTicket: report.averageTicket,
-        totalItems: 0,
-        grossProfit: 0,
-        profitMargin: 0,
-        periods: Object.entries(report.salesByHour).map(([hour, value], _index, arr) => {
-          const total = arr.reduce((sum, [, v]) => sum + (v as number), 0);
-          const percentage = total > 0 ? ((value as number) / total) * 100 : 0;
-          return {
-            label: `${hour}:00`,
-            date: hour,
-            salesCount: 0,
-            revenue: value as number,
-            count: 0,
-            amount: value as number,
-            averageTicket: 0,
-            percentage,
-          };
-        }),
-        topProducts: topProductsList.map((item, index) => ({
-          id: `product-${index}`,
-          name: item.product.name,
-          quantity: item.quantity,
-          amount: item.revenue,
-        })),
-        paymentBreakdown: Object.entries(report.salesByPaymentMethod).map(
-          ([method, value], _idx, arr) => {
-            const total = arr.reduce((sum, [, v]) => sum + (v as number), 0);
-            const percentage = total > 0 ? ((value as number) / total) * 100 : 0;
-            return {
-              method,
-              label: method,
-              amount: value as number,
-              count: 0,
-              percentage,
-            };
-          }
-        ),
+        salesCount: salesCountTotal,
+        averageTicket,
+        totalItems,
+        grossProfit,
+        profitMargin,
+        periods,
+        topProducts,
+        paymentBreakdown,
       };
     },
     enabled: !!params?.startDate && !!params?.endDate,

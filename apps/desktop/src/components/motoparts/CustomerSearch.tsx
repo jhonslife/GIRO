@@ -29,7 +29,7 @@ import {
 } from '@/hooks/useCustomers';
 import { cn } from '@/lib/utils';
 import { ChevronRight, FileText, Loader2, Phone, Plus, Search, User, X } from 'lucide-react';
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // CUSTOMER SEARCH - Busca e seleção de cliente
@@ -147,6 +147,22 @@ export function CustomerSearch({
               onValueChange={setQuery}
             />
             <CommandList>
+              {/* Botão persistente para criar novo cliente */}
+              <div className="p-2 border-b">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full justify-start text-primary hover:text-primary hover:bg-primary/10"
+                  onClick={() => {
+                    setOpen(false);
+                    setShowCreateDialog(true);
+                  }}
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Novo Cliente
+                </Button>
+              </div>
+
               {isSearching && (
                 <div className="p-4 space-y-2">
                   <Skeleton className="h-10 w-full" />
@@ -156,23 +172,8 @@ export function CustomerSearch({
               )}
 
               {!isSearching && query.length >= 2 && results.length === 0 && (
-                <CommandEmpty className="py-6">
-                  <div className="text-center space-y-2">
-                    <p>Nenhum cliente encontrado para "{query}"</p>
-                    {showCreateButton && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setOpen(false);
-                          setShowCreateDialog(true);
-                        }}
-                      >
-                        <Plus className="mr-2 h-4 w-4" />
-                        Cadastrar novo cliente
-                      </Button>
-                    )}
-                  </div>
+                <CommandEmpty className="py-6 text-center text-muted-foreground">
+                  Nenhum cliente encontrado para "{query}"
                 </CommandEmpty>
               )}
 
@@ -209,9 +210,16 @@ export function CustomerSearch({
                 </CommandGroup>
               )}
 
-              {!isSearching && query.length < 2 && (
+              {!isSearching && query.length > 0 && query.length < 2 && (
                 <div className="p-4 text-sm text-muted-foreground text-center">
                   Digite pelo menos 2 caracteres para buscar
+                </div>
+              )}
+
+              {!isSearching && query.length === 0 && results.length === 0 && (
+                <div className="p-8 text-center text-muted-foreground">
+                  <Search className="mx-auto h-8 w-8 mb-2 opacity-20" />
+                  <p className="text-sm">Busque por nome, CPF ou telefone</p>
                 </div>
               )}
             </CommandList>
@@ -314,6 +322,7 @@ interface CustomerCreateDialogProps {
   onOpenChange: (open: boolean) => void;
   onSubmit: (input: CreateCustomerInput) => Promise<void>;
   initialName?: string;
+  initialData?: Partial<Customer>;
 }
 
 export function CustomerCreateDialog({
@@ -321,11 +330,25 @@ export function CustomerCreateDialog({
   onOpenChange,
   onSubmit,
   initialName = '',
+  initialData,
 }: CustomerCreateDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<CreateCustomerInput>({
     name: initialName,
+    ...initialData,
   });
+
+  // Atualiza os dados quando o dialog abre ou os dados iniciais mudam
+  useEffect(() => {
+    if (open) {
+      setFormData({
+        name: initialData?.name || initialName || '',
+        cpf: initialData?.cpf || '',
+        phone: initialData?.phone || '',
+        email: initialData?.email || '',
+      });
+    }
+  }, [open, initialData, initialName]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

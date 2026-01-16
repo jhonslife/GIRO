@@ -58,6 +58,30 @@ pub fn list_serial_ports() -> Vec<String> {
     hardware::list_serial_ports()
 }
 
+/// Lista todas as portas de hardware relevantes (Serial + USB Printer no Linux)
+#[tauri::command]
+pub fn list_hardware_ports() -> Vec<String> {
+    let mut ports = hardware::list_serial_ports();
+
+    #[cfg(target_os = "linux")]
+    {
+        for i in 0..10 {
+            let path = format!("/dev/usb/lp{}", i);
+            if std::path::Path::new(&path).exists() {
+                ports.push(path);
+            }
+            let path_lp = format!("/dev/lp{}", i);
+            if std::path::Path::new(&path_lp).exists() {
+                ports.push(path_lp);
+            }
+        }
+    }
+
+    ports.sort();
+    ports.dedup();
+    ports
+}
+
 /// Verifica se uma porta existe
 #[tauri::command]
 pub fn check_port_exists(port: String) -> bool {
@@ -469,17 +493,25 @@ pub async fn start_serial_scanner(
     port: String,
     baud: u32,
     state: State<'_, HardwareState>,
+    app_state: State<'_, crate::AppState>,
 ) -> AppResult<()> {
-    let scanner_server = state.scanner_server.read().await;
+    let mut scanner_server = state.scanner_server.write().await;
 
-    match scanner_server.as_ref() {
-        Some(scanner_state) => {
-            hardware::scanner::start_serial_scanner(scanner_state.clone(), &port, baud)?;
-            Ok(())
-        }
-        None => {
-            Err(HardwareError::NotConfigured("Servidor de scanner não iniciado. Inicie o servidor mobile ou as configurações de scanner primeiro.".into()).into())
-        }
+    // Se o estado não existir, inicializa um padrão (sem servidor WS)
+    if scanner_server.is_none() {
+        let db_pool = (*app_state.db_pool).clone();
+        let config = MobileScannerConfig {
+            enabled: true,
+            ..Default::default()
+        };
+        *scanner_server = Some(ScannerServerState::with_db_pool(config, db_pool));
+    }
+
+    if let Some(scanner_state) = scanner_server.as_ref() {
+        hardware::scanner::start_serial_scanner(scanner_state.clone(), &port, baud)?;
+        Ok(())
+    } else {
+        Err(HardwareError::NotConfigured("Falha ao inicializar estado do scanner".into()).into())
     }
 }
 
@@ -523,6 +555,7 @@ macro_rules! hardware_commands {
         tauri::generate_handler![
             // Portas
             $crate::commands::hardware::list_serial_ports,
+            $crate::commands::hardware::list_hardware_ports,
             $crate::commands::hardware::check_port_exists,
             // Impressora
             $crate::commands::hardware::configure_printer,

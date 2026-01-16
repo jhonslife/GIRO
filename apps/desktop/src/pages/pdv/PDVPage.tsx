@@ -6,6 +6,7 @@
 import { CartItemRow } from '@/components/pdv/CartItemRow';
 import { PaymentModal } from '@/components/pdv/PaymentModal';
 import { ProductSearchResults } from '@/components/pdv/ProductSearchResults';
+import { CustomerSearch } from '@/components/motoparts/CustomerSearch';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,6 +26,7 @@ import { formatCurrency } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth-store';
 import { usePDVStore } from '@/stores/pdv-store';
 import { type Product } from '@/types';
+import { useCustomers, Customer } from '@/hooks/useCustomers';
 import {
   AlertCircle,
   Banknote,
@@ -63,8 +65,24 @@ export const PDVPage: FC = () => {
     removeItem,
     updateQuantity,
     setDiscount,
+    customerId,
+    setCustomer,
   } = usePDVStore();
   const { currentSession } = useAuthStore();
+  const { getCustomerById } = useCustomers();
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+
+  // Carregar cliente se houver customerId no store
+  useEffect(() => {
+    if (customerId && !selectedCustomer) {
+      getCustomerById(customerId).then(setSelectedCustomer);
+    }
+  }, [customerId, getCustomerById, selectedCustomer]);
+
+  const handleCustomerSelect = (customer: Customer | null) => {
+    setSelectedCustomer(customer);
+    setCustomer(customer?.id || null);
+  };
 
   const subtotal = getSubtotal();
   const total = getTotal();
@@ -212,7 +230,7 @@ export const PDVPage: FC = () => {
             <span className="kbd absolute right-3 top-1/2 -translate-y-1/2">F2</span>
           </div>
 
-          {/* Resultados da busca */}
+          {/* Resultados da busca de produtos */}
           {showSearch && searchQuery && (
             <ProductSearchResults
               query={searchQuery}
@@ -220,6 +238,20 @@ export const PDVPage: FC = () => {
               onClose={() => setShowSearch(false)}
             />
           )}
+        </Card>
+
+        {/* Seleção de Cliente */}
+        <Card className="p-4">
+          <div className="flex items-center gap-4">
+            <div className="flex-1">
+              <Label className="mb-2 block text-sm font-medium">Cliente (Opcional)</Label>
+              <CustomerSearch
+                selectedCustomer={selectedCustomer}
+                onSelect={handleCustomerSelect}
+                placeholder="Vincular cliente à venda..."
+              />
+            </div>
+          </div>
         </Card>
 
         {/* Lista de Itens */}

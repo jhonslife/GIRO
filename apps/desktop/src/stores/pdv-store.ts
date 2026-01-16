@@ -34,6 +34,7 @@ interface PDVState {
   discountReason: string;
   paymentMethod: PaymentMethod | null;
   amountPaid: number;
+  customerId: string | null;
 
   // Estado da sessão de caixa
   cashSession: CashSession | null;
@@ -58,6 +59,7 @@ interface PDVState {
 
   // Ações de sessão
   setCashSession: (session: CashSession | null) => void;
+  setCustomer: (customerId: string | null) => void;
 
   // Ações de modal
   openPaymentModal: () => void;
@@ -93,6 +95,7 @@ export const usePDVStore = create<PDVState>()((set, get) => ({
   selectedPaymentMethod: null,
   isProcessing: false,
   lastSaleId: null,
+  customerId: null,
 
   // Adicionar item ao carrinho
   addItem: (item) => {
@@ -162,11 +165,15 @@ export const usePDVStore = create<PDVState>()((set, get) => ({
       isProcessing: false,
       isPaymentModalOpen: false,
       selectedPaymentMethod: null,
+      customerId: null,
     });
   },
 
   setCashSession: (session) => {
     set({ cashSession: session });
+  },
+  setCustomer: (customerId) => {
+    set({ customerId });
   },
 
   openPaymentModal: () => {

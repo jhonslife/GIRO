@@ -12,6 +12,7 @@ import {
   Boxes,
   ChevronLeft,
   ChevronRight,
+  Contact,
   HelpCircle,
   LayoutDashboard,
   Package,
@@ -49,6 +50,7 @@ export const Sidebar: FC = () => {
       ? [{ icon: ShieldCheck, label: 'Garantias', href: '/warranties' }]
       : []),
     { icon: ShoppingCart, label: 'PDV', href: '/pdv', tutorialId: 'nav-pdv' },
+    { icon: Contact, label: 'Clientes', href: '/customers' },
     { icon: Package, label: 'Produtos', href: '/products', tutorialId: 'nav-products' },
     { icon: Boxes, label: 'Estoque', href: '/stock', tutorialId: 'nav-stock' },
     { icon: Truck, label: 'Fornecedores', href: '/suppliers', tutorialId: 'nav-suppliers' },

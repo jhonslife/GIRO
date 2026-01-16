@@ -14,6 +14,7 @@ import { Navigate, Outlet, Route, Routes, useNavigate } from 'react-router-dom';
 import { AlertsPage } from '@/pages/alerts';
 import { LoginPage } from '@/pages/auth';
 import { CashControlPage } from '@/pages/cash';
+import { CustomersPage } from '@/pages/customers';
 import { DashboardPage } from '@/pages/dashboard';
 import { EmployeesPage } from '@/pages/employees';
 import { LicenseActivationPage } from '@/pages/license';
@@ -95,8 +96,9 @@ const useHelpHotkey = () => {
 };
 
 const AdminCheck: FC = () => {
-  const { data: hasAdmin, isLoading } = useHasAdmin();
-  const { isAuthenticated } = useAuthStore();
+  const { data: hasAdmin, isLoading, error } = useHasAdmin();
+  const { isAuthenticated, logout } = useAuthStore();
+  const { isConfigured, resetProfile } = useBusinessProfile();
 
   if (isLoading) {
     return (
@@ -109,18 +111,36 @@ const AdminCheck: FC = () => {
     );
   }
 
-  // Se não tem admin, redireciona para o setup inicial
-  if (!hasAdmin && !isAuthenticated) {
+  if (error) {
+    console.error('[AdminCheck] Error:', error);
+    return (
+      <div className="p-4 text-red-500">
+        Erro ao verificar estado inicial. Verifique se o backend está rodando.
+      </div>
+    );
+  }
+
+  // Se não há admin no banco, mas o localStorage diz que está autenticado ou configurado,
+  // significa que os dados foram limpos. Precisamos resetar o estado do localStorage também.
+  if (!hasAdmin) {
+    if (isAuthenticated) {
+      console.log(
+        '[AdminCheck] No admin in DB but localStorage says authenticated. Logging out...'
+      );
+      logout();
+    }
+    if (isConfigured) {
+      console.log('[AdminCheck] No admin in DB but business profile is configured. Resetting...');
+      resetProfile();
+    }
     return <Navigate to="/setup" replace />;
   }
 
-  // Se não está autenticado, vai para o login (que é protegido pela licença)
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
-  // Se autenticado, vai para a raiz do layout (RootRedirect)
-  return <Navigate to="/" replace />;
+  return <RootRedirect />;
 };
 
 const App: FC = () => {
@@ -131,7 +151,7 @@ const App: FC = () => {
     <SessionGuard timeoutMinutes={30}>
       {isAuthenticated && <UpdateChecker />}
       <Routes>
-        <Route index element={<AdminCheck />} />
+        <Route path="/" element={<AdminCheck />} />
         {/* Setup Inicial - Primeiro Acesso */}
         <Route path="/setup" element={<InitialSetupPage />} />
 
@@ -183,6 +203,9 @@ const App: FC = () => {
 
           {/* PDV */}
           <Route path="pdv" element={<PDVPage />} />
+
+          {/* Clientes */}
+          <Route path="customers" element={<CustomersPage />} />
 
           {/* Produtos */}
           <Route path="products" element={<ProductsPage />} />

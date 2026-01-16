@@ -24,6 +24,7 @@ export const LoginPage: FC = () => {
   const { isConfigured } = useBusinessProfile();
 
   useEffect(() => {
+    console.log('[LoginPage] Mounted');
     inputRef.current?.focus();
   }, []);
 

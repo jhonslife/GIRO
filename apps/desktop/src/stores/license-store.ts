@@ -61,6 +61,7 @@ export const useLicenseStore = create<LicenseStore>()(
           licenseInfo: info,
           state: newState,
           error: null,
+          isHydrated: true,
         });
       },
 

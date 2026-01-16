@@ -93,7 +93,8 @@ impl<'a> EmployeeRepository<'a> {
         let pin_hash = hash_pin(&data.pin);
         let password_hash = data.password.map(|password| hash_password(&password));
 
-        sqlx::query(
+        tracing::info!("Criando funcionário: {} (role: {})", data.name, role);
+        let result = sqlx::query(
             "INSERT INTO employees (id, name, cpf, phone, email, pin, password, role, is_active, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)"
         )
         .bind(&id)
@@ -107,7 +108,12 @@ impl<'a> EmployeeRepository<'a> {
         .bind(&now)
         .bind(&now)
         .execute(self.pool)
-        .await?;
+        .await;
+
+        if let Err(e) = result {
+            tracing::error!("Erro ao criar funcionário no banco: {:?}", e);
+            return Err(e.into());
+        }
 
         self.find_by_id(&id)
             .await?
@@ -142,7 +148,7 @@ impl<'a> EmployeeRepository<'a> {
             .unwrap_or(existing.role);
         let is_active = data.is_active.unwrap_or(existing.is_active);
 
-        sqlx::query(
+        let result = sqlx::query(
             "UPDATE employees SET name = ?, cpf = ?, phone = ?, email = ?, pin = ?, password = ?, role = ?, is_active = ?, updated_at = ? WHERE id = ?"
         )
         .bind(&name)
@@ -156,7 +162,12 @@ impl<'a> EmployeeRepository<'a> {
         .bind(&now)
         .bind(id)
         .execute(self.pool)
-        .await?;
+        .await;
+
+        if let Err(e) = result {
+            tracing::error!("Erro ao atualizar funcionário {}: {:?}", id, e);
+            return Err(e.into());
+        }
 
         self.find_by_id(id)
             .await?

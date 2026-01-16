@@ -8,8 +8,8 @@
 import { validateLicense } from '@/lib/tauri';
 import { useLicenseStore, type LicenseState } from '@/stores/license-store';
 import { Loader2 } from 'lucide-react';
-import { useEffect, type FC, type ReactNode } from 'react';
-import { Navigate } from 'react-router-dom';
+import { useEffect, useState, type FC, type ReactNode } from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
 
 interface LicenseGuardProps {
   children: ReactNode;
@@ -23,7 +23,6 @@ export const LicenseGuard: FC<LicenseGuardProps> = ({ children }) => {
     (globalThis as unknown as { __E2E_BYPASS_LICENSE?: boolean }).__E2E_BYPASS_LICENSE;
 
   const {
-    licenseKey,
     state,
     setState,
     setLicenseInfo,
@@ -33,74 +32,107 @@ export const LicenseGuard: FC<LicenseGuardProps> = ({ children }) => {
     isWithinGracePeriod,
   } = useLicenseStore();
 
-  useEffect(() => {
-    if (e2eBypass) return;
+  const [localLoading, setLocalLoading] = useState(true);
 
-    const timeoutId = setTimeout(() => {
-      if (useLicenseStore.getState().state === 'loading') {
-        console.warn('[LicenseGuard] Stuck in loading for 10s, forcing unlicensed state');
-        setState('unlicensed');
-      }
-    }, 10000);
+  useEffect(() => {
+    if (e2eBypass) {
+      setLocalLoading(false);
+      return;
+    }
 
     const checkLicense = async () => {
-      const currentStore = useLicenseStore.getState();
-      console.log(
-        `[LicenseGuard] Checking license... isHydrated=${currentStore.isHydrated}, state=${state}`
-      );
+      console.log('[LicenseGuard] Starting checkLicense...');
+      try {
+        const currentStore = useLicenseStore.getState();
+        console.log(
+          `[LicenseGuard] Initial state: isHydrated=${currentStore.isHydrated}, state=${currentStore.state}`
+        );
 
-      // Always ensure we have the truth from disk on first load
-      if (!currentStore.isHydrated) {
-        console.log('[LicenseGuard] Store not hydrated, attempting hydration...');
-        await hydrateFromDisk();
-      }
-
-      const store = useLicenseStore.getState();
-      const currentKey = store.licenseKey;
-      console.log(`[LicenseGuard] Hydration finished: key=${currentKey}, state=${store.state}`);
-
-      // If still loading after hydration, handle properly
-      if (store.state === 'loading') {
-        if (isWithinGracePeriod()) {
-          console.log('[LicenseGuard] Within grace period, permitting access');
-          setState('valid');
-          return;
+        // Ensure we have data from disk
+        if (!currentStore.isHydrated) {
+          console.log('[LicenseGuard] Not hydrated, calling hydrateFromDisk...');
+          await hydrateFromDisk();
         }
 
-        // No grace period? Must validate
-        try {
-          if (currentKey) {
-            console.log('[LicenseGuard] Triggering mandatory validation');
-            const info = await validateLicense(currentKey);
-            setLicenseInfo(info);
-            updateLastValidation();
+        const store = useLicenseStore.getState();
+        const currentKey = store.licenseKey;
+        console.log(
+          `[LicenseGuard] Hydration finished. Key=${currentKey ? 'FOUND' : 'MISSING'}, state=${
+            store.state
+          }`
+        );
+
+        if (store.state === 'loading') {
+          console.log('[LicenseGuard] Store state is still "loading", processing...');
+          if (isWithinGracePeriod()) {
+            console.log('[LicenseGuard] Within grace period, permitting access.');
+            setState('valid');
+          } else if (currentKey) {
+            console.log('[LicenseGuard] Attempting online validation...');
+            try {
+              const info = await validateLicense(currentKey);
+              setLicenseInfo(info);
+              updateLastValidation();
+              setState('valid');
+              console.log('[LicenseGuard] Online validation SUCCESS');
+            } catch (err) {
+              console.error('[LicenseGuard] Online validation FAILED:', err);
+              setError('Falha na validação online.');
+              setState('error');
+            }
           } else {
+            console.log('[LicenseGuard] No key and no grace period. Setting to unlicensed.');
             setState('unlicensed');
           }
-        } catch (e) {
-          console.error('[LicenseGuard] Validation failed', e);
-          setError('Erro de conexão com servidor de licença');
+        } else {
+          console.log(`[LicenseGuard] Store already in definitive state: ${store.state}`);
         }
+      } catch (err) {
+        console.error('[LicenseGuard] Global error in checkLicense:', err);
+      } finally {
+        setLocalLoading(false);
+        console.log('[LicenseGuard] checkLicense finished.');
       }
     };
 
     checkLicense();
 
-    return () => clearTimeout(timeoutId as unknown as number);
+    const timeoutId = setTimeout(() => {
+      if (localLoading) {
+        console.warn('[LicenseGuard] 10s timeout reached, forcing loading end.');
+        setLocalLoading(false);
+      }
+    }, 10000);
+
+    return () => clearTimeout(timeoutId);
   }, [
+    e2eBypass,
     hydrateFromDisk,
     isWithinGracePeriod,
-    licenseKey,
     setError,
     setLicenseInfo,
     setState,
-    state,
-    e2eBypass,
     updateLastValidation,
   ]);
 
-  // Loading state
-  if (state === 'loading') {
+  const location = useLocation();
+  const isLicensePath = location.pathname === '/license';
+
+  console.log(
+    `[LicenseGuard] Rendering. path=${location.pathname}, localLoading=${localLoading}, storeState=${state}`
+  );
+
+  // Bypass for activation page - let it handle its own loading/logic
+  if (isLicensePath) {
+    console.log('[LicenseGuard] Path is /license, bypassing guard render blocking');
+    return <>{children}</>;
+  }
+
+  // Local loading or store initializing
+  if (localLoading || state === 'loading') {
+    console.log(
+      `[LicenseGuard] Showing loading screen. localLoading=${localLoading}, state=${state}`
+    );
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
@@ -114,10 +146,12 @@ export const LicenseGuard: FC<LicenseGuardProps> = ({ children }) => {
   // No license or invalid - redirect to activation
   const invalidStates: LicenseState[] = ['unlicensed', 'expired', 'suspended', 'error'];
   if (invalidStates.includes(state)) {
+    console.log(`[LicenseGuard] Invalid state (${state}), redirecting to /license`);
     return <Navigate to="/license" replace />;
   }
 
   // License valid - render children
+  console.log('[LicenseGuard] License valid, rendering children');
   return <>{children}</>;
 };
 

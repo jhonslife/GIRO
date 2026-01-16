@@ -60,7 +60,8 @@ const mapPrinterModelToBackend = (model: string): BackendPrinterModel => {
 const mapPrinterPortToConnection = (port: string): BackendPrinterConnection => {
   const trimmed = port.trim();
   if (!trimmed) return 'serial';
-  if (trimmed === 'USB') return 'usb';
+  if (trimmed === 'USB' || trimmed.includes('/dev/usb/lp') || trimmed.includes('/dev/lp'))
+    return 'usb';
   if (trimmed.includes(':')) return 'network';
   return 'serial';
 };
@@ -111,7 +112,7 @@ export const SettingsPage: FC = () => {
   const fetchPorts = useCallback(async () => {
     setIsLoadingPorts(true);
     try {
-      const ports = await invoke<SerialPort[]>('list_serial_ports');
+      const ports = await invoke<SerialPort[]>('list_hardware_ports');
       setAvailablePorts(ports);
     } catch (error) {
       console.error('Erro ao listar portas:', error);
@@ -157,7 +158,7 @@ export const SettingsPage: FC = () => {
       model: mapPrinterModelToBackend(printerModel),
       connection,
       // Para USB, deixar vazio para o backend tentar /dev/usb/lp0 (Linux)
-      port: connection === 'usb' ? '' : printerPort,
+      port: printerPort === 'USB' ? '' : printerPort,
       paper_width: 48,
       auto_cut: printer.autoCut ?? true,
       open_drawer_on_sale: printer.openDrawer ?? true,
@@ -311,22 +312,20 @@ export const SettingsPage: FC = () => {
         port: scalePort,
       });
 
-      // Persiste no banco de dados via Tauri
-      await Promise.all([
-        setSetting('company.name', companyName, 'string'),
-        setSetting('company.tradeName', companyTradeName, 'string'),
-        setSetting('company.cnpj', companyDocument, 'string'),
-        setSetting('company.address', companyAddress, 'string'),
-        setSetting('company.city', companyCity, 'string'),
-        setSetting('company.state', companyState, 'string'),
-        setSetting('company.phone', companyPhone, 'string'),
-        setSetting('printer.enabled', String(printerEnabled), 'boolean'),
-        setSetting('printer.model', printerModel, 'string'),
-        setSetting('printer.port', printerPort, 'string'),
-        setSetting('scale.enabled', String(scaleEnabled), 'boolean'),
-        setSetting('scale.model', scaleModel, 'string'),
-        setSetting('scale.port', scalePort, 'string'),
-      ]);
+      // Persiste no banco de dados via Tauri (sequencialmente para evitar locks)
+      await setSetting('company.name', companyName, 'string');
+      await setSetting('company.tradeName', companyTradeName, 'string');
+      await setSetting('company.cnpj', companyDocument, 'string');
+      await setSetting('company.address', companyAddress, 'string');
+      await setSetting('company.city', companyCity, 'string');
+      await setSetting('company.state', companyState, 'string');
+      await setSetting('company.phone', companyPhone, 'string');
+      await setSetting('printer.enabled', String(printerEnabled), 'boolean');
+      await setSetting('printer.model', printerModel, 'string');
+      await setSetting('printer.port', printerPort, 'string');
+      await setSetting('scale.enabled', String(scaleEnabled), 'boolean');
+      await setSetting('scale.model', scaleModel, 'string');
+      await setSetting('scale.port', scalePort, 'string');
 
       // Sincroniza configurações no estado de hardware (em memória)
       try {

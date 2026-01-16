@@ -9,7 +9,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { activateLicense, getHardwareId, setSetting, validateLicense } from '@/lib/tauri';
+import {
+  activateLicense,
+  getHardwareId,
+  restoreLicense,
+  setSetting,
+  validateLicense,
+} from '@/lib/tauri';
 import { useLicenseStore } from '@/stores/license-store';
 import { AlertCircle, Key, Loader2, Monitor, ShieldCheck } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
@@ -31,6 +37,59 @@ export function LicenseActivationPage() {
     updateLastValidation,
     hydrateFromDisk,
   } = useLicenseStore();
+
+  const performActivation = useCallback(
+    async (key: string) => {
+      setIsLoading(true);
+      try {
+        const info = await activateLicense(key);
+
+        // Store the license
+        storeLicenseKey(key);
+        setLicenseInfo(info);
+        updateLastValidation();
+
+        // Sincronizar dados do proprietário se existirem na licença
+        if (info.company_name) {
+          try {
+            await setSetting('company.name', info.company_name);
+          } catch (err) {
+            console.error('Falha ao salvar nome da empresa da licença:', err);
+          }
+        }
+
+        toast({
+          title: 'Licença Ativada!',
+          description: info.company_name
+            ? `Bem-vindo, ${info.company_name}. Software ativado.`
+            : 'Seu software foi ativado com sucesso.',
+        });
+
+        console.log('[LicenseActivationPage] Activation success, redirecting in 1.5s...');
+        // Redirect to login (which will then lead to wizard if not configured)
+        setTimeout(() => {
+          console.log('[LicenseActivationPage] Executing navigate to /login');
+          navigate('/login', { replace: true });
+        }, 1500);
+      } catch (error) {
+        const errorMessage =
+          typeof error === 'string'
+            ? error
+            : 'Falha ao ativar licença. Verifique a chave e tente novamente.';
+
+        toast({
+          title: 'Erro na Ativação',
+          description: errorMessage,
+          variant: 'destructive',
+        });
+        setState('unlicensed');
+        setIsValidating(false);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [navigate, setLicenseInfo, setState, storeLicenseKey, toast, updateLastValidation]
+  );
 
   const validateStoredLicense = useCallback(
     async (key: string) => {
@@ -103,8 +162,6 @@ export function LicenseActivationPage() {
           console.log('[LicenseActivationPage] Triggering online validation...');
           await validateStoredLicense(currentKey);
         } else {
-          console.log('[LicenseActivationPage] No license found. Attempting auto-restore...');
-          const { restoreLicense } = await import('@/lib/tauri');
           try {
             const restoredKey = await restoreLicense();
             if (restoredKey) {
@@ -115,20 +172,10 @@ export function LicenseActivationPage() {
                 duration: 5000,
               });
               setLicenseKey(restoredKey);
-              // Trigger activation automatically
-              setTimeout(() => {
-                const btn = document.getElementById('activate-btn');
-                if (btn) btn.click(); // Hacky but effective, or just call handleActivate directly if I can hoist state
-              }, 500);
-              // Better: explicit state triggering
-              // But handleActivate relies on licenseKey state which is async? No, react state.
-              // We'll just set it and let user click or refactor.
-              // Let's refactor slightly to call activate immediately
+              setIsValidating(false); // Stop "Checking license..." spinner to show activation spinner or success
 
-              // We can't easily call handleActivate because it closes over state options not yet updated?
-              // Actually, if we setLicenseKey(restoredKey), the state updates, but the next line running handleActivate
-              // might see old state depending on closure.
-              // Safer to just fill it and show a message "License Found!"
+              // Trigger activation automatically using the new function
+              await performActivation(restoredKey);
             } else {
               console.log('[LicenseActivationPage] No license to restore.');
               setState('unlicensed');
@@ -150,7 +197,15 @@ export function LicenseActivationPage() {
     };
 
     initialize();
-  }, [hydrateFromDisk, isValidating, navigate, setState, validateStoredLicense]);
+  }, [
+    hydrateFromDisk,
+    isValidating,
+    navigate,
+    setState,
+    validateStoredLicense,
+    performActivation,
+    toast,
+  ]);
 
   const handleActivate = async () => {
     if (!licenseKey.trim()) {
@@ -162,49 +217,7 @@ export function LicenseActivationPage() {
       return;
     }
 
-    setIsLoading(true);
-    try {
-      const info = await activateLicense(licenseKey.trim());
-
-      // Store the license
-      storeLicenseKey(licenseKey.trim());
-      setLicenseInfo(info);
-      updateLastValidation();
-
-      // Sincronizar dados do proprietário se existirem na licença
-      if (info.company_name) {
-        try {
-          await setSetting('company.name', info.company_name);
-        } catch (err) {
-          console.error('Falha ao salvar nome da empresa da licença:', err);
-        }
-      }
-
-      toast({
-        title: 'Licença Ativada!',
-        description: info.company_name
-          ? `Bem-vindo, ${info.company_name}. Software ativado.`
-          : 'Seu software foi ativado com sucesso.',
-      });
-
-      // Redirect to login (which will then lead to wizard if not configured)
-      setTimeout(() => {
-        navigate('/login', { replace: true });
-      }, 1500);
-    } catch (error) {
-      const errorMessage =
-        typeof error === 'string'
-          ? error
-          : 'Falha ao ativar licença. Verifique a chave e tente novamente.';
-
-      toast({
-        title: 'Erro na Ativação',
-        description: errorMessage,
-        variant: 'destructive',
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    await performActivation(licenseKey.trim());
   };
 
   // Format license key as user types (XXXX-XXXX-XXXX-XXXX)
@@ -224,6 +237,7 @@ export function LicenseActivationPage() {
 
   // Loading state while validating stored license
   if (isValidating) {
+    console.log(`[LicenseActivationPage] Showing loading screen (isValidating=${isValidating})`);
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 to-primary/10">
         <Card className="w-full max-w-md">

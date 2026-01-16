@@ -325,7 +325,11 @@ impl ThermalPrinter {
         let candidates: Vec<String> = if !self.config.port.trim().is_empty() {
             vec![self.config.port.clone()]
         } else {
-            vec!["/dev/usb/lp0".to_string(), "/dev/lp0".to_string()]
+            let mut c = vec!["/dev/lp0".to_string(), "/dev/lp1".to_string()];
+            for i in 0..10 {
+                c.push(format!("/dev/usb/lp{}", i));
+            }
+            c
         };
 
         let Some(device_path) = candidates.into_iter().find(|p| Path::new(p).exists()) else {

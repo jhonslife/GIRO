@@ -77,7 +77,8 @@ impl<'a> SettingsRepository<'a> {
         let existing = self.find_by_key(&data.key).await?;
         let now = chrono::Utc::now().to_rfc3339();
 
-        if let Some(setting) = existing {
+        tracing::info!("Salvando configuração: {} = {}", data.key, data.value);
+        let result = if let Some(setting) = existing {
             // Update
             let value_type = data
                 .value_type
@@ -89,40 +90,39 @@ impl<'a> SettingsRepository<'a> {
                 .bind(&now)
                 .bind(&setting.id)
                 .execute(self.pool)
-                .await?;
-            return self.find_by_id(&setting.id).await?.ok_or_else(|| {
-                crate::error::AppError::NotFound {
-                    entity: "Setting".into(),
-                    id: setting.id,
-                }
-            });
+                .await
+        } else {
+            // Create new
+            let id = new_id();
+            let value_type = data.value_type.unwrap_or_else(|| "STRING".to_string());
+            let group = data.group_name.unwrap_or_else(|| "general".to_string());
+
+            sqlx::query(
+                "INSERT INTO settings (id, key, value, type, group_name, description, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+            )
+            .bind(&id)
+            .bind(&data.key)
+            .bind(&data.value)
+            .bind(&value_type)
+            .bind(&group)
+            .bind(&data.description)
+            .bind(&now)
+            .bind(&now)
+            .execute(self.pool)
+            .await
+        };
+
+        if let Err(e) = result {
+            tracing::error!("Erro ao salvar configuração {}: {:?}", data.key, e);
+            return Err(e.into());
         }
 
-        // Create new
-        let id = new_id();
-        let value_type = data.value_type.unwrap_or_else(|| "STRING".to_string());
-        let group = data.group_name.unwrap_or_else(|| "general".to_string());
-
-        sqlx::query(
-            "INSERT INTO settings (id, key, value, type, group_name, description, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-        )
-        .bind(&id)
-        .bind(&data.key)
-        .bind(&data.value)
-        .bind(&value_type)
-        .bind(&group)
-        .bind(&data.description)
-        .bind(&now)
-        .bind(&now)
-        .execute(self.pool)
-        .await?;
-
-        self.find_by_id(&id)
-            .await?
-            .ok_or_else(|| crate::error::AppError::NotFound {
+        self.find_by_key(&data.key).await?.ok_or_else(|| {
+            crate::error::AppError::NotFound {
                 entity: "Setting".into(),
-                id,
-            })
+                id: data.key,
+            }
+        })
     }
 
     pub async fn delete(&self, key: &str) -> AppResult<()> {
