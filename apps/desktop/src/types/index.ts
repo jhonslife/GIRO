@@ -475,4 +475,12 @@ export interface LicenseInfo {
   support_expires_at?: string;
   is_lifetime?: boolean;
   can_offline?: boolean;
+  has_admin?: boolean;
+}
+
+export interface UpdateLicenseAdminRequest {
+  name: string;
+  email: string;
+  phone: string;
+  pin: string;
 }

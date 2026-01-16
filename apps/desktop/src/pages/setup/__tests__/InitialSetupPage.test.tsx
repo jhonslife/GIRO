@@ -1,33 +1,50 @@
-import { InitialSetupPage } from '@/pages/setup/InitialSetupPage';
-import { createQueryWrapper } from '@/test/queryWrapper';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, it, vi } from 'vitest';
+import { InitialSetupPage } from "@/pages/setup/InitialSetupPage";
+import { createQueryWrapper } from "@/test/queryWrapper";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+import { describe, expect, it, vi } from "vitest";
 
 // Mocks
-vi.mock('@/lib/tauri', () => ({
+vi.mock("@/lib/tauri", () => ({
   invoke: vi.fn(),
+  updateLicenseAdmin: vi.fn().mockResolvedValue(undefined),
 }));
 
-vi.mock('@/hooks/useSetup', () => ({
+const mockMutateAsync = vi
+  .fn()
+  .mockResolvedValue({
+    id: "admin-1",
+    name: "Test Admin",
+    email: "test@example.com",
+  });
+
+vi.mock("@/hooks/useSetup", () => ({
   useCreateFirstAdmin: () => ({
-    mutateAsync: vi
-      .fn()
-      .mockResolvedValue({ id: 'admin-1', name: 'Admin', email: 'admin@test.com' }),
+    mutateAsync: mockMutateAsync,
     isPending: false,
   }),
 }));
 
-vi.mock('@/stores/auth-store', () => ({
+const mockLogin = vi.fn();
+vi.mock("@/stores/auth-store", () => ({
   useAuthStore: () => ({
-    login: vi.fn(),
+    login: mockLogin,
   }),
+}));
+
+vi.mock("@/stores/license-store", () => ({
+  useLicenseStore: {
+    getState: () => ({
+      licenseKey: "MOCK-KEY-123",
+      state: "valid",
+    }),
+  },
 }));
 
 const { Wrapper: queryWrapper } = createQueryWrapper();
 
-describe('InitialSetupPage', () => {
-  it('should render the welcome screen', () => {
+describe("InitialSetupPage", () => {
+  it("should render the welcome screen", () => {
     render(
       <MemoryRouter>
         <InitialSetupPage />
@@ -36,10 +53,12 @@ describe('InitialSetupPage', () => {
     );
 
     expect(screen.getByText(/Bem-vindo ao GIRO!/i)).toBeInTheDocument();
-    expect(screen.getByText(/Criar Primeiro Administrador/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Criar Primeiro Administrador/i)
+    ).toBeInTheDocument();
   });
 
-  it('should advance to step 2 (form) after clicking start', async () => {
+  it("should advance to step 2 (form) after clicking start", async () => {
     render(
       <MemoryRouter>
         <InitialSetupPage />
@@ -51,7 +70,58 @@ describe('InitialSetupPage', () => {
 
     await waitFor(() => {
       // O form tem o título "Criar Primeiro Administrador" também, mas podemos checar labels
-      expect(screen.getByText(/Nome Completo/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/Nome Completo/i)).toBeInTheDocument();
+    });
+  });
+
+  it("should complete setup and call updateLicenseAdmin", async () => {
+    const { updateLicenseAdmin } = await import("@/lib/tauri");
+
+    render(
+      <MemoryRouter>
+        <InitialSetupPage />
+      </MemoryRouter>,
+      { wrapper: queryWrapper }
+    );
+
+    // Step 1: Welcome
+    fireEvent.click(screen.getByText(/Criar Primeiro Administrador/i));
+
+    // Step 2: Form
+    const nameInput = screen.getByLabelText(/Nome Completo/i);
+    const cpfInput = screen.getByLabelText(/CPF/i);
+    const phoneInput = screen.getByLabelText(/Telefone/i);
+    const emailInput = screen.getByLabelText(/Email/i);
+    const pinInput = screen.getByLabelText(/PIN \(4-6 dígitos\)/i);
+    const confirmPinInput = screen.getByLabelText(/Confirmar PIN/i);
+
+    fireEvent.change(nameInput, { target: { value: "Test Admin" } });
+    fireEvent.change(cpfInput, { target: { value: "12345678909" } }); // Will be formatted by logic if I used fireEvent.change correctly
+    fireEvent.change(phoneInput, { target: { value: "11988887777" } });
+    fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+    fireEvent.change(pinInput, { target: { value: "1234" } });
+    fireEvent.change(confirmPinInput, { target: { value: "1234" } });
+
+    const submitBtn = screen.getByRole("button", {
+      name: /Criar Administrador/i,
+    });
+    fireEvent.click(submitBtn);
+
+    await waitFor(() => {
+      expect(mockMutateAsync).toHaveBeenCalledWith({
+        name: "Test Admin",
+        email: "test@example.com",
+        pin: "1234",
+      });
+      expect(mockLogin).toHaveBeenCalled();
+      expect(updateLicenseAdmin).toHaveBeenCalledWith(
+        "MOCK-KEY-123",
+        expect.objectContaining({
+          name: "Test Admin",
+          email: "test@example.com",
+        })
+      );
+      expect(screen.getByText(/Administrador Criado!/i)).toBeInTheDocument();
     });
   });
 });

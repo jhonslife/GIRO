@@ -158,7 +158,7 @@ jobs:
             "platforms": {
               "windows-x86_64": {
                 "signature": "",
-                "url": "https://github.com/jhonslife/GIRO/releases/download/${VERSION}/GIRO_${VERSION_NUM}_x64-setup.nsis.zip"
+                "url": "https://github.com/jhonslife/GIRO/releases/download/${VERSION}/GIRO_${VERSION_NUM}_x64-setup.exe.zip"
               },
               "linux-x86_64": {
                 "signature": "",

@@ -8,9 +8,12 @@ interface CreateFirstAdminInput {
   pin: string;
 }
 
+// [Bust Cache] Unique key per session
+const SESSION_ID = Math.random().toString(36).substring(7);
+
 export function useHasAdmin() {
   return useQuery({
-    queryKey: ['has-admin'],
+    queryKey: ['has-admin', SESSION_ID],
     queryFn: async () => {
       return await invoke<boolean>('has_admin');
     },

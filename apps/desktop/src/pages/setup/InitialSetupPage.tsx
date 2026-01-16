@@ -3,16 +3,24 @@
  * @description Primeira tela após instalação - cria o primeiro admin
  */
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useCreateFirstAdmin } from '@/hooks/useSetup';
-import { cn } from '@/lib/utils';
-import { useAuthStore } from '@/stores/auth-store';
-import { CheckCircle2, Loader2, Shield, UserPlus } from 'lucide-react';
-import { useEffect, useState, type FC } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useCreateFirstAdmin } from "@/hooks/useSetup";
+import { updateLicenseAdmin } from "@/lib/tauri";
+import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/stores/auth-store";
+import { useLicenseStore } from "@/stores/license-store";
+import { CheckCircle2, Loader2, Shield, UserPlus } from "lucide-react";
+import { useEffect, useState, type FC } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface FormData {
   name: string;
@@ -34,15 +42,15 @@ interface FormErrors {
 
 export const InitialSetupPage: FC = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState<'welcome' | 'form' | 'success'>('welcome');
+  const [step, setStep] = useState<"welcome" | "form" | "success">("welcome");
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<FormData>({
-    name: '',
-    cpf: '',
-    phone: '',
-    email: '',
-    pin: '',
-    confirmPin: '',
+    name: "",
+    cpf: "",
+    phone: "",
+    email: "",
+    pin: "",
+    confirmPin: "",
   });
   const [errors, setErrors] = useState<FormErrors>({});
 
@@ -55,7 +63,7 @@ export const InitialSetupPage: FC = () => {
   }, []);
 
   const validateCPF = (cpf: string): boolean => {
-    const cleaned = cpf.replace(/\D/g, '');
+    const cleaned = cpf.replace(/\D/g, "");
     if (cleaned.length !== 11) return false;
 
     // Validação básica de CPF
@@ -84,38 +92,38 @@ export const InitialSetupPage: FC = () => {
     const newErrors: FormErrors = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = 'Nome é obrigatório';
+      newErrors.name = "Nome é obrigatório";
     }
 
-    const cleanedCPF = formData.cpf.replace(/\D/g, '');
+    const cleanedCPF = formData.cpf.replace(/\D/g, "");
     if (!cleanedCPF) {
-      newErrors.cpf = 'CPF é obrigatório';
+      newErrors.cpf = "CPF é obrigatório";
     } else if (!validateCPF(cleanedCPF)) {
-      newErrors.cpf = 'CPF inválido';
+      newErrors.cpf = "CPF inválido";
     }
 
     if (!formData.phone.trim()) {
-      newErrors.phone = 'Telefone é obrigatório';
+      newErrors.phone = "Telefone é obrigatório";
     }
 
     if (!formData.email.trim()) {
-      newErrors.email = 'Email é obrigatório';
+      newErrors.email = "Email é obrigatório";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Email inválido';
+      newErrors.email = "Email inválido";
     }
 
     if (!formData.pin) {
-      newErrors.pin = 'PIN é obrigatório';
+      newErrors.pin = "PIN é obrigatório";
     } else if (formData.pin.length < 4) {
-      newErrors.pin = 'PIN deve ter pelo menos 4 dígitos';
+      newErrors.pin = "PIN deve ter pelo menos 4 dígitos";
     } else if (formData.pin.length > 6) {
-      newErrors.pin = 'PIN deve ter no máximo 6 dígitos';
+      newErrors.pin = "PIN deve ter no máximo 6 dígitos";
     } else if (!/^\d+$/.test(formData.pin)) {
-      newErrors.pin = 'PIN deve conter apenas números';
+      newErrors.pin = "PIN deve conter apenas números";
     }
 
     if (formData.pin !== formData.confirmPin) {
-      newErrors.confirmPin = 'PINs não conferem';
+      newErrors.confirmPin = "PINs não conferem";
     }
 
     setErrors(newErrors);
@@ -142,31 +150,49 @@ export const InitialSetupPage: FC = () => {
       login({
         id: admin.id,
         name: admin.name,
-        role: 'ADMIN',
+        role: "ADMIN",
         email: admin.email,
         pin: formData.pin,
       });
 
-      setStep('success');
+      // Tentar sincronizar com o servidor de licenças
+      try {
+        const licenseState = useLicenseStore.getState();
+        if (licenseState.licenseKey && licenseState.state === "valid") {
+          console.log("[Setup] Syncing admin to license server...");
+          await updateLicenseAdmin(licenseState.licenseKey, {
+            name: formData.name.trim(),
+            email: formData.email.trim(),
+            phone: formData.phone,
+            pin: formData.pin,
+          });
+          console.log("[Setup] Admin synced successfully");
+        }
+      } catch (e) {
+        console.error("[Setup] Failed to sync admin to license server:", e);
+        // Não impedir o progresso, apenas logar o erro
+      }
+
+      setStep("success");
 
       // Redirecionar para o wizard de perfil de negócio após breve sucesso
       setTimeout(() => {
-        navigate('/wizard', { replace: true });
+        navigate("/wizard", { replace: true });
       }, 2000);
     } catch (err) {
-      console.error('Erro ao criar admin:', err);
-      setErrors({ name: 'Erro ao criar administrador. Tente novamente.' });
+      console.error("Erro ao criar admin:", err);
+      setErrors({ name: "Erro ao criar administrador. Tente novamente." });
     } finally {
       setIsLoading(false);
     }
   };
 
   const formatCPF = (value: string): string => {
-    const cleaned = value.replace(/\D/g, '');
+    const cleaned = value.replace(/\D/g, "");
     const match = cleaned.match(/^(\d{0,3})(\d{0,3})(\d{0,3})(\d{0,2})$/);
     if (!match) return value;
 
-    let formatted = match[1] || '';
+    let formatted = match[1] || "";
     if (match[2]) formatted += `.${match[2]}`;
     if (match[3]) formatted += `.${match[3]}`;
     if (match[4]) formatted += `-${match[4]}`;
@@ -175,19 +201,19 @@ export const InitialSetupPage: FC = () => {
   };
 
   const formatPhone = (value: string): string => {
-    const cleaned = value.replace(/\D/g, '');
+    const cleaned = value.replace(/\D/g, "");
     const match = cleaned.match(/^(\d{0,2})(\d{0,5})(\d{0,4})$/);
     if (!match) return value;
 
-    let formatted = '';
+    let formatted = "";
     if (match[1]) formatted += `(${match[1]}`;
     if (match[2]) formatted += `) ${match[2]}`;
     if (match[3]) formatted += `-${match[3]}`;
 
-    return formatted || '';
+    return formatted || "";
   };
 
-  if (step === 'welcome') {
+  if (step === "welcome") {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-primary/10 to-background p-4">
         <Card className="w-full max-w-2xl">
@@ -205,22 +231,31 @@ export const InitialSetupPage: FC = () => {
             <div className="space-y-4 rounded-lg border bg-muted/50 p-6">
               <h3 className="font-semibold">🎉 Primeira execução detectada</h3>
               <p className="text-sm text-muted-foreground">
-                Para começar a usar o GIRO, vamos criar o primeiro administrador do sistema. Este
-                usuário terá acesso total e poderá cadastrar outros funcionários posteriormente.
+                Para começar a usar o GIRO, vamos criar o primeiro administrador
+                do sistema. Este usuário terá acesso total e poderá cadastrar
+                outros funcionários posteriormente.
               </p>
 
               <div className="space-y-2 text-sm">
                 <h4 className="font-medium">O administrador poderá:</h4>
                 <ul className="space-y-1 pl-5 text-muted-foreground">
-                  <li className="list-disc">Cadastrar e gerenciar funcionários</li>
+                  <li className="list-disc">
+                    Cadastrar e gerenciar funcionários
+                  </li>
                   <li className="list-disc">Configurar o sistema completo</li>
                   <li className="list-disc">Acessar todos os relatórios</li>
-                  <li className="list-disc">Realizar vendas e operações de caixa</li>
+                  <li className="list-disc">
+                    Realizar vendas e operações de caixa
+                  </li>
                 </ul>
               </div>
             </div>
 
-            <Button onClick={() => setStep('form')} className="w-full" size="lg">
+            <Button
+              onClick={() => setStep("form")}
+              className="w-full"
+              size="lg"
+            >
               <UserPlus className="mr-2 h-5 w-5" />
               Criar Primeiro Administrador
             </Button>
@@ -230,7 +265,7 @@ export const InitialSetupPage: FC = () => {
     );
   }
 
-  if (step === 'success') {
+  if (step === "success") {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-primary/10 to-background p-4">
         <Card className="w-full max-w-md">
@@ -240,7 +275,9 @@ export const InitialSetupPage: FC = () => {
             </div>
 
             <h2 className="mb-2 text-2xl font-bold">Administrador Criado!</h2>
-            <p className="mb-6 text-muted-foreground">Redirecionando para seleção de perfil...</p>
+            <p className="mb-6 text-muted-foreground">
+              Redirecionando para seleção de perfil...
+            </p>
 
             <div className="flex items-center justify-center">
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
@@ -256,7 +293,9 @@ export const InitialSetupPage: FC = () => {
       <Card className="w-full max-w-2xl">
         <CardHeader>
           <CardTitle>Criar Primeiro Administrador</CardTitle>
-          <CardDescription>Preencha os dados do administrador principal do sistema</CardDescription>
+          <CardDescription>
+            Preencha os dados do administrador principal do sistema
+          </CardDescription>
         </CardHeader>
 
         <CardContent>
@@ -273,11 +312,13 @@ export const InitialSetupPage: FC = () => {
                   setFormData({ ...formData, name: e.target.value });
                   setErrors({ ...errors, name: undefined });
                 }}
-                className={cn(errors.name && 'border-destructive')}
+                className={cn(errors.name && "border-destructive")}
                 placeholder="João da Silva"
                 autoFocus
               />
-              {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
+              {errors.name && (
+                <p className="text-sm text-destructive">{errors.name}</p>
+              )}
             </div>
 
             {/* CPF */}
@@ -293,11 +334,13 @@ export const InitialSetupPage: FC = () => {
                   setFormData({ ...formData, cpf: formatted });
                   setErrors({ ...errors, cpf: undefined });
                 }}
-                className={cn(errors.cpf && 'border-destructive')}
+                className={cn(errors.cpf && "border-destructive")}
                 placeholder="000.000.000-00"
                 maxLength={14}
               />
-              {errors.cpf && <p className="text-sm text-destructive">{errors.cpf}</p>}
+              {errors.cpf && (
+                <p className="text-sm text-destructive">{errors.cpf}</p>
+              )}
             </div>
 
             {/* Telefone */}
@@ -313,11 +356,13 @@ export const InitialSetupPage: FC = () => {
                   setFormData({ ...formData, phone: formatted });
                   setErrors({ ...errors, phone: undefined });
                 }}
-                className={cn(errors.phone && 'border-destructive')}
+                className={cn(errors.phone && "border-destructive")}
                 placeholder="(00) 00000-0000"
                 maxLength={15}
               />
-              {errors.phone && <p className="text-sm text-destructive">{errors.phone}</p>}
+              {errors.phone && (
+                <p className="text-sm text-destructive">{errors.phone}</p>
+              )}
             </div>
 
             {/* Email */}
@@ -333,10 +378,12 @@ export const InitialSetupPage: FC = () => {
                   setFormData({ ...formData, email: e.target.value });
                   setErrors({ ...errors, email: undefined });
                 }}
-                className={cn(errors.email && 'border-destructive')}
+                className={cn(errors.email && "border-destructive")}
                 placeholder="admin@exemplo.com"
               />
-              {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
+              {errors.email && (
+                <p className="text-sm text-destructive">{errors.email}</p>
+              )}
             </div>
 
             {/* PIN */}
@@ -351,15 +398,21 @@ export const InitialSetupPage: FC = () => {
                   inputMode="numeric"
                   value={formData.pin}
                   onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+                    const value = e.target.value.replace(/\D/g, "").slice(0, 6);
                     setFormData({ ...formData, pin: value });
-                    setErrors({ ...errors, pin: undefined, confirmPin: undefined });
+                    setErrors({
+                      ...errors,
+                      pin: undefined,
+                      confirmPin: undefined,
+                    });
                   }}
-                  className={cn(errors.pin && 'border-destructive')}
+                  className={cn(errors.pin && "border-destructive")}
                   placeholder="••••"
                   maxLength={6}
                 />
-                {errors.pin && <p className="text-sm text-destructive">{errors.pin}</p>}
+                {errors.pin && (
+                  <p className="text-sm text-destructive">{errors.pin}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -372,16 +425,18 @@ export const InitialSetupPage: FC = () => {
                   inputMode="numeric"
                   value={formData.confirmPin}
                   onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+                    const value = e.target.value.replace(/\D/g, "").slice(0, 6);
                     setFormData({ ...formData, confirmPin: value });
                     setErrors({ ...errors, confirmPin: undefined });
                   }}
-                  className={cn(errors.confirmPin && 'border-destructive')}
+                  className={cn(errors.confirmPin && "border-destructive")}
                   placeholder="••••"
                   maxLength={6}
                 />
                 {errors.confirmPin && (
-                  <p className="text-sm text-destructive">{errors.confirmPin}</p>
+                  <p className="text-sm text-destructive">
+                    {errors.confirmPin}
+                  </p>
                 )}
               </div>
             </div>
@@ -390,7 +445,7 @@ export const InitialSetupPage: FC = () => {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setStep('welcome')}
+                onClick={() => setStep("welcome")}
                 className="w-full"
                 disabled={isLoading}
               >

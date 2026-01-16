@@ -315,28 +315,39 @@ export const EmployeesPage: FC = () => {
                 <CardTitle className="text-sm font-medium">{employee.name}</CardTitle>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0">
+                    <Button
+                      variant="ghost"
+                      className="h-8 w-8 p-0"
+                      data-testid={`employee-actions-${employee.id}`}
+                    >
                       <span className="sr-only">Abrir menu</span>
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => handleEdit(employee)}>
+                    <DropdownMenuItem
+                      data-testid="edit-employee"
+                      onClick={() => handleEdit(employee)}
+                    >
                       <Edit className="mr-2 h-4 w-4" />
                       Editar
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => openPinDialog(employee)}>
+                    <DropdownMenuItem
+                      data-testid="reset-pin"
+                      onClick={() => openPinDialog(employee)}
+                    >
                       <Shield className="mr-2 h-4 w-4" />
                       Alterar PIN
                     </DropdownMenuItem>
                     <DropdownMenuItem
+                      data-testid="toggle-active"
                       className={employee.isActive ? 'text-red-600' : 'text-green-600'}
                       onClick={() => handleSoftDelete(employee)}
                     >
                       {employee.isActive ? (
-                        <Trash2 className="mr-2 h-4 w-4" />
+                        <Trash2 data-testid="soft-delete" className="mr-2 h-4 w-4" />
                       ) : (
-                        <Power className="mr-2 h-4 w-4" />
+                        <Power data-testid="soft-delete" className="mr-2 h-4 w-4" />
                       )}
                       {employee.isActive ? 'Desativar' : 'Reativar'}
                     </DropdownMenuItem>
@@ -386,7 +397,7 @@ export const EmployeesPage: FC = () => {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nome</FormLabel>
+                    <FormLabel>Nome Completo</FormLabel>
                     <FormControl>
                       <Input placeholder="Nome completo" {...field} />
                     </FormControl>
@@ -469,7 +480,9 @@ export const EmployeesPage: FC = () => {
               )}
 
               <DialogFooter>
-                <Button type="submit">Salvar</Button>
+                <Button type="submit" data-testid="submit-employee">
+                  Salvar
+                </Button>
               </DialogFooter>
             </form>
           </Form>

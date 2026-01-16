@@ -32,6 +32,7 @@ import type {
   Supplier,
   TauriResponse,
   UpdateProductInput,
+  UpdateLicenseAdminRequest,
 } from '@/types';
 import { invoke as tauriCoreInvoke } from '@tauri-apps/api/core';
 
@@ -735,6 +736,13 @@ export async function createBackup(): Promise<TauriResponse<string>> {
 
 export async function restoreBackup(path: string): Promise<TauriResponse<void>> {
   return tauriInvoke<TauriResponse<void>>('restore_backup', { path });
+}
+
+export async function updateLicenseAdmin(
+  licenseKey: string,
+  data: UpdateLicenseAdminRequest
+): Promise<void> {
+  return tauriInvoke<void>('update_license_admin', { licenseKey, data });
 }
 
 export async function getLastBackupDate(): Promise<string | null> {

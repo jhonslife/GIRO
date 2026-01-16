@@ -4,4 +4,7 @@
 
 pub mod client;
 
-pub use client::{LicenseClient, LicenseClientConfig, LicenseInfo, LicenseStatus, MetricsPayload};
+pub use client::{
+    LicenseClient, LicenseClientConfig, LicenseInfo, LicenseStatus, MetricsPayload,
+    UpdateAdminRequest,
+};

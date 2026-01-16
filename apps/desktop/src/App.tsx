@@ -8,7 +8,16 @@ import { useAuthStore } from '@/stores/auth-store';
 import { useLicenseStore } from '@/stores/license-store';
 import { useBusinessProfile } from '@/stores/useBusinessProfile';
 import { type FC, useEffect, useState } from 'react';
-import { Navigate, Outlet, Route, Routes, useNavigate } from 'react-router-dom';
+import { Navigate, Outlet, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
+// ... existing imports ...
+
+const NavigationLogger: FC = () => {
+  const location = useLocation();
+  useEffect(() => {
+    console.warn('🚩 [Navigation] Path changed to:', location.pathname);
+  }, [location.pathname]);
+  return null;
+};
 
 // Pages - usando named exports
 import { AlertsPage } from '@/pages/alerts';
@@ -61,19 +70,6 @@ const WizardRoute: FC = () => {
   return <BusinessProfileWizard redirectTo="/pdv" />;
 };
 
-// Componente para rota raiz - verifica se perfil está configurado
-const RootRedirect: FC = () => {
-  const { isConfigured } = useBusinessProfile();
-
-  // Se não configurado, enviar para wizard
-  if (!isConfigured) {
-    return <Navigate to="/wizard" replace />;
-  }
-
-  // Se configurado, agora sim vai para o PDV
-  return <Navigate to="/pdv" replace />;
-};
-
 // Hook para atalho F1 - Ajuda
 const useHelpHotkey = () => {
   const navigate = useNavigate();
@@ -95,90 +91,58 @@ const useHelpHotkey = () => {
   }, [navigate, state]);
 };
 
-const AdminCheck: FC = () => {
-  const { data: hasAdmin, isLoading, error } = useHasAdmin();
+const GlobalSetupGate: FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { data: hasAdmin, isLoading } = useHasAdmin();
   const { isAuthenticated, logout } = useAuthStore();
   const { isConfigured, resetProfile } = useBusinessProfile();
+  const location = useLocation();
   const [isCleaningUp, setIsCleaningUp] = useState(false);
-  const [cleanupDone, setCleanupDone] = useState(false);
 
-  // Cleanup stale localStorage state when database has no admin
+  // Global monitoring
   useEffect(() => {
     if (isLoading) return;
 
-    console.log('[AdminCheck] hasAdmin state:', hasAdmin);
-
-    // [FIX] If NO admin is found in backend, we MUST ensure the frontend is also clean.
-    // Otherwise, stale AuthStore or BusinessProfile might guard/redirect us wrong.
     if (hasAdmin === false) {
-      console.log('🚨 [AdminCheck] No admin in DB. PURGING frontend state...', {
-        isAuthenticated,
-        isConfigured,
-      });
-
-      let needsCleanup = false;
-
-      if (isAuthenticated) {
-        console.warn('❌ [AdminCheck] User was authenticated but no Admin exists! Logging out.');
+      // Logic from AdminCheck: Purge frontend if backend is clean
+      if (isAuthenticated || isConfigured) {
+        console.warn(
+          '❌ [GlobalSetupGate] State mismatch: No admin in DB but frontend has state. PURGING.'
+        );
         logout();
-        needsCleanup = true;
-      }
-
-      if (isConfigured) {
-        console.warn('❌ [AdminCheck] Profile was configured but no Admin exists! Resetting.');
         resetProfile();
-        needsCleanup = true;
-      }
-
-      if (needsCleanup) {
         setIsCleaningUp(true);
-        setTimeout(() => {
-          setIsCleaningUp(false);
-          setCleanupDone(true);
-        }, 500); // Give it a moment to stabilize
-      } else {
-        setCleanupDone(true);
+        setTimeout(() => setIsCleaningUp(false), 500);
       }
-    } else {
-      // hasAdmin is true (or undefined/error?), just proceed
-      setCleanupDone(true);
     }
-  }, [hasAdmin, isLoading, isAuthenticated, isConfigured, logout, resetProfile]);
+  }, [hasAdmin, isLoading, isAuthenticated, isConfigured, logout, resetProfile, location.pathname]);
 
   if (isLoading || isCleaningUp) {
     return (
       <div className="flex h-screen flex-col items-center justify-center space-y-4">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-        <p className="text-sm text-muted-foreground">Inicializando...</p>
-        <div className="rounded bg-black/80 p-4 text-xs font-mono text-white">
-          <p>DEBUG INFO:</p>
-          <p>hasAdmin: {isLoading ? 'LOADING' : hasAdmin ? 'TRUE' : 'FALSE'}</p>
-          <p>isAuthenticated: {isAuthenticated ? 'TRUE' : 'FALSE'}</p>
-          <p>isConfigured: {isConfigured ? 'TRUE' : 'FALSE'}</p>
-        </div>
+        <p className="text-sm text-muted-foreground">Inicializando Sistema...</p>
       </div>
     );
   }
 
-  if (error) {
-    console.error('[AdminCheck] Error:', error);
-    return (
-      <div className="p-4 text-red-500">
-        Erro ao verificar estado inicial. Verifique se o backend está rodando.
-      </div>
-    );
-  }
+  // FORCE Setup if no admin exists (except if we are already there or at license/alerts)
+  const bypassRoutes = ['/setup', '/license', '/license-activation'];
+  const adminMissing = hasAdmin === false || hasAdmin === null;
 
-  // After cleanup is done, redirect appropriately
-  if (!hasAdmin) {
+  if (adminMissing && !bypassRoutes.includes(location.pathname)) {
+    console.warn(
+      `[GlobalSetupGate] No Admin detected (hasAdmin=${hasAdmin}). Forcing redirect from ${location.pathname} to /setup`
+    );
     return <Navigate to="/setup" replace />;
   }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
+  return <>{children}</>;
+};
 
-  return <RootRedirect />;
+const RootRedirect: FC = () => {
+  const { isConfigured } = useBusinessProfile();
+  if (!isConfigured) return <Navigate to="/wizard" replace />;
+  return <Navigate to="/pdv" replace />;
 };
 
 const App: FC = () => {
@@ -187,137 +151,140 @@ const App: FC = () => {
 
   return (
     <SessionGuard timeoutMinutes={30}>
-      {isAuthenticated && <UpdateChecker />}
-      <Routes>
-        <Route path="/" element={<AdminCheck />} />
-        {/* Setup Inicial - Primeiro Acesso */}
-        <Route path="/setup" element={<InitialSetupPage />} />
+      <NavigationLogger />
+      <GlobalSetupGate>
+        {isAuthenticated && <UpdateChecker />}
+        <Routes>
+          <Route path="/" element={<RootRedirect />} />
+          {/* Setup Inicial - Primeiro Acesso */}
+          <Route path="/setup" element={<InitialSetupPage />} />
 
-        {/* Rota de Ativação de Licença - ANTES de tudo */}
-        <Route path="/license" element={<LicenseActivationPage />} />
+          {/* Rota de Ativação de Licença - ANTES de tudo */}
+          <Route path="/license" element={<LicenseActivationPage />} />
 
-        {/* Test-only route to bypass license guard for E2E (not used in production) */}
-        <Route path="/__test-login" element={<LoginPage />} />
+          {/* Test-only route to bypass license guard for E2E (not used in production) */}
+          <Route path="/__test-login" element={<LoginPage />} />
 
-        {/* Rota de Login - Protegida por licença */}
-        <Route
-          path="/login"
-          element={
-            <LicenseGuard>
-              {isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />}
-            </LicenseGuard>
-          }
-        />
-
-        {/* Wizard de Configuração de Perfil (primeira execução) */}
-        <Route
-          path="/wizard"
-          element={
-            <LicenseGuard>
-              <ProtectedRoute>
-                <WizardRoute />
-              </ProtectedRoute>
-            </LicenseGuard>
-          }
-        />
-
-        {/* Layout com AppShell usando element wrapper */}
-        <Route
-          element={
-            <LicenseGuard>
-              <ProtectedRoute>
-                <AppShell />
-              </ProtectedRoute>
-            </LicenseGuard>
-          }
-        >
-          {/* Dashboard - Verifica se perfil está configurado */}
-          <Route index element={<RootRedirect />} />
-          <Route path="dashboard" element={<DashboardPage />} />
-
-          {/* Motopeças */}
-          <Route path="service-orders" element={<ServiceOrdersPage />} />
-          <Route path="warranties" element={<WarrantiesPage />} />
-
-          {/* PDV */}
-          <Route path="pdv" element={<PDVPage />} />
-
-          {/* Clientes */}
-          <Route path="customers" element={<CustomersPage />} />
-
-          {/* Produtos */}
-          <Route path="products" element={<ProductsPage />} />
-          <Route path="products/new" element={<ProductFormPage />} />
-          <Route path="products/:id" element={<ProductFormPage />} />
-          <Route path="products/categories" element={<CategoriesPage />} />
-
-          {/* Estoque */}
-          <Route path="stock" element={<StockPage />} />
-          <Route path="stock/entry" element={<StockEntryPage />} />
-          <Route path="stock/movements" element={<StockMovementsPage />} />
-          <Route path="stock/expiration" element={<ExpirationPage />} />
-
-          {/* Funcionários */}
+          {/* Rota de Login - Protegida por licença */}
           <Route
-            path="employees"
+            path="/login"
             element={
-              <ProtectedRoute requiredRole={['ADMIN']}>
-                <EmployeesPage />
-              </ProtectedRoute>
+              <LicenseGuard>
+                {isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />}
+              </LicenseGuard>
             }
           />
 
-          {/* Fornecedores */}
+          {/* Wizard de Configuração de Perfil (primeira execução) */}
           <Route
-            path="suppliers"
+            path="/wizard"
             element={
-              <ProtectedRoute requiredRole={['ADMIN', 'MANAGER']}>
-                <SuppliersPage />
-              </ProtectedRoute>
+              <LicenseGuard>
+                <ProtectedRoute>
+                  <WizardRoute />
+                </ProtectedRoute>
+              </LicenseGuard>
             }
           />
 
-          {/* Caixa */}
-          <Route path="cash" element={<CashControlPage />} />
-
-          {/* Relatórios */}
+          {/* Layout com AppShell usando element wrapper */}
           <Route
-            path="reports"
             element={
-              <ProtectedRoute requiredRole={['ADMIN', 'MANAGER', 'VIEWER']}>
-                <ReportsPage />
-              </ProtectedRoute>
+              <LicenseGuard>
+                <ProtectedRoute>
+                  <AppShell />
+                </ProtectedRoute>
+              </LicenseGuard>
             }
-          />
-          <Route
-            path="reports/sales"
-            element={
-              <ProtectedRoute requiredRole={['ADMIN', 'MANAGER', 'VIEWER']}>
-                <SalesReportPage />
-              </ProtectedRoute>
-            }
-          />
+          >
+            {/* Dashboard - Verifica se perfil está configurado */}
+            <Route index element={<RootRedirect />} />
+            <Route path="dashboard" element={<DashboardPage />} />
 
-          {/* Configurações */}
-          <Route
-            path="settings"
-            element={
-              <ProtectedRoute requiredRole={['ADMIN']}>
-                <SettingsPage />
-              </ProtectedRoute>
-            }
-          />
+            {/* Motopeças */}
+            <Route path="service-orders" element={<ServiceOrdersPage />} />
+            <Route path="warranties" element={<WarrantiesPage />} />
 
-          {/* Alertas */}
-          <Route path="alerts" element={<AlertsPage />} />
+            {/* PDV */}
+            <Route path="pdv" element={<PDVPage />} />
 
-          {/* Tutoriais / Ajuda */}
-          <Route path="tutorials" element={<TutorialsPage />} />
+            {/* Clientes */}
+            <Route path="customers" element={<CustomersPage />} />
 
-          {/* Fallback */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Route>
-      </Routes>
+            {/* Produtos */}
+            <Route path="products" element={<ProductsPage />} />
+            <Route path="products/new" element={<ProductFormPage />} />
+            <Route path="products/:id" element={<ProductFormPage />} />
+            <Route path="products/categories" element={<CategoriesPage />} />
+
+            {/* Estoque */}
+            <Route path="stock" element={<StockPage />} />
+            <Route path="stock/entry" element={<StockEntryPage />} />
+            <Route path="stock/movements" element={<StockMovementsPage />} />
+            <Route path="stock/expiration" element={<ExpirationPage />} />
+
+            {/* Funcionários */}
+            <Route
+              path="employees"
+              element={
+                <ProtectedRoute requiredRole={['ADMIN']}>
+                  <EmployeesPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Fornecedores */}
+            <Route
+              path="suppliers"
+              element={
+                <ProtectedRoute requiredRole={['ADMIN', 'MANAGER']}>
+                  <SuppliersPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Caixa */}
+            <Route path="cash" element={<CashControlPage />} />
+
+            {/* Relatórios */}
+            <Route
+              path="reports"
+              element={
+                <ProtectedRoute requiredRole={['ADMIN', 'MANAGER', 'VIEWER']}>
+                  <ReportsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="reports/sales"
+              element={
+                <ProtectedRoute requiredRole={['ADMIN', 'MANAGER', 'VIEWER']}>
+                  <SalesReportPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Configurações */}
+            <Route
+              path="settings"
+              element={
+                <ProtectedRoute requiredRole={['ADMIN']}>
+                  <SettingsPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Alertas */}
+            <Route path="alerts" element={<AlertsPage />} />
+
+            {/* Tutoriais / Ajuda */}
+            <Route path="tutorials" element={<TutorialsPage />} />
+
+            {/* Fallback */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Route>
+        </Routes>
+      </GlobalSetupGate>
     </SessionGuard>
   );
 };

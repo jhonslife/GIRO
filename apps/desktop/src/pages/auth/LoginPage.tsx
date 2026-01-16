@@ -114,7 +114,9 @@ export const LoginPage: FC = () => {
             <img src="/logo.png" alt="GIRO" className="h-16 w-16 rounded-xl" />
           </div>
           <CardTitle className="text-2xl">GIRO</CardTitle>
-          <CardDescription>Digite seu PIN para entrar</CardDescription>
+          <CardDescription>
+            <p>Digite seu PIN para entrar</p>
+          </CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-6">

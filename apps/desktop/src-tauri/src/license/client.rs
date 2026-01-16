@@ -51,6 +51,7 @@ pub struct LicenseInfo {
     pub support_expires_at: Option<DateTime<Utc>>,
     pub is_lifetime: Option<bool>,
     pub can_offline: Option<bool>,
+    pub has_admin: Option<bool>,
 }
 
 /// Activation request
@@ -60,6 +61,15 @@ struct ActivateRequest {
     machine_name: Option<String>,
     os_version: Option<String>,
     cpu_info: Option<String>,
+}
+
+/// Admin update request
+#[derive(Debug, Serialize)]
+pub struct UpdateAdminRequest {
+    pub name: String,
+    pub email: String,
+    pub phone: String,
+    pub pin: String,
 }
 
 /// Validation request
@@ -184,6 +194,7 @@ impl LicenseClient {
             is_lifetime: bool,
             can_offline: bool,
             message: String,
+            has_admin: bool,
         }
 
         let api_resp = response
@@ -205,6 +216,7 @@ impl LicenseClient {
             support_expires_at: api_resp.support_expires_at,
             is_lifetime: Some(api_resp.is_lifetime),
             can_offline: Some(api_resp.can_offline),
+            has_admin: Some(api_resp.has_admin),
         })
     }
 
@@ -264,6 +276,7 @@ impl LicenseClient {
             is_lifetime: bool,
             can_offline: bool,
             message: String,
+            has_admin: bool,
         }
 
         let api_resp = response
@@ -285,6 +298,7 @@ impl LicenseClient {
             support_expires_at: api_resp.support_expires_at,
             is_lifetime: Some(api_resp.is_lifetime),
             can_offline: Some(api_resp.can_offline),
+            has_admin: Some(api_resp.has_admin),
         })
     }
 
@@ -427,6 +441,35 @@ impl LicenseClient {
             .map_err(|e| format!("Erro ao processar resposta: {}", e))?;
 
         Ok(time_resp.server_time)
+    }
+
+    /// Update admin data (Sync)
+    pub async fn update_admin(
+        &self,
+        license_key: &str,
+        data: UpdateAdminRequest,
+    ) -> Result<(), String> {
+        let url = format!(
+            "{}/api/v1/licenses/{}/admin",
+            self.config.server_url, license_key
+        );
+
+        let response = self
+            .client
+            .post(&url)
+            .header("X-API-Key", &self.config.api_key)
+            .json(&data)
+            .send()
+            .await
+            .map_err(|e| format!("Erro ao conectar com servidor: {}", e))?;
+
+        if !response.status().is_success() {
+            let error_text = response.text().await.unwrap_or_default();
+            tracing::error!("[LicenseClient] Erro ao atualizar admin: {}", error_text);
+            return Err("Falha ao atualizar dados do administrador no servidor".to_string());
+        }
+
+        Ok(())
     }
 }
 

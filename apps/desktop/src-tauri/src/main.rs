@@ -16,7 +16,8 @@ fn get_database_path() -> PathBuf {
         .join("GIRO");
 
     std::fs::create_dir_all(&app_data).ok();
-    app_data.join("giro.db")
+    // RADICAL TEST: Change DB name to ensure fresh state
+    app_data.join("giro_debug_reconstructed_v1.db")
 }
 
 #[tokio::main]
@@ -29,9 +30,10 @@ async fn main() {
         .init();
 
     tracing::info!("Iniciando GIRO Desktop v{}", env!("CARGO_PKG_VERSION"));
+    tracing::error!("🚀🚀🚀 VERIFICATION: IF YOU SEE THIS, THIS IS THE RECONSTRUCTED BINARY 🚀🚀🚀");
 
     let db_path = get_database_path();
-    tracing::info!("Banco de dados: {:?}", db_path);
+    tracing::info!("DATABASE VERIFICATION PATH: {:?}", db_path);
 
     let db = DatabaseManager::new(db_path.to_str().unwrap())
         .await
@@ -311,6 +313,7 @@ async fn main() {
             commands::sync_metrics,
             commands::get_server_time,
             commands::restore_license,
+            commands::update_license_admin,
         ])
         .run(tauri::generate_context!())
         .expect("Erro ao executar aplicação Tauri");

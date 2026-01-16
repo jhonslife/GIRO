@@ -4,6 +4,7 @@
 
 use crate::license::LicenseInfo;
 use crate::license::MetricsPayload;
+use crate::license::UpdateAdminRequest;
 use crate::AppState;
 use tauri::State;
 
@@ -148,4 +149,16 @@ pub async fn restore_license(state: State<'_, AppState>) -> Result<Option<String
     let license_key = client.restore(hardware_id).await?;
 
     Ok(license_key)
+}
+
+#[tauri::command]
+pub async fn update_license_admin(
+    license_key: String,
+    data: UpdateAdminRequest,
+    state: State<'_, AppState>,
+) -> Result<(), String> {
+    let client = &state.license_client;
+    let normalized_key = license_key.trim().to_uppercase().replace(" ", "");
+
+    client.update_admin(&normalized_key, data).await
 }
