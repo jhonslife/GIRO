@@ -1,6 +1,6 @@
 {
   "name": "@mercearias/database",
-  "version": "0.1.0",
+  "version": "1.0.8",
   "description": "Database schema, migrations e types para o sistema Mercearias",
   "private": true,
   "type": "module",
