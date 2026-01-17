@@ -64,7 +64,7 @@ struct ActivateRequest {
 }
 
 /// Admin update request
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct UpdateAdminRequest {
     pub name: String,
     pub email: String,
