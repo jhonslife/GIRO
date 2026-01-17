@@ -749,6 +749,177 @@ export async function getLastBackupDate(): Promise<string | null> {
   return tauriInvoke<string | null>('get_last_backup_date');
 }
 
+// ────────────────────────────────────────────────────────────────────────────
+// CLOUD BACKUP (License Server API)
+// ────────────────────────────────────────────────────────────────────────────
+
+const LICENSE_SERVER_URL = 'https://giro-license-server-production.up.railway.app/api/v1';
+
+export type CloudBackupMeta = {
+  id: string;
+  license_id: string;
+  file_key: string;
+  file_size_bytes: number;
+  checksum: string | null;
+  description: string | null;
+  created_at: string;
+};
+
+export type CloudBackupListResponse = {
+  backups: CloudBackupMeta[];
+  total: number;
+};
+
+export type CloudBackupUploadResponse = {
+  id: string;
+  file_key: string;
+  message: string;
+};
+
+/**
+ * Get the JWT token from auth store for API calls
+ */
+function getAuthToken(): string | null {
+  // Token might be stored in localStorage or auth store
+  if (typeof window !== 'undefined') {
+    return window.localStorage.getItem('backup_token') || null;
+  }
+  return null;
+}
+
+/**
+ * Set the JWT token for cloud backup API calls
+ */
+export function setCloudBackupToken(token: string): void {
+  if (typeof window !== 'undefined') {
+    window.localStorage.setItem('backup_token', token);
+  }
+}
+
+/**
+ * Upload local backup to cloud server
+ */
+export async function uploadBackupToCloud(backupData: Blob | ArrayBuffer): Promise<CloudBackupUploadResponse> {
+  const token = getAuthToken();
+  if (!token) {
+    throw new Error('Não autenticado. Faça login no servidor de licenças primeiro.');
+  }
+
+  const response = await fetch(`${LICENSE_SERVER_URL}/backups`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/octet-stream',
+    },
+    body: backupData,
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.message || `Erro ao enviar backup: ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * List all cloud backups for the current user
+ */
+export async function listCloudBackups(): Promise<CloudBackupListResponse> {
+  const token = getAuthToken();
+  if (!token) {
+    throw new Error('Não autenticado. Faça login no servidor de licenças primeiro.');
+  }
+
+  const response = await fetch(`${LICENSE_SERVER_URL}/backups`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.message || `Erro ao listar backups: ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * Get metadata for a specific cloud backup
+ */
+export async function getCloudBackup(backupId: string): Promise<CloudBackupMeta> {
+  const token = getAuthToken();
+  if (!token) {
+    throw new Error('Não autenticado. Faça login no servidor de licenças primeiro.');
+  }
+
+  const response = await fetch(`${LICENSE_SERVER_URL}/backups/${backupId}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.message || `Erro ao obter backup: ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * Delete a cloud backup
+ */
+export async function deleteCloudBackup(backupId: string): Promise<void> {
+  const token = getAuthToken();
+  if (!token) {
+    throw new Error('Não autenticado. Faça login no servidor de licenças primeiro.');
+  }
+
+  const response = await fetch(`${LICENSE_SERVER_URL}/backups/${backupId}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.message || `Erro ao excluir backup: ${response.statusText}`);
+  }
+}
+
+/**
+ * Create local backup and upload to cloud
+ * Combines createBackup() with uploadBackupToCloud()
+ */
+export async function syncBackupToCloud(): Promise<CloudBackupUploadResponse | null> {
+  try {
+    // Create local backup first
+    const localResult = await createBackup();
+    
+    if (!localResult.success || !localResult.data) {
+      console.error('[Backup] Failed to create local backup:', localResult.error);
+      return null;
+    }
+
+    // Read the backup file and upload to cloud
+    // Note: This requires file system access which Tauri handles
+    console.log('[Backup] Local backup created:', localResult.data);
+    
+    // For now, we just return null - full implementation needs file reading
+    // In production, use Tauri's fs API to read the file and upload
+    console.log('[Backup] Cloud sync not yet fully implemented - local backup saved');
+    return null;
+  } catch (error) {
+    console.error('[Backup] Sync failed:', error);
+    throw error;
+  }
+}
+
 // Seeding
 export async function seedDatabase(): Promise<string> {
   return tauriInvoke<string>('seed_database');
