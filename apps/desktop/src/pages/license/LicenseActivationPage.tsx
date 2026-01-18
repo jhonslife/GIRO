@@ -50,10 +50,17 @@ export function LicenseActivationPage() {
       try {
         const info = await activateLicense(key);
 
-        // Store the license
+        // Store the license in Zustand
         storeLicenseKey(key);
         setLicenseInfo(info);
         updateLastValidation();
+
+        // Also save to settings table for LicenseSettings page compatibility
+        try {
+          await setSetting("system.license_key", key, "string");
+        } catch (err) {
+          console.error("Falha ao salvar license key nas configurações:", err);
+        }
 
         // Sincronizar dados do proprietário se existirem na licença
         if (info.company_name) {
@@ -72,7 +79,7 @@ export function LicenseActivationPage() {
         });
 
         console.log(
-          "[LicenseActivationPage] Activation success, redirecting in 1.5s..."
+          "[LicenseActivationPage] Activation success, redirecting in 1.5s...",
         );
 
         // If server says no admin exists, we MUST go to setup
@@ -81,7 +88,7 @@ export function LicenseActivationPage() {
 
         setTimeout(() => {
           console.log(
-            `[LicenseActivationPage] Executing navigate to ${targetRoute}`
+            `[LicenseActivationPage] Executing navigate to ${targetRoute}`,
           );
           navigate(targetRoute, { replace: true });
         }, 1500);
@@ -109,7 +116,7 @@ export function LicenseActivationPage() {
       storeLicenseKey,
       toast,
       updateLastValidation,
-    ]
+    ],
   );
 
   const validateStoredLicense = useCallback(
@@ -131,7 +138,7 @@ export function LicenseActivationPage() {
         setIsValidating(false);
       }
     },
-    [navigate, setLicenseInfo, setState, updateLastValidation]
+    [navigate, setLicenseInfo, setState, updateLastValidation],
   );
 
   // Check for stored license on mount
@@ -163,7 +170,7 @@ export function LicenseActivationPage() {
         const store = useLicenseStore.getState();
         const currentKey = store.licenseKey;
         console.log(
-          `[LicenseActivationPage] Post-hydration: key=${currentKey}, state=${store.state}`
+          `[LicenseActivationPage] Post-hydration: key=${currentKey}, state=${store.state}`,
         );
 
         if (currentKey) {
@@ -172,7 +179,7 @@ export function LicenseActivationPage() {
           // Check if we are within grace period (7 days) OR if already valid
           if (store.isWithinGracePeriod() || store.state === "valid") {
             console.log(
-              "[LicenseActivationPage] Valid license or within grace period, proceeding to root"
+              "[LicenseActivationPage] Valid license or within grace period, proceeding to root",
             );
             clearTimeout(timeoutId);
             navigate("/", { replace: true });
@@ -181,7 +188,7 @@ export function LicenseActivationPage() {
 
           // Not in grace period and not valid, MUST validate online
           console.log(
-            "[LicenseActivationPage] Triggering online validation..."
+            "[LicenseActivationPage] Triggering online validation...",
           );
           await validateStoredLicense(currentKey);
         } else {
@@ -190,7 +197,7 @@ export function LicenseActivationPage() {
             if (restoredKey) {
               console.log(
                 "[LicenseActivationPage] License restored!",
-                restoredKey
+                restoredKey,
               );
               toast({
                 title: "Licença Restaurada",
@@ -217,7 +224,7 @@ export function LicenseActivationPage() {
       } catch (error) {
         console.error(
           "[LicenseActivationPage] Failed to initialize license check:",
-          error
+          error,
         );
         setState("error");
         setIsValidating(false);
@@ -268,7 +275,7 @@ export function LicenseActivationPage() {
   // Loading state while validating stored license
   if (isValidating) {
     console.log(
-      `[LicenseActivationPage] Showing loading screen (isValidating=${isValidating})`
+      `[LicenseActivationPage] Showing loading screen (isValidating=${isValidating})`,
     );
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 to-primary/10">
