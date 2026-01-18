@@ -21,6 +21,7 @@ import { useLicenseStore } from "@/stores/license-store";
 import { CheckCircle2, Loader2, Shield, UserPlus } from "lucide-react";
 import { useEffect, useState, type FC } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface FormData {
   name: string;
@@ -56,6 +57,7 @@ export const InitialSetupPage: FC = () => {
 
   const { login } = useAuthStore();
   const createAdmin = useCreateFirstAdmin();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     // No mount check if admin exists - if they are here manually we should probably let them work
@@ -172,6 +174,11 @@ export const InitialSetupPage: FC = () => {
         console.error("[Setup] Failed to sync admin to license server:", e);
         // Não impedir o progresso, apenas logar o erro
       }
+
+      // CRITICAL: Invalidate the has-admin query so GlobalSetupGate knows an admin now exists
+      // This prevents the race condition where it redirects back to /setup
+      await queryClient.invalidateQueries({ queryKey: ["has-admin"] });
+      console.log("[Setup] has-admin query invalidated");
 
       setStep("success");
 
