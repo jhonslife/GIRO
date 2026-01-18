@@ -337,7 +337,7 @@ Remove-Item "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\GIRO" -Recurse -
 
 Se está desinstalando por problemas técnicos, considere:
 
-- 📧 Contatar suporte: suporte@arkheion.com
+- 📧 Contatar suporte: suporte@arkheion-tiktrend.com.br
 - 💬 Chat: Sistema pode ter solução mais simples
 - 🔧 Diagnóstico: Pode ser configuração apenas
 
@@ -347,7 +347,7 @@ Se está desinstalando por problemas técnicos, considere:
 - ✅ Com backup = Restaurável
 - 📞 Contate suporte para orientação
 ## Problemas na remoção?
-- 📧 Email: suporte@arkheion.com
+- 📧 Email: suporte@arkheion-tiktrend.com.br
 - 📄 Anexar: Capturas de tela do erro
 - 📝 Descrever: Passos realizados
 

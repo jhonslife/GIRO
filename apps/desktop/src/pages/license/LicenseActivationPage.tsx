@@ -377,7 +377,7 @@ export function LicenseActivationPage() {
               Comprar licença
             </a>
             <a
-              href="mailto:suporte@arkheion.com.br"
+              href="mailto:suporte@arkheion-tiktrend.com.br"
               className="hover:text-primary underline-offset-4 hover:underline"
             >
               Precisa de ajuda? Contate o suporte
