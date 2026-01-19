@@ -37,6 +37,7 @@ vi.mock("@/lib/tauri", () => ({
   validateLicense: vi.fn(),
   setSetting: vi.fn(),
   getStoredLicense: vi.fn().mockResolvedValue(null),
+  restoreLicense: vi.fn(),
 }));
 
 const queryWrapper = createQueryWrapper();
@@ -67,7 +68,7 @@ describe("LicenseActivationPage", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByRole("heading", { name: "Ativar Licença" })
+        screen.getByRole("heading", { name: "Ativar Licença" }),
       ).toBeInTheDocument();
     });
     expect(screen.getByText("MOCK-HWID-123")).toBeInTheDocument();
@@ -101,7 +102,7 @@ describe("LicenseActivationPage", () => {
     await waitFor(() => {
       expect(tauri.activateLicense).toHaveBeenCalledWith("AAAA-BBBB-CCCC-DDDD");
       expect(mockToast).toHaveBeenCalledWith(
-        expect.objectContaining({ title: "Licença Ativada!" })
+        expect.objectContaining({ title: "Licença Ativada!" }),
       );
     });
 
@@ -109,7 +110,7 @@ describe("LicenseActivationPage", () => {
       () => {
         expect(mockNavigate).toHaveBeenCalled();
       },
-      { timeout: 3000 }
+      { timeout: 3000 },
     );
   });
 
@@ -132,7 +133,7 @@ describe("LicenseActivationPage", () => {
       () => {
         expect(mockNavigate).toHaveBeenCalledWith("/setup", { replace: true });
       },
-      { timeout: 3000 }
+      { timeout: 3000 },
     );
   });
 
@@ -155,7 +156,7 @@ describe("LicenseActivationPage", () => {
       () => {
         expect(mockNavigate).toHaveBeenCalledWith("/", { replace: true });
       },
-      { timeout: 3000 }
+      { timeout: 3000 },
     );
   });
 
@@ -175,7 +176,7 @@ describe("LicenseActivationPage", () => {
         expect.objectContaining({
           title: "Erro na Ativação",
           variant: "destructive",
-        })
+        }),
       );
     });
   });

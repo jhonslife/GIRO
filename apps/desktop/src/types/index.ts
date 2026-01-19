@@ -453,9 +453,10 @@ export interface CloseCashSessionInput {
 }
 
 export interface CashMovementInput {
-  type: 'WITHDRAWAL' | 'DEPOSIT';
+  sessionId: string;
+  movementType: 'SUPPLY' | 'BLEED' | 'OPENING' | 'CLOSING';
   amount: number;
-  description: string;
+  description?: string;
 }
 
 // License Types

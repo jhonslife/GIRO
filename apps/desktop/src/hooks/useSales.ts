@@ -26,6 +26,7 @@ import type {
   OpenCashSessionInput,
   SaleFilter,
 } from '@/types';
+import { cashSessionKeys } from './usePDV';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { format, startOfWeek, startOfMonth } from 'date-fns';
 
@@ -41,12 +42,6 @@ export const saleKeys = {
   detail: (id: string) => [...saleKeys.details(), id] as const,
   today: () => [...saleKeys.all, 'today'] as const,
   dailyTotal: () => [...saleKeys.all, 'dailyTotal'] as const,
-};
-
-export const cashSessionKeys = {
-  all: ['cashSession'] as const,
-  current: () => [...cashSessionKeys.all, 'current'] as const,
-  history: () => [...cashSessionKeys.all, 'history'] as const,
 };
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -214,8 +209,7 @@ export function useCloseCashSession() {
     onSuccess: (session) => {
       setCashSession(null);
       queryClient.invalidateQueries({ queryKey: cashSessionKeys.current() });
-      queryClient.invalidateQueries({ queryKey: cashSessionKeys.history() });
-
+      
       const diff = session.difference ?? 0;
       if (Math.abs(diff) < 0.01) {
         success('Caixa fechado', 'Fechamento conferido sem diferença');
@@ -240,8 +234,10 @@ export function useCashMovement() {
     mutationFn: (input: CashMovementInput) => addCashMovement(input),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: cashSessionKeys.current() });
+      queryClient.invalidateQueries({ queryKey: cashSessionKeys.summary(variables.sessionId) });
+      queryClient.invalidateQueries({ queryKey: cashSessionKeys.movements(variables.sessionId) });
 
-      const action = variables.type === 'WITHDRAWAL' ? 'Sangria' : 'Suprimento';
+      const action = variables.movementType === 'BLEED' ? 'Sangria' : 'Suprimento';
       success(action, `${action} de R$ ${variables.amount.toFixed(2)} registrado`);
     },
     onError: (err) => {

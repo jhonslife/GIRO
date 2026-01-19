@@ -8,6 +8,7 @@ import type {
   Alert,
   CashMovement,
   CashMovementInput,
+  CashMovementType,
   CashSession,
   CashSessionSummary,
   Category,
@@ -180,10 +181,18 @@ const webMockInvoke = async <T>(command: string, args?: Record<string, unknown>)
         throw new Error('Nenhuma sessão aberta para movimentar');
       }
 
+      // Map movementType (SUPPLY/BLEED) to CashMovement type for UI compatibility
+      const typeMap: Record<string, CashMovementType> = {
+        'SUPPLY': 'DEPOSIT',
+        'BLEED': 'WITHDRAWAL',
+        'OPENING': 'OPENING',
+        'CLOSING': 'CLOSING',
+      };
+
       const movement: CashMovement = {
         id: randomId('cash-movement'),
         sessionId: session.id,
-        type: input.type,
+        type: typeMap[input.movementType] || 'ADJUSTMENT',
         amount: input.amount,
         description: input.description,
         employeeId: session.employeeId,
@@ -475,7 +484,14 @@ export async function createEmployee(
 ): Promise<Employee> {
   const employeeId = useAuthStore.getState().employee?.id;
   if (!employeeId) throw new Error('Operação requer um funcionário autenticado');
-  return tauriInvoke<Employee>('create_employee', { input, employee_id: employeeId });
+
+  // Backend CreateEmployee struct doesn't have isActive/permissions
+  const { isActive, permissions, ...backendInput } = input;
+
+  return tauriInvoke<Employee>('create_employee', {
+    input: backendInput,
+    employee_id: employeeId,
+  });
 }
 
 export async function updateEmployee(id: string, input: Partial<Employee>): Promise<Employee> {
@@ -597,8 +613,15 @@ export async function refreshAlerts(): Promise<void> {
 // SUPPLIERS
 // ────────────────────────────────────────────────────────────────────────────
 
-export async function getSuppliers(): Promise<Supplier[]> {
-  return tauriInvoke<Supplier[]>('get_suppliers');
+export async function getSuppliers(filter?: {
+  search?: string;
+  activeOnly?: boolean;
+}): Promise<Supplier[]> {
+  return tauriInvoke<Supplier[]>('get_suppliers', { filter });
+}
+
+export async function getSupplierById(id: string): Promise<Supplier | null> {
+  return tauriInvoke<Supplier | null>('get_supplier_by_id', { id });
 }
 
 export async function createSupplier(
@@ -606,7 +629,14 @@ export async function createSupplier(
 ): Promise<Supplier> {
   const employeeId = useAuthStore.getState().employee?.id;
   if (!employeeId) throw new Error('Operação requer um funcionário autenticado');
-  return tauriInvoke<Supplier>('create_supplier', { input, employee_id: employeeId });
+
+  // Backend CreateSupplier struct doesn't have isActive
+  const { isActive, ...backendInput } = input;
+
+  return tauriInvoke<Supplier>('create_supplier', {
+    input: backendInput,
+    employee_id: employeeId,
+  });
 }
 
 export async function updateSupplier(id: string, input: Partial<Supplier>): Promise<Supplier> {

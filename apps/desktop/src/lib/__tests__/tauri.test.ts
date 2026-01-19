@@ -38,6 +38,25 @@ describe('tauri.ts', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.clear();
+    // Seed mock DB for tests that expect an employee/admin
+    localStorage.setItem(
+      '__giro_web_mock_db__',
+      JSON.stringify({
+        employees: [
+          {
+            id: 'admin-1',
+            name: 'Admin',
+            role: 'ADMIN',
+            pin: '8899',
+            isActive: true,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+        ],
+        currentCashSession: null,
+        cashSessionHistory: [],
+      })
+    );
     setTauriEnv(false);
   });
 
@@ -136,13 +155,15 @@ describe('tauri.ts', () => {
       });
 
       await tauriLib.addCashMovement({
-        type: 'DEPOSIT',
+        sessionId: session.id,
+        movementType: 'SUPPLY',
         amount: 50,
         description: 'Suprimento',
       });
 
       await tauriLib.addCashMovement({
-        type: 'WITHDRAWAL',
+        sessionId: session.id,
+        movementType: 'BLEED',
         amount: 30,
         description: 'Sangria',
       });
