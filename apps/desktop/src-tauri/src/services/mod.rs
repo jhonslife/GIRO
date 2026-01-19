@@ -9,6 +9,7 @@ pub mod mobile_handlers;
 pub mod mobile_protocol;
 pub mod mobile_server;
 pub mod mobile_session;
+pub mod setup_checks;
 
 pub use backup_service::*;
 pub use mdns_service::*;

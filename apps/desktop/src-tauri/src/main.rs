@@ -60,6 +60,10 @@ async fn main() {
     let hardware_id = generate_hardware_id();
     tracing::info!("Hardware ID: {}", hardware_id);
 
+    // AUTOMATED SETUP CHECK
+    // Verifies firewall rules and critical configurations
+    giro_lib::services::setup_checks::check_network_setup().await;
+
     // License server configuration (from env or default)
     // Em produção (release), usa o servidor da Railway. Em dev, usa localhost ou env var.
     // IMPORTANTE: A URL base NÃO deve incluir /api/v1 - o LicenseClient adiciona isso

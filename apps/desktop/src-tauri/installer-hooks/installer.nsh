@@ -58,6 +58,20 @@
     WriteRegStr HKLM "Software\GIRO" "InstallPath" "$INSTDIR"
     WriteRegStr HKLM "Software\GIRO" "Version" "${VERSION}"
     WriteRegStr HKLM "Software\GIRO" "DataPath" "$LOCALAPPDATA\GIRO"
+
+    ; ═══════════════════════════════════════════════════════════════════════════
+    ; AUTO CONFIGURE FIREWALL
+    ; ═══════════════════════════════════════════════════════════════════════════
+    DetailPrint "Configurando Firewall do Windows..."
+
+    ; 1. Allow Port 3847 (TCP) - Private & Public
+    nsExec::ExecToLog 'netsh advfirewall firewall add rule name="GIRO Mobile Sync" dir=in action=allow protocol=TCP localport=3847 profile=private,public'
+
+    ; 2. Allow Application Executable - Private & Public
+    nsExec::ExecToLog 'netsh advfirewall firewall add rule name="GIRO Desktop App" dir=in action=allow program="$INSTDIR\giro-desktop.exe" profile=private,public'
+
+    DetailPrint "✓ Firewall configurado!"
+
     
     ; Criar entrada no menu Iniciar
     CreateDirectory "$SMPROGRAMS\GIRO"
@@ -201,6 +215,14 @@
     
     ; Limpar registro de desinstalação
     DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\{com.arkheion.giro}"
+
+    ; ═══════════════════════════════════════════════════════════════════════════
+    ; REMOVE FIREWALL RULES
+    ; ═══════════════════════════════════════════════════════════════════════════
+    DetailPrint "Removendo regras do Firewall..."
+    nsExec::ExecToLog 'netsh advfirewall firewall delete rule name="GIRO Mobile Sync"'
+    nsExec::ExecToLog 'netsh advfirewall firewall delete rule name="GIRO Desktop App"'
+
 !macroend
 
 !macro customUnInstallSuccess
