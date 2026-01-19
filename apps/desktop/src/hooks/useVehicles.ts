@@ -5,6 +5,8 @@ import {
   getCachedModels,
   getCachedSearch,
   getCachedYears,
+  markFullSyncComplete,
+  needsSync,
   setCachedBrands,
   setCachedModels,
   setCachedSearch,
@@ -98,23 +100,44 @@ export function useVehicles(options: UseVehiclesOptions = {}): UseVehiclesReturn
     };
   }, [selectedBrand, selectedModel, selectedYear]);
 
-  // Carregar marcas (cache-first)
+  // Carregar marcas (cache-first com sync inteligente)
   const loadBrands = useCallback(async () => {
     // Tentar cache primeiro
     const cached = getCachedBrands();
+
     if (cached && cached.length > 0) {
       setBrands(cached);
+
+      // Se cache é válido (< 7 dias), não precisa recarregar
+      if (!needsSync()) {
+        return;
+      }
+
+      // Cache existe mas precisa sincronizar (> 7 dias)
+      // Recarregar em background sem mostrar loading
+      console.log('[useVehicles] Cache existe, atualizando em background...');
+      invoke<VehicleBrand[]>('get_vehicle_brands')
+        .then((result) => {
+          setBrands(result);
+          setCachedBrands(result);
+          markFullSyncComplete();
+          console.log('[useVehicles] Marcas atualizadas em background');
+        })
+        .catch((err) => {
+          console.warn('[useVehicles] Falha na sync de background:', err);
+        });
       return;
     }
 
+    // Sem cache, carregar normalmente
     setIsLoadingBrands(true);
     setError(null);
 
     try {
       const result = await invoke<VehicleBrand[]>('get_vehicle_brands');
       setBrands(result);
-      // Salvar no cache
       setCachedBrands(result);
+      markFullSyncComplete();
     } catch (err) {
       console.error('Erro ao carregar marcas:', err);
       setError('Não foi possível carregar as marcas de veículos');
