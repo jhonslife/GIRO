@@ -36,9 +36,9 @@ export const supplierKeys = {
  * Lista todos os fornecedores ativos
  */
 export function useSuppliers() {
-  return useQuery({
+  return useQuery<Supplier[]>({
     queryKey: supplierKeys.lists(),
-    queryFn: getSuppliers,
+    queryFn: () => getSuppliers(),
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 }
@@ -47,9 +47,9 @@ export function useSuppliers() {
  * Lista todos os fornecedores (ativos e inativos)
  */
 export function useAllSuppliers() {
-  return useQuery({
+  return useQuery<Supplier[]>({
     queryKey: supplierKeys.listAll(),
-    queryFn: getAllSuppliers,
+    queryFn: () => getAllSuppliers(),
     staleTime: 1000 * 60 * 5,
   });
 }
@@ -58,9 +58,9 @@ export function useAllSuppliers() {
  * Lista apenas fornecedores inativos
  */
 export function useInactiveSuppliers() {
-  return useQuery({
+  return useQuery<Supplier[]>({
     queryKey: supplierKeys.listInactive(),
-    queryFn: getInactiveSuppliers,
+    queryFn: () => getInactiveSuppliers(),
     staleTime: 1000 * 60 * 5,
   });
 }

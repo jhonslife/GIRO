@@ -27,8 +27,8 @@ import {
   useOpenCashSession,
 } from "@/hooks/usePDV";
 import { useCashMovement } from "@/hooks/useSales";
-import { invoke } from "@/lib/tauri";
 import { cn, formatCurrency } from "@/lib/utils";
+
 import { useAuthStore } from "@/stores/auth-store";
 import type { CashMovement } from "@/types";
 import { format } from "date-fns";
