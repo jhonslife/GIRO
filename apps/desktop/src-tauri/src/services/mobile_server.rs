@@ -91,7 +91,9 @@ impl MobileServer {
             config,
             pool: pool.clone(),
             session_manager: SessionManager::new(
-                std::env::var("JWT_SECRET").unwrap_or_else(|_| "giro-secret-key".to_string()),
+                std::env::var("JWT_SECRET").expect(
+                    "Environment variable JWT_SECRET is required. Set JWT_SECRET in the environment.",
+                ),
             ),
             connections: Arc::new(RwLock::new(HashMap::new())),
             event_tx,

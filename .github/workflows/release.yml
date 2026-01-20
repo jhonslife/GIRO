@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 env:
   CARGO_TERM_COLOR: always
@@ -15,6 +15,8 @@ env:
 jobs:
   release:
     name: Build & Release
+    permissions:
+      contents: write
     strategy:
       fail-fast: false
       matrix:
@@ -67,11 +69,23 @@ jobs:
 
       - name: Install dependencies (Desktop)
         working-directory: apps/desktop
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint (Desktop)
+        working-directory: apps/desktop
+        run: pnpm run lint
+
+      - name: Typecheck (Desktop)
+        working-directory: apps/desktop
+        run: pnpm run typecheck
+
+      - name: Unit tests (Desktop)
+        working-directory: apps/desktop
+        run: pnpm run test:run
 
       - name: Install dependencies (Database)
         working-directory: packages/database
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Generate Prisma Client
         working-directory: packages/database
@@ -80,6 +94,13 @@ jobs:
       - name: Build Frontend
         working-directory: apps/desktop
         run: pnpm build
+
+      - name: Validate required secrets
+        run: |
+          if [ -z "${{ secrets.GH_TOKEN }}" ]; then echo "GH_TOKEN (secret) is missing"; exit 1; fi
+          if [ -z "${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}" ]; then echo "TAURI_SIGNING_PRIVATE_KEY (secret) is missing"; exit 1; fi
+          if [ -z "${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}" ]; then echo "TAURI_SIGNING_PRIVATE_KEY_PASSWORD (secret) is missing"; exit 1; fi
+          if [ -z "${{ secrets.LICENSE_API_KEY }}" ]; then echo "LICENSE_API_KEY (secret) is missing"; exit 1; fi
 
       - name: Build Desktop App
         uses: tauri-apps/tauri-action@v0
@@ -126,6 +147,8 @@ jobs:
     name: Update Updater Manifest
     needs: release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout
@@ -143,8 +166,8 @@ jobs:
           git config user.name github-actions[bot]
           git config user.email github-actions[bot]@users.noreply.github.com
           git add .
-          git commit -m "chore: update manifest for ${{ github.ref_name }}" || true
-          git push || true
+          git commit -m "chore: update manifest for ${{ github.ref_name }}" || echo "no changes to commit"
+          git push
 
       - name: Update latest.json
         run: |
@@ -174,5 +197,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add latest.json
-          git commit -m "chore: update latest.json for ${{ github.ref_name }}" || true
-          git push || true
+          git commit -m "chore: update latest.json for ${{ github.ref_name }}" || echo "no changes to commit"
+          git push

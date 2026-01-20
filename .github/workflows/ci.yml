@@ -2,6 +2,69 @@ name: CI
 
 on:
   push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  node:
+    name: Node.js & Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'pnpm'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Dependency audit (pnpm)
+        run: pnpm audit --audit-level=moderate || true
+
+      - name: Run unit tests (frontend)
+        run: pnpm -w run test:run
+
+      - name: Run vitest coverage
+        run: pnpm -w run test:coverage || true
+
+  rust:
+    name: Rust check (hardware)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+
+      - name: Cargo check hardware module
+        run: cargo check --manifest-path apps/desktop/src-tauri/Cargo.toml --locked
+
+  secret-scan:
+    name: Secret scan (trufflehog)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run TruffleHog secret scan
+        uses: trufflesecurity/trufflehog-action@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+name: CI
+
+on:
+  push:
     branches: [main, develop]
   pull_request:
     branches: [main]
@@ -133,3 +196,25 @@ jobs:
       - name: Build Backend
         working-directory: apps/desktop/src-tauri
         run: cargo build --release
+
+  cargo-audit:
+    name: Cargo Audit
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Install cargo-audit
+        run: |
+          cargo install cargo-audit --force
+
+      - name: Run cargo audit
+        working-directory: apps/desktop/src-tauri
+        run: |
+          cargo audit || true

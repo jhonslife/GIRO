@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/home/jhonslife/CICLOGIRO/GIRO/logs/.94b057f6e293a0797463ef2b02b6eccdba988a8e-audit.json",
+    "files": [
+        {
+            "date": 1768935154039,
+            "name": "/home/jhonslife/CICLOGIRO/GIRO/logs/mcp-puppeteer-2026-01-20.log",
+            "hash": "e0d6dcb63825dab535654df494574eb68a4abcaa080b235250c1c6e8871e906e"
+        }
+    ],
+    "hashType": "sha256"
+}

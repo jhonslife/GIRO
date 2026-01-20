@@ -5,7 +5,8 @@
 // ════════════════════════════════════════════════════════════════════════════
 
 import { EmployeeRole, PrismaClient, ProductUnit, SettingType } from '@prisma/client';
-import { createHash } from 'crypto';
+import argon2 from 'argon2';
+import { createHmac } from 'crypto';
 
 const prisma = new PrismaClient();
 
@@ -14,11 +15,18 @@ const prisma = new PrismaClient();
 // ════════════════════════════════════════════════════════════════════════════
 
 function hashPin(pin: string): string {
-  return createHash('sha256').update(pin).digest('hex');
+  // Deterministic HMAC-SHA256 for PINs to allow lookup by equality
+  const key = process.env.PIN_HMAC_KEY || '';
+  if (!key) {
+    // Fallback to sha256-like behavior if no key provided (not ideal)
+    return createHmac('sha256', 'giro-default-pin-key').update(pin).digest('hex');
+  }
+  return createHmac('sha256', key).update(pin).digest('hex');
 }
 
-function hashPassword(password: string): string {
-  return createHash('sha256').update(password).digest('hex');
+function hashPassword(password: string): Promise<string> {
+  // Use Argon2 for password hashing (unique salt, secure)
+  return argon2.hash(password, { type: argon2.argon2id });
 }
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -62,7 +70,7 @@ async function seedEmployee() {
       name: 'Administrador',
       cpf: '00000000000',
       pin: hashPin('8899'),
-      password: hashPassword('admin123'),
+      password: await hashPassword('admin123'),
       role: EmployeeRole.ADMIN,
       email: 'admin@mercearias.local',
     },
@@ -88,15 +96,14 @@ async function seedEmployee() {
       name: 'Gerente',
       cpf: '22222222222',
       pin: hashPin('9999'),
-      password: hashPassword('gerente123'),
+      password: await hashPassword('gerente123'),
       role: EmployeeRole.MANAGER,
       email: 'gerente@mercearias.local',
     },
   });
-
-  console.log(`   ✅ Admin criado (PIN: 8899, Senha: admin123)`);
-  console.log(`   ✅ Operador criado (PIN: 0000)`);
-  console.log(`   ✅ Gerente criado (PIN: 9999, Senha: gerente123)`);
+  console.log(`   ✅ Admin criado (credenciais protegidas)`);
+  console.log(`   ✅ Operador criado (PIN protegido)`);
+  console.log(`   ✅ Gerente criado (credenciais protegidas)`);
   return admin;
 }
 

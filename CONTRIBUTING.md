@@ -28,22 +28,32 @@ Antes de criar um bug report:
 
 **Template de Bug Report**:
 
-```markdown
+````markdown
 ## Descrição
+
 Descrição clara do bug
+
 ## Passos para Reproduzir
+
 1. Vá para '...'
 2. Clique em '...'
 3. Veja o erro
+
 ## Comportamento Esperado
+
 O que deveria acontecer
+
 ## Screenshots
+
 Se aplicável
+
 ## Ambiente
+
 - OS: [e.g. Windows 11]
 - Versão: [e.g. 1.0.0]
 - Browser/App: [e.g. Chrome, Desktop App]
-```text
+
+````text
 ### 💡 Sugerindo Melhorias
 
 **Template de Feature Request**:
@@ -277,3 +287,30 @@ pnpm expo start --clear
 ---
 
 **Obrigado por contribuir com o GIRO!** 🙏✨
+
+## 🔐 Política de Segredos (Secrets Policy)
+
+Por segurança, chaves, tokens e credenciais nunca devem ser commited no repositório.
+
+Recomendações rápidas:
+
+- Execute o scanner local de segredos antes de abrir PRs:
+
+```bash
+# Varredura rápida
+scripts/run-partB-secrets.sh
+````
+````
+
+- Instale os hooks de pré-commit (gitleaks + checks básicos):
+
+```bash
+chmod +x scripts/setup-pre-commit.sh
+scripts/setup-pre-commit.sh
+```
+
+- Se encontrar um segredo exposto em um commit anterior, siga o playbook em `REPORTS/partB-secrets-playbook.md` para remoção e rotação.
+
+- Não compartilhe relatórios contendo segredos em canais públicos. Notifique imediatamente SRE/Infra e os donos das credenciais para revogação e rotação.
+
+Adicionalmente, o repositório contém uma configuração mínima de `pre-commit` (`.pre-commit-config.yaml`) e uma configuração de regras para `gitleaks` (`.gitleaks.toml`). Use `scripts/setup-pre-commit.sh` para configurar o ambiente local.

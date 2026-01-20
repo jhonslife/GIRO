@@ -4,6 +4,11 @@ use crate::error::AppResult;
 use crate::models::{CreateEmployee, Employee, SafeEmployee, UpdateEmployee};
 use crate::repositories::new_id;
 use sha2::{Digest, Sha256};
+use argon2::{Argon2, PasswordHasher, PasswordVerifier};
+use argon2::password_hash::{SaltString, PasswordHash};
+use argon2::password_hash::rand_core::OsRng;
+use hmac::{Hmac, Mac};
+use hex;
 use sqlx::SqlitePool;
 
 pub struct EmployeeRepository<'a> {
@@ -216,9 +221,85 @@ impl<'a> EmployeeRepository<'a> {
     }
 
     pub async fn authenticate_pin(&self, pin: &str) -> AppResult<Option<Employee>> {
-        // Hash PIN com SHA256 (compatível com seed)
+        // Primeiro tente o hash atual (HMAC-SHA256)
         let pin_hash = hash_pin(pin);
-        self.find_by_pin(&pin_hash).await
+        if let Some(emp) = self.find_by_pin(&pin_hash).await? {
+            return Ok(Some(emp));
+        }
+
+        // Fallback legacy: SHA256 sem HMAC (versões antigas do seed)
+        use sha2::Sha256 as LegacySha256;
+        let mut hasher = LegacySha256::new();
+        hasher.update(pin.as_bytes());
+        let legacy_hash = format!("{:x}", hasher.finalize());
+
+        if let Some(emp) = self.find_by_pin(&legacy_hash).await? {
+            // Re-hash o PIN usando o novo método e atualize o registro
+            let new_pin_hash = hash_pin(pin);
+            let now = chrono::Utc::now().to_rfc3339();
+            let _ = sqlx::query("UPDATE employees SET pin = ?, updated_at = ? WHERE id = ?")
+                .bind(&new_pin_hash)
+                .bind(&now)
+                .bind(&emp.id)
+                .execute(self.pool)
+                .await;
+            return Ok(Some(emp));
+        }
+
+        Ok(None)
+    }
+
+    /// Verifica uma senha para um funcionário e migra hash legacy para Argon2 se necessário
+    pub async fn verify_password_and_migrate(&self, employee_id: &str, password: &str) -> AppResult<bool> {
+        let existing = match self.find_by_id(employee_id).await? {
+            Some(e) => e,
+            None => return Ok(false),
+        };
+
+        let stored = match existing.password {
+            Some(s) => s,
+            None => return Ok(false),
+        };
+
+        // Tenta primeira verificar como Argon2 (hash moderno)
+        if let Ok(parsed) = PasswordHash::new(&stored) {
+            let argon2 = Argon2::default();
+            if argon2.verify_password(password.as_bytes(), &parsed).is_ok() {
+                return Ok(true);
+            }
+        }
+
+        // Fallback legacy: SHA256 hex
+        let mut legacy_hasher = Sha256::new();
+        legacy_hasher.update(password.as_bytes());
+        let legacy_hash = format!("{:x}", legacy_hasher.finalize());
+        if legacy_hash == stored {
+            // Re-hash com Argon2 e atualize
+
+            let salt = SaltString::generate(&mut OsRng);
+            let argon2 = Argon2::default();
+            let password_hash = match argon2.hash_password(password.as_bytes(), &salt) {
+                Ok(h) => h.to_string(),
+                Err(e) => {
+                    tracing::error!("Argon2 re-hash failed: {:?}", e);
+                    return Err(crate::error::AppError::Internal(
+                        "Erro interno ao gerar hash de senha".into(),
+                    ));
+                }
+            };
+
+            let now = chrono::Utc::now().to_rfc3339();
+            let _ = sqlx::query("UPDATE employees SET password = ?, updated_at = ? WHERE id = ?")
+                .bind(&password_hash)
+                .bind(&now)
+                .bind(employee_id)
+                .execute(self.pool)
+                .await;
+
+            return Ok(true);
+        }
+
+        Ok(false)
     }
 }
 
@@ -228,15 +309,25 @@ impl<'a> EmployeeRepository<'a> {
 
 /// Hash do PIN usando SHA256 (compatível com seed do Prisma)
 fn hash_pin(pin: &str) -> String {
-    let mut hasher = Sha256::new();
-    hasher.update(pin.as_bytes());
-    format!("{:x}", hasher.finalize())
+    // Deterministic HMAC-SHA256 using PIN_HMAC_KEY env var for lookup-friendly PIN hashing
+    type HmacSha256 = Hmac<Sha256>;
+    let key = std::env::var("PIN_HMAC_KEY").unwrap_or_else(|_| "giro-default-pin-key".to_string());
+    let mut mac = HmacSha256::new_from_slice(key.as_bytes()).expect("HMAC can take key of any size");
+    mac.update(pin.as_bytes());
+    let result = mac.finalize();
+    let bytes = result.into_bytes();
+    hex::encode(bytes)
 }
 
 fn hash_password(password: &str) -> String {
-    let mut hasher = Sha256::new();
-    hasher.update(password.as_bytes());
-    format!("{:x}", hasher.finalize())
+    // Use Argon2id with random salt
+    let salt = SaltString::generate(&mut OsRng);
+    let argon2 = Argon2::default();
+    let password_hash = argon2
+        .hash_password(password.as_bytes(), &salt)
+        .expect("Argon2 hashing failed")
+        .to_string();
+    password_hash
 }
 
 #[cfg(test)]

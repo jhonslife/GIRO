@@ -7,7 +7,9 @@
 [![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react)](https://react.dev)
 [![Rust](https://img.shields.io/badge/Rust-1.83-orange?style=for-the-badge&logo=rust)](https://www.rust-lang.org)
 [![Expo](https://img.shields.io/badge/Expo-52-000020?style=for-the-badge&logo=expo)](https://expo.dev)
+
 ## Sistema de Ponto de Venda completo com aplicações Desktop e Mobile
+
 [🚀 Começar](#-instalação) • [📖 Documentação](#-documentação) • [🛠️ Desenvolvimento](#-desenvolvimento) • [🤝 Contribuir](#-contribuindo)
 
 </div>
@@ -34,7 +36,7 @@ GIRO é um sistema completo de Ponto de Venda (PDV) desenvolvido com tecnologias
 
 ## 🏗️ Arquitetura
 
-```text
+````text
 GIRO/
 ├── apps/
 │   ├── desktop/          # Aplicação Tauri (React + Rust)
@@ -240,6 +242,21 @@ pnpm test:coverage
 
 ---
 
+## 🧩 Variáveis de Ambiente (Essenciais)
+
+O aplicativo desktop requer algumas variáveis de ambiente obrigatórias para funcionar corretamente em produção. Crie um arquivo `.env` a partir de `apps/desktop/.env.example` ou exporte as variáveis no ambiente do sistema.
+
+- **LICENSE_SERVER_URL**: URL do servidor de licença (opcional, `apps/desktop/.env.example` contém o valor padrão de produção).
+- **LICENSE_API_KEY**: Chave de API da licença (obrigatória — sem valor padrão no código).
+- **JWT_SECRET**: Segredo JWT usado pelo servidor mobile/WebSocket (obrigatório — sem valor padrão no código).
+
+Exemplo rápido:
+
+```bash
+cp apps/desktop/.env.example apps/desktop/.env
+# then edit apps/desktop/.env and replace placeholders
+````
+
 ## 🤝 Contribuindo
 
 Contribuições são bem-vindas! Por favor:
@@ -254,7 +271,7 @@ Contribuições são bem-vindas! Por favor:
 
 Seguimos [Conventional Commits](https://www.conventionalcommits.org/):
 
-```text
+````text
 feat(scope): add new feature
 fix(scope): fix bug description
 docs(scope): update documentation
@@ -291,3 +308,4 @@ Este projeto é proprietário. Todos os direitos reservados.
 Feito com ❤️ por Arkheion Corp
 
 </div>
+````

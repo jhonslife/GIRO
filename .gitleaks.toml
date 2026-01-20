@@ -1,0 +1,17 @@
+[[rules]]
+description = "Generic API Key or token"
+regex = '''(?i)(?:api[_-]?key|token|secret)["'=:\s]+[A-Za-z0-9-_]{16,}'''
+tags = ["key"]
+
+[[rules]]
+description = "AWS Access Key ID"
+regex = '''AKIA[0-9A-Z]{16}'''
+tags = ["aws"]
+
+[[rules]]
+description = "Private RSA key"
+regex = '''-----BEGIN (?:RSA )?PRIVATE KEY-----[\s\S]{100,}-----END (?:RSA )?PRIVATE KEY-----'''
+tags = ["private_key"]
+
+[allowlist]
+paths = ["docs/**", "templates/**", "scripts/**"]

@@ -1,0 +1,8 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Run lint-staged for staged files
+pnpm -w exec -- lint-staged
+
+# Quick secrets scan (best-effort, non-blocking)
+pnpm -w run scan-secrets

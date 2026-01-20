@@ -1,0 +1,60 @@
+[
+  {
+    "name": "@mercearias/database",
+    "version": "1.0.8",
+    "path": "/home/jhonslife/CICLOGIRO/GIRO/packages/database",
+    "private": true,
+    "dependencies": {
+      "@prisma/client": {
+        "from": "@prisma/client",
+        "version": "6.19.2",
+        "resolved": "https://registry.npmjs.org/@prisma/client/-/client-6.19.2.tgz",
+        "path": "/home/jhonslife/CICLOGIRO/GIRO/node_modules/.pnpm/@prisma+client@6.19.2_prisma@6.19.2_magicast@0.3.5_typescript@5.9.3__typescript@5.9.3/node_modules/@prisma/client"
+      },
+      "argon2": {
+        "from": "argon2",
+        "version": "0.30.3",
+        "resolved": "https://registry.npmjs.org/argon2/-/argon2-0.30.3.tgz",
+        "path": "/home/jhonslife/CICLOGIRO/GIRO/node_modules/.pnpm/argon2@0.30.3/node_modules/argon2"
+      }
+    },
+    "devDependencies": {
+      "@types/node": {
+        "from": "@types/node",
+        "version": "22.19.7",
+        "resolved": "https://registry.npmjs.org/@types/node/-/node-22.19.7.tgz",
+        "path": "/home/jhonslife/CICLOGIRO/GIRO/node_modules/.pnpm/@types+node@22.19.7/node_modules/@types/node"
+      },
+      "dotenv": {
+        "from": "dotenv",
+        "version": "17.2.3",
+        "resolved": "https://registry.npmjs.org/dotenv/-/dotenv-17.2.3.tgz",
+        "path": "/home/jhonslife/CICLOGIRO/GIRO/node_modules/.pnpm/dotenv@17.2.3/node_modules/dotenv"
+      },
+      "prisma": {
+        "from": "prisma",
+        "version": "6.19.2",
+        "resolved": "https://registry.npmjs.org/prisma/-/prisma-6.19.2.tgz",
+        "path": "/home/jhonslife/CICLOGIRO/GIRO/node_modules/.pnpm/prisma@6.19.2_magicast@0.3.5_typescript@5.9.3/node_modules/prisma"
+      },
+      "rimraf": {
+        "from": "rimraf",
+        "version": "6.1.2",
+        "resolved": "https://registry.npmjs.org/rimraf/-/rimraf-6.1.2.tgz",
+        "path": "/home/jhonslife/CICLOGIRO/GIRO/node_modules/.pnpm/rimraf@6.1.2/node_modules/rimraf"
+      },
+      "tsx": {
+        "from": "tsx",
+        "version": "4.21.0",
+        "resolved": "https://registry.npmjs.org/tsx/-/tsx-4.21.0.tgz",
+        "path": "/home/jhonslife/CICLOGIRO/GIRO/node_modules/.pnpm/tsx@4.21.0/node_modules/tsx"
+      },
+      "typescript": {
+        "from": "typescript",
+        "version": "5.9.3",
+        "resolved": "https://registry.npmjs.org/typescript/-/typescript-5.9.3.tgz",
+        "path": "/home/jhonslife/CICLOGIRO/GIRO/node_modules/.pnpm/typescript@5.9.3/node_modules/typescript"
+      }
+    }
+  }
+]

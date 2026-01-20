@@ -2,16 +2,34 @@
 name: Relatorios
 description: Especialista em relatórios, analytics, charts e exportação de dados
 tools:
-  - vscode
-  - execute
-  - read
-  - edit
-  - search
-  - filesystem/*
-  - github/*
-  - prisma/*
-  - sequential-thinking/*
-  - TBD
+  [
+    'vscode',
+    'execute',
+    'read',
+    'edit',
+    'search',
+    'web',
+    'github/*',
+    'agent',
+    'copilot-container-tools/*',
+    'postgres/*',
+    'puppeteer/*',
+    'memory/*',
+    'filesystem/*',
+    'sequential-thinking/*',
+    'prisma/*',
+    'ms-python.python/getPythonEnvironmentInfo',
+    'ms-python.python/getPythonExecutableCommand',
+    'ms-python.python/installPythonPackage',
+    'ms-python.python/configurePythonEnvironment',
+    'prisma.prisma/prisma-migrate-status',
+    'prisma.prisma/prisma-migrate-dev',
+    'prisma.prisma/prisma-migrate-reset',
+    'prisma.prisma/prisma-studio',
+    'prisma.prisma/prisma-platform-login',
+    'prisma.prisma/prisma-postgres-create-database',
+    'todo',
+  ]
 model: Claude Sonnet 4
 handoffs:
   - label: 🦀 Backend Queries

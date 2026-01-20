@@ -8,6 +8,32 @@
       "prisma",
       "@prisma/client",
       "@prisma/engines"
+    ],
+    "overrides": {
+      "tar": "^7.5.3",
+      "esbuild": ">=0.25.0"
+    }
+  },
+  "scripts": {
+    "prepare": "husky install",
+    "scan-secrets": "npx trufflehog filesystem . || true",
+    "lint": "eslint . --ext .ts,.tsx,.js --report-unused-disable-directives"
+  },
+  "devDependencies": {
+    "husky": "^8.0.0",
+    "lint-staged": "^14.0.0",
+    "trufflehog": "^0.0.5",
+    "eslint": "^8.0.0",
+    "prettier": "^2.8.8"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "git add"
+    ],
+    "*.{md,json}": [
+      "prettier --write",
+      "git add"
     ]
   }
 }
