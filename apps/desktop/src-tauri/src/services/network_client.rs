@@ -13,13 +13,12 @@ use mdns_sd::{ServiceDaemon, ServiceEvent};
 use sqlx::SqlitePool;
 use std::sync::Arc;
 use std::time::Duration;
-use tokio::net::TcpStream;
 use tokio::sync::{broadcast, mpsc, RwLock};
 use tokio::time::sleep;
-use tokio_tungstenite::{connect_async, MaybeTlsStream, WebSocketStream};
+use tokio_tungstenite::connect_async;
 use tokio_tungstenite::tungstenite::Message;
 
-type WsStream = WebSocketStream<MaybeTlsStream<TcpStream>>;
+
 
 /// Configuração do Cliente de Rede
 #[derive(Debug, Clone)]
@@ -40,7 +39,7 @@ pub enum ConnectionState {
 /// Cliente de Rede
 pub struct NetworkClient {
     pool: SqlitePool,
-    config: NetworkClientConfig,
+    _config: NetworkClientConfig,
     state: Arc<RwLock<ConnectionState>>,
     tx: RwLock<Option<mpsc::Sender<ClientCommand>>>,
     event_tx: broadcast::Sender<ClientEvent>,
@@ -68,7 +67,7 @@ impl NetworkClient {
         
         Arc::new(Self {
             pool,
-            config: NetworkClientConfig { terminal_name },
+            _config: NetworkClientConfig { terminal_name },
             state: Arc::new(RwLock::new(ConnectionState::Disconnected)),
             tx: RwLock::new(None),
             event_tx,
@@ -96,6 +95,18 @@ impl NetworkClient {
             let _ = tx.send(ClientCommand::Disconnect).await;
         }
         self.set_state(ConnectionState::Disconnected).await;
+    }
+
+    /// Envia uma venda para o Master (Remote Create)
+    pub async fn send_sale(&self, sale: serde_json::Value) -> Result<(), String> {
+        if let Some(tx) = self.tx.read().await.as_ref() {
+            tx.send(ClientCommand::SendSale(sale))
+                .await
+                .map_err(|e| e.to_string())?;
+            Ok(())
+        } else {
+            Err("Cliente desconectado".to_string())
+        }
     }
 
     /// Obtém estado atual
