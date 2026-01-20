@@ -125,6 +125,20 @@
         Delete "$LOCALAPPDATA\GIRO\giro.db-wal"
         Delete "$LOCALAPPDATA\GIRO\giro.db-journal"
         
+        ; Banco de dados de debug (versões anteriores)
+        DetailPrint "  ▶ Removendo bancos de dados de debug..."
+        Delete "$LOCALAPPDATA\GIRO\giro_debug_reconstructed_v1.db"
+        Delete "$LOCALAPPDATA\GIRO\giro_debug_reconstructed_v1.db-shm"
+        Delete "$LOCALAPPDATA\GIRO\giro_debug_reconstructed_v1.db-wal"
+        Delete "$LOCALAPPDATA\GIRO\giro_debug_reconstructed_v1.db-journal"
+        
+        ; Qualquer outro arquivo .db
+        DetailPrint "  ▶ Removendo outros arquivos de banco de dados..."
+        Delete "$LOCALAPPDATA\GIRO\*.db"
+        Delete "$LOCALAPPDATA\GIRO\*.db-shm"
+        Delete "$LOCALAPPDATA\GIRO\*.db-wal"
+        Delete "$LOCALAPPDATA\GIRO\*.db-journal"
+        
         ; Backups
         DetailPrint "  ▶ Removendo backups ($LOCALAPPDATA\GIRO\backups)..."
         RMDir /r "$LOCALAPPDATA\GIRO\backups"

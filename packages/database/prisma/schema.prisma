@@ -64,8 +64,9 @@ model Product {
   costPrice Float @default(0) // Custo médio
 
   // Estoque
-  currentStock Float @default(0) // Estoque atual
-  minStock     Float @default(0) // Estoque mínimo (alerta)
+  currentStock Float  @default(0) // Estoque atual
+  minStock     Float  @default(0) // Estoque mínimo (alerta)
+  maxStock     Float? // Estoque máximo (sugestão de compra)
 
   // Flags
   isActive Boolean @default(true)
@@ -123,14 +124,15 @@ enum ProductUnit {
 
 /// Lotes de produtos para controle de validade e FIFO
 model ProductLot {
-  id              String    @id @default(cuid())
-  lotNumber       String? // Número do lote do fabricante
-  expirationDate  DateTime? // Data de validade
-  purchaseDate    DateTime  @default(now()) // Data de entrada
-  initialQuantity Float // Quantidade inicial
-  currentQuantity Float // Quantidade disponível
-  costPrice       Float // Custo unitário do lote
-  status          LotStatus @default(AVAILABLE)
+  id                String    @id @default(cuid())
+  lotNumber         String? // Número do lote do fabricante
+  expirationDate    DateTime? // Data de validade
+  manufacturingDate DateTime? // Data de fabricação
+  purchaseDate      DateTime  @default(now()) // Data de entrada
+  initialQuantity   Float // Quantidade inicial
+  currentQuantity   Float // Quantidade disponível
+  costPrice         Float // Custo unitário do lote
+  status            LotStatus @default(AVAILABLE)
 
   // Relações
   productId  String

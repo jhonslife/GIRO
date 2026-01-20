@@ -17,8 +17,7 @@ fn get_database_path() -> PathBuf {
         .join("GIRO");
 
     std::fs::create_dir_all(&app_data).ok();
-    // RADICAL TEST: Change DB name to ensure fresh state
-    app_data.join("giro_debug_reconstructed_v1.db")
+    app_data.join("giro.db")
 }
 
 #[tokio::main]
@@ -31,7 +30,7 @@ async fn main() {
         .init();
 
     tracing::info!("Iniciando GIRO Desktop v{}", env!("CARGO_PKG_VERSION"));
-    tracing::error!("🚀🚀🚀 VERIFICATION: IF YOU SEE THIS, THIS IS THE RECONSTRUCTED BINARY 🚀🚀🚀");
+
 
     let db_path = get_database_path();
     tracing::info!("DATABASE VERIFICATION PATH: {:?}", db_path);
