@@ -1,0 +1,15 @@
+{
+  "version": "v2.0.4",
+  "notes": "Versão 2.0.4 do GIRO Desktop\n\n- Melhorias de performance\n- Correções de bugs\n- Atualização de dependências",
+  "pub_date": "2026-01-26T20:00:00Z",
+  "platforms": {
+    "windows-x86_64": {
+      "signature": "",
+      "url": "https://github.com/jhonslife/GIRO/releases/download/v2.0.4/GIRO_2.0.4_x64-setup.exe"
+    },
+    "linux-x86_64": {
+      "signature": "",
+      "url": "https://github.com/jhonslife/GIRO/releases/download/v2.0.4/GIRO_2.0.4_amd64.AppImage"
+    }
+  }
+}
