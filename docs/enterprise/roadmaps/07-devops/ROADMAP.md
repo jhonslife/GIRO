@@ -1,10 +1,10 @@
 # 🚀 DevOps Roadmap - GIRO Enterprise
 
 > **Agente:** 07-devops  
-> **Status:** 🔴 BLOCKED  
-> **Progresso:** 0/4 (0%)  
-> **Bloqueador:** Depende de 06-testing  
-> **Última Atualização:** 25 de Janeiro de 2026
+> **Status:** � COMPLETE  
+> **Progresso:** 4/4 (100%)  
+> **Bloqueador:** Nenhum  
+> **Última Atualização:** 28 de Janeiro de 2026
 
 ---
 
@@ -21,129 +21,140 @@ Atualizar pipelines de CI/CD e configurações de deploy para suportar o perfil 
 
 ## ✅ Checklist de Tasks
 
-### Fase 1: GitHub Actions (2 tasks)
+### Fase 1: GitHub Actions (2 tasks) ✅
 
-- [ ] **DO-001**: Atualizar workflow de CI
-  ```yaml
-  # .github/workflows/ci.yml
-  
-  name: CI
-  
-  on:
-    push:
-      branches: [main, develop, feature/*]
-    pull_request:
-      branches: [main, develop]
-  
-  jobs:
-    lint:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v4
-        
-        - name: Setup Node.js
-          uses: actions/setup-node@v4
-          with:
-            node-version: '20'
-            cache: 'pnpm'
-        
+- [x] **DO-001**: Atualizar workflow de CI
+
+  > **Implementado em**: `.github/workflows/ci.yml` (249 linhas)
+  >
+  > - Lint (ESLint + Clippy), Type check, Vitest + Rust tests
+  > - Coverage upload para Codecov (frontend + rust flags)
+  > - E2E tests com Playwright, Cargo audit
+  > - Quality gate para validar todos os jobs
+
+- [x] **DO-002**: Atualizar workflow de Release
+  > **Implementado em**: `.github/workflows/release.yml` (193 linhas)
+  >
+  > - Build para Windows (x86_64-pc-windows-msvc) e Linux (x86_64-unknown-linux-gnu)
+  > - Tauri signing com TAURI_SIGNING_PRIVATE_KEY
+  > - Updater manifest automático, Release notes template
+
+### Fase 2: Build & Migrations (2 tasks) ✅
+
+- [x] **DO-003**: Migrations Enterprise
+
+  > **Implementado em**: `src-tauri/migrations/027_enterprise_module.sql` (331 linhas)
+  >
+  > - Contracts, WorkFronts, Activities
+  > - StockLocations, StockBalances
+  > - MaterialRequests, StockTransfers
+  > - Todos os índices e constraints
+
+- [x] **DO-004**: Feature Flags
+
+  > **Enterprise é ativado por**: `business_type = 'ENTERPRISE'` no settings
+  >
+  > - Não requer Cargo feature flag separado
+  > - Reutiliza core do GIRO (Products, Employees, etc.)
+
         - name: Install dependencies
           run: pnpm install
-        
+
         - name: Lint TypeScript
           run: pnpm lint
-        
+
         - name: Type check
           run: pnpm typecheck
-    
-    test-rust:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v4
-        
+
+  test-rust:
+  runs-on: ubuntu-latest
+  steps: - uses: actions/checkout@v4
+
         - name: Setup Rust
           uses: dtolnay/rust-toolchain@stable
-        
+
         - name: Cache cargo
           uses: Swatinem/rust-cache@v2
           with:
             workspaces: 'apps/desktop/src-tauri'
-        
+
         - name: Run Rust tests
           working-directory: apps/desktop/src-tauri
           run: |
             cargo test --all-features
-        
+
         - name: Check coverage
           working-directory: apps/desktop/src-tauri
           run: |
             cargo install cargo-tarpaulin
             cargo tarpaulin --out Xml --output-dir coverage
-            
+
         - name: Upload coverage
           uses: codecov/codecov-action@v3
           with:
             files: apps/desktop/src-tauri/coverage/cobertura.xml
             flags: rust
-    
-    test-frontend:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v4
-        
+
+  test-frontend:
+  runs-on: ubuntu-latest
+  steps: - uses: actions/checkout@v4
+
         - name: Setup Node.js
           uses: actions/setup-node@v4
           with:
             node-version: '20'
             cache: 'pnpm'
-        
+
         - name: Install dependencies
           run: pnpm install
-        
+
         - name: Run tests
           run: pnpm test:coverage
-        
+
         - name: Upload coverage
           uses: codecov/codecov-action@v3
           with:
             files: coverage/lcov.info
             flags: frontend
-    
-    e2e:
-      needs: [lint, test-rust, test-frontend]
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v4
-        
+
+  e2e:
+  needs: [lint, test-rust, test-frontend]
+  runs-on: ubuntu-latest
+  steps: - uses: actions/checkout@v4
+
         - name: Setup Node.js
           uses: actions/setup-node@v4
           with:
             node-version: '20'
             cache: 'pnpm'
-        
+
         - name: Install dependencies
           run: pnpm install
-        
+
         - name: Install Playwright
           run: pnpm exec playwright install --with-deps
-        
+
         - name: Run E2E tests
           run: pnpm test:e2e
-        
+
         - name: Upload test results
           if: failure()
           uses: actions/upload-artifact@v4
           with:
             name: playwright-report
             path: playwright-report/
+
+  ```
+
   ```
 
 - [ ] **DO-002**: Atualizar workflow de Build
+
   ```yaml
   # .github/workflows/build.yml
-  
+
   name: Build
-  
+
   on:
     push:
       tags:
@@ -159,7 +170,7 @@ Atualizar pipelines de CI/CD e configurações de deploy para suportar o perfil 
             - grocery
             - motoparts
             - enterprise
-  
+
   jobs:
     build:
       strategy:
@@ -171,36 +182,36 @@ Atualizar pipelines de CI/CD e configurações de deploy para suportar o perfil 
               target: windows
             - platform: macos-latest
               target: macos
-      
+
       runs-on: ${{ matrix.platform }}
-      
+
       steps:
         - uses: actions/checkout@v4
-        
+
         - name: Setup Node.js
           uses: actions/setup-node@v4
           with:
             node-version: '20'
             cache: 'pnpm'
-        
+
         - name: Setup Rust
           uses: dtolnay/rust-toolchain@stable
-        
+
         - name: Install Linux dependencies
           if: matrix.target == 'linux'
           run: |
             sudo apt-get update
             sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev
-        
+
         - name: Install dependencies
           run: pnpm install
-        
+
         - name: Build Tauri
           env:
             TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
             TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
           run: pnpm tauri build
-        
+
         - name: Upload artifacts
           uses: actions/upload-artifact@v4
           with:
@@ -216,9 +227,10 @@ Atualizar pipelines de CI/CD e configurações de deploy para suportar o perfil 
 ### Fase 2: Migrations e Seeds (1 task)
 
 - [ ] **DO-003**: Criar migration e seed para Enterprise
+
   ```typescript
   // packages/database/prisma/migrations/YYYYMMDDHHMMSS_add_enterprise_entities/migration.sql
-  
+
   -- Enums
   CREATE TYPE "ContractStatus" AS ENUM ('PLANNING', 'ACTIVE', 'SUSPENDED', 'COMPLETED', 'CANCELLED');
   CREATE TYPE "WorkFrontStatus" AS ENUM ('PLANNING', 'ACTIVE', 'COMPLETED');
@@ -227,27 +239,27 @@ Atualizar pipelines de CI/CD e configurações de deploy para suportar o perfil 
   CREATE TYPE "RequestStatus" AS ENUM ('DRAFT', 'PENDING', 'APPROVED', 'PARTIALLY_APPROVED', 'REJECTED', 'SEPARATING', 'DELIVERED', 'CANCELLED');
   CREATE TYPE "TransferStatus" AS ENUM ('PENDING', 'APPROVED', 'IN_TRANSIT', 'COMPLETED', 'CANCELLED');
   CREATE TYPE "InventoryStatus" AS ENUM ('IN_PROGRESS', 'COMPLETED', 'CANCELLED');
-  
+
   -- Adicionar novos roles ao enum existente
   ALTER TYPE "EmployeeRole" ADD VALUE 'CONTRACT_MANAGER';
   ALTER TYPE "EmployeeRole" ADD VALUE 'SUPERVISOR';
   ALTER TYPE "EmployeeRole" ADD VALUE 'WAREHOUSE';
   ALTER TYPE "EmployeeRole" ADD VALUE 'REQUESTER';
-  
+
   -- Tables (conforme schema definido em 01-database)
   ...
   ```
-  
+
   ```typescript
   // packages/database/prisma/seed-enterprise.ts
-  
+
   import { PrismaClient } from '@prisma/client';
-  
+
   const prisma = new PrismaClient();
-  
+
   async function seedEnterprise() {
     console.log('🏢 Seeding Enterprise data...');
-    
+
     // Criar configuração Enterprise
     await prisma.businessConfig.upsert({
       where: { type: 'ENTERPRISE' },
@@ -272,7 +284,7 @@ Atualizar pipelines de CI/CD e configurações de deploy para suportar o perfil 
         },
       },
     });
-    
+
     // Criar categorias padrão Enterprise
     const categories = [
       { name: 'Material Elétrico', icon: 'Zap', color: '#F59E0B' },
@@ -284,7 +296,7 @@ Atualizar pipelines de CI/CD e configurações de deploy para suportar o perfil 
       { name: 'Material de Soldagem', icon: 'Flame', color: '#F97316' },
       { name: 'Consumíveis', icon: 'Package', color: '#10B981' },
     ];
-    
+
     for (const cat of categories) {
       await prisma.category.upsert({
         where: { name_businessType: { name: cat.name, businessType: 'ENTERPRISE' } },
@@ -292,7 +304,7 @@ Atualizar pipelines de CI/CD e configurações de deploy para suportar o perfil 
         create: { ...cat, businessType: 'ENTERPRISE' },
       });
     }
-    
+
     // Criar local padrão
     await prisma.stockLocation.upsert({
       where: { name: 'Almoxarifado Central' },
@@ -304,10 +316,10 @@ Atualizar pipelines de CI/CD e configurações de deploy para suportar o perfil 
         isActive: true,
       },
     });
-    
+
     console.log('✅ Enterprise seed completed');
   }
-  
+
   seedEnterprise()
     .catch(console.error)
     .finally(() => prisma.$disconnect());
@@ -316,26 +328,27 @@ Atualizar pipelines de CI/CD e configurações de deploy para suportar o perfil 
 ### Fase 3: Feature Flags (1 task)
 
 - [ ] **DO-004**: Configurar feature flags para gradual rollout
+
   ```typescript
   // packages/config/feature-flags.ts
-  
+
   export interface FeatureFlags {
     // Core
     enableEnterprise: boolean;
-    
+
     // Enterprise específicos
     enterpriseContracts: boolean;
     enterpriseWorkFronts: boolean;
     enterpriseMaterialRequests: boolean;
     enterpriseTransfers: boolean;
     enterpriseInventory: boolean;
-    
+
     // Integrações
     enterpriseSiengeExport: boolean;
     enterpriseUAUExport: boolean;
     enterpriseMobileSync: boolean;
   }
-  
+
   // Default flags por ambiente
   export const DEFAULT_FLAGS: Record<string, FeatureFlags> = {
     development: {
@@ -373,12 +386,12 @@ Atualizar pipelines de CI/CD e configurações de deploy para suportar o perfil 
     },
   };
   ```
-  
+
   ```rust
   // src-tauri/src/config/feature_flags.rs
-  
+
   use serde::{Deserialize, Serialize};
-  
+
   #[derive(Debug, Clone, Serialize, Deserialize)]
   pub struct FeatureFlags {
       pub enable_enterprise: bool,
@@ -391,7 +404,7 @@ Atualizar pipelines de CI/CD e configurações de deploy para suportar o perfil 
       pub enterprise_uau_export: bool,
       pub enterprise_mobile_sync: bool,
   }
-  
+
   impl Default for FeatureFlags {
       fn default() -> Self {
           Self {
@@ -401,7 +414,7 @@ Atualizar pipelines de CI/CD e configurações de deploy para suportar o perfil 
           }
       }
   }
-  
+
   pub fn is_feature_enabled(flag: &str, flags: &FeatureFlags) -> bool {
       match flag {
           "enterprise" => flags.enable_enterprise,

@@ -94,29 +94,29 @@ O GIRO utiliza uma arquitetura de **monorepo com apps especializadas**, onde:
 
 ### Matriz de Features por Produto
 
-| Feature | Desktop (Varejo) | Enterprise (Almoxarifado) |
-|---------|:----------------:|:-------------------------:|
-| PDV/Caixa | ✅ | ❌ |
-| Vendas | ✅ | ❌ |
-| Estoque | ✅ (simples) | ✅ (multi-local) |
-| Validade/Lotes | ✅ | ✅ |
-| Funcionários | ✅ | ✅ |
-| Contratos | ❌ | ✅ |
-| Frentes de Trabalho | ❌ | ✅ |
-| Atividades | ❌ | ✅ |
-| Requisições | ❌ | ✅ |
-| Transferências | ❌ | ✅ |
-| Inventário Rotativo | ❌ | ✅ |
-| Apropriação de Custo | ❌ | ✅ |
-| Impressora Térmica | ✅ | ✅ |
-| Balança | ✅ | ❌ |
-| Scanner USB | ✅ | ✅ |
-| Scanner Mobile | ✅ | ✅ |
-| Gaveta de Dinheiro | ✅ | ❌ |
+| Feature              | Desktop (Varejo) | Enterprise (Almoxarifado) |
+| -------------------- | :--------------: | :-----------------------: |
+| PDV/Caixa            |        ✅        |            ❌             |
+| Vendas               |        ✅        |            ❌             |
+| Estoque              |   ✅ (simples)   |     ✅ (multi-local)      |
+| Validade/Lotes       |        ✅        |            ✅             |
+| Funcionários         |        ✅        |            ✅             |
+| Contratos            |        ❌        |            ✅             |
+| Frentes de Trabalho  |        ❌        |            ✅             |
+| Atividades           |        ❌        |            ✅             |
+| Requisições          |        ❌        |            ✅             |
+| Transferências       |        ❌        |            ✅             |
+| Inventário Rotativo  |        ❌        |            ✅             |
+| Apropriação de Custo |        ❌        |            ✅             |
+| Impressora Térmica   |        ✅        |            ✅             |
+| Balança              |        ✅        |            ❌             |
+| Scanner USB          |        ✅        |            ✅             |
+| Scanner Mobile       |        ✅        |            ✅             |
+| Gaveta de Dinheiro   |        ✅        |            ❌             |
 
 ### Arquitetura Interna de cada App
 
-```text
+````text
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                        GIRO DESKTOP / ENTERPRISE APP                    │
 ├─────────────────────────────────────────────────────────────────────────┤
@@ -272,9 +272,10 @@ GIRO/
 │   └── core/             # Hooks, utils, types (compartilhado)
 └── tools/
     └── scripts/          # Build, deploy, etc.
-```
+````
 
 **Justificativa:**
+
 - **80% código compartilhado** - UI, auth, database, utils
 - **20% específico por app** - Pages, workflows, features de domínio
 - **Deploy independente** - Cada app gera instalador próprio
@@ -284,7 +285,7 @@ GIRO/
 
 ### ADR-004: Backup Strategy
 
-```text
+````text
 ┌──────────────────────────────────────────────────────────────────┐
 │                     ESTRATÉGIA DE BACKUP                          │
 ├──────────────────────────────────────────────────────────────────┤
@@ -325,7 +326,7 @@ GIRO/
 │  Zustand Store ──sync──► Tauri State Manager                    │
 │                                                                  │
 └─────────────────────────────────────────────────────────────────┘
-```
+````
 
 ---
 
@@ -513,113 +514,115 @@ GIRO/                            # ─── MONOREPO RAIZ ───
 ---
 
 ## 🔌 Integrações de Hardware
-│   │   │   │   ├── pdvStore.ts
-│   │   │   │   ├── authStore.ts
-│   │   │   │   ├── settingsStore.ts
-│   │   │   │   └── alertStore.ts
-│   │   │   │
-│   │   │   ├── lib/             # Utilities
-│   │   │   │   ├── tauri.ts     # Tauri invoke wrappers
-│   │   │   │   ├── formatters.ts
-│   │   │   │   └── validators.ts
-│   │   │   │
-│   │   │   ├── types/           # TypeScript types
-│   │   │   └── styles/          # Global CSS
-│   │   │
-│   │   ├── src-tauri/           # Rust Backend
-│   │   │   ├── src/
-│   │   │   │   ├── main.rs
-│   │   │   │   ├── lib.rs
-│   │   │   │   │
-│   │   │   │   ├── commands/    # Tauri commands
-│   │   │   │   │   ├── mod.rs
-│   │   │   │   │   ├── products.rs
-│   │   │   │   │   ├── sales.rs
-│   │   │   │   │   ├── stock.rs
-│   │   │   │   │   ├── employees.rs
-│   │   │   │   │   ├── cash.rs
-│   │   │   │   │   ├── reports.rs
-│   │   │   │   │   └── settings.rs
-│   │   │   │   │
-│   │   │   │   ├── services/    # Business logic
-│   │   │   │   │   ├── mod.rs
-│   │   │   │   │   ├── product_service.rs
-│   │   │   │   │   ├── sale_service.rs
-│   │   │   │   │   ├── stock_service.rs
-│   │   │   │   │   ├── alert_service.rs
-│   │   │   │   │   └── backup_service.rs
-│   │   │   │   │
-│   │   │   │   ├── repositories/ # Data access
-│   │   │   │   │   ├── mod.rs
-│   │   │   │   │   ├── product_repo.rs
-│   │   │   │   │   ├── sale_repo.rs
-│   │   │   │   │   └── ...
-│   │   │   │   │
-│   │   │   │   ├── hardware/    # Device drivers
-│   │   │   │   │   ├── mod.rs
-│   │   │   │   │   ├── printer.rs
-│   │   │   │   │   ├── scale.rs
-│   │   │   │   │   ├── barcode_scanner.rs
-│   │   │   │   │   └── cash_drawer.rs
-│   │   │   │   │
-│   │   │   │   ├── models/      # Domain models
-│   │   │   │   ├── database/    # DB connection
-│   │   │   │   └── config/      # App config
-│   │   │   │
-│   │   │   ├── Cargo.toml
-│   │   │   ├── tauri.conf.json
-│   │   │   └── icons/
-│   │   │
-│   │   ├── package.json
-│   │   ├── vite.config.ts
-│   │   ├── tailwind.config.ts
-│   │   └── tsconfig.json
-│   │
-│   └── mobile-scanner/          # ─── PWA SCANNER ───
-│       ├── src/
-│       │   ├── App.tsx
-│       │   ├── Scanner.tsx      # Camera barcode reader
-│       │   └── WebSocketClient.tsx
-│       ├── package.json
-│       └── vite.config.ts
+
+│ │ │ │ ├── pdvStore.ts
+│ │ │ │ ├── authStore.ts
+│ │ │ │ ├── settingsStore.ts
+│ │ │ │ └── alertStore.ts
+│ │ │ │
+│ │ │ ├── lib/ # Utilities
+│ │ │ │ ├── tauri.ts # Tauri invoke wrappers
+│ │ │ │ ├── formatters.ts
+│ │ │ │ └── validators.ts
+│ │ │ │
+│ │ │ ├── types/ # TypeScript types
+│ │ │ └── styles/ # Global CSS
+│ │ │
+│ │ ├── src-tauri/ # Rust Backend
+│ │ │ ├── src/
+│ │ │ │ ├── main.rs
+│ │ │ │ ├── lib.rs
+│ │ │ │ │
+│ │ │ │ ├── commands/ # Tauri commands
+│ │ │ │ │ ├── mod.rs
+│ │ │ │ │ ├── products.rs
+│ │ │ │ │ ├── sales.rs
+│ │ │ │ │ ├── stock.rs
+│ │ │ │ │ ├── employees.rs
+│ │ │ │ │ ├── cash.rs
+│ │ │ │ │ ├── reports.rs
+│ │ │ │ │ └── settings.rs
+│ │ │ │ │
+│ │ │ │ ├── services/ # Business logic
+│ │ │ │ │ ├── mod.rs
+│ │ │ │ │ ├── product_service.rs
+│ │ │ │ │ ├── sale_service.rs
+│ │ │ │ │ ├── stock_service.rs
+│ │ │ │ │ ├── alert_service.rs
+│ │ │ │ │ └── backup_service.rs
+│ │ │ │ │
+│ │ │ │ ├── repositories/ # Data access
+│ │ │ │ │ ├── mod.rs
+│ │ │ │ │ ├── product_repo.rs
+│ │ │ │ │ ├── sale_repo.rs
+│ │ │ │ │ └── ...
+│ │ │ │ │
+│ │ │ │ ├── hardware/ # Device drivers
+│ │ │ │ │ ├── mod.rs
+│ │ │ │ │ ├── printer.rs
+│ │ │ │ │ ├── scale.rs
+│ │ │ │ │ ├── barcode_scanner.rs
+│ │ │ │ │ └── cash_drawer.rs
+│ │ │ │ │
+│ │ │ │ ├── models/ # Domain models
+│ │ │ │ ├── database/ # DB connection
+│ │ │ │ └── config/ # App config
+│ │ │ │
+│ │ │ ├── Cargo.toml
+│ │ │ ├── tauri.conf.json
+│ │ │ └── icons/
+│ │ │
+│ │ ├── package.json
+│ │ ├── vite.config.ts
+│ │ ├── tailwind.config.ts
+│ │ └── tsconfig.json
+│ │
+│ └── mobile-scanner/ # ─── PWA SCANNER ───
+│ ├── src/
+│ │ ├── App.tsx
+│ │ ├── Scanner.tsx # Camera barcode reader
+│ │ └── WebSocketClient.tsx
+│ ├── package.json
+│ └── vite.config.ts
 │
 ├── packages/
-│   ├── database/                # ─── PRISMA SCHEMA ───
-│   │   ├── prisma/
-│   │   │   ├── schema.prisma
-│   │   │   └── migrations/
-│   │   ├── src/
-│   │   │   └── types.ts         # Generated types
-│   │   └── package.json
-│   │
-│   ├── shared/                  # ─── SHARED CODE ───
-│   │   ├── src/
-│   │   │   ├── constants.ts
-│   │   │   ├── types.ts
-│   │   │   └── utils.ts
-│   │   └── package.json
-│   │
-│   └── ui/                      # ─── DESIGN SYSTEM ───
-│       ├── src/
-│       │   ├── components/
-│       │   ├── tokens/
-│       │   └── index.ts
-│       └── package.json
+│ ├── database/ # ─── PRISMA SCHEMA ───
+│ │ ├── prisma/
+│ │ │ ├── schema.prisma
+│ │ │ └── migrations/
+│ │ ├── src/
+│ │ │ └── types.ts # Generated types
+│ │ └── package.json
+│ │
+│ ├── shared/ # ─── SHARED CODE ───
+│ │ ├── src/
+│ │ │ ├── constants.ts
+│ │ │ ├── types.ts
+│ │ │ └── utils.ts
+│ │ └── package.json
+│ │
+│ └── ui/ # ─── DESIGN SYSTEM ───
+│ ├── src/
+│ │ ├── components/
+│ │ ├── tokens/
+│ │ └── index.ts
+│ └── package.json
 │
 ├── tools/
-│   └── scripts/
-│       ├── build-installer.ts
-│       ├── generate-types.ts
-│       └── seed-database.ts
+│ └── scripts/
+│ ├── build-installer.ts
+│ ├── generate-types.ts
+│ └── seed-database.ts
 │
-├── docs/                        # Documentação
-├── roadmaps/                    # Gestão do projeto
+├── docs/ # Documentação
+├── roadmaps/ # Gestão do projeto
 │
-├── package.json                 # Root package (workspaces)
+├── package.json # Root package (workspaces)
 ├── pnpm-workspace.yaml
-├── turbo.json                   # Turborepo config
+├── turbo.json # Turborepo config
 └── README.md
-```text
+
+````text
 ---
 
 ## 🔌 Integrações de Hardware
@@ -916,3 +919,4 @@ Windows: %APPDATA%/Mercearias/logs/
 ---
 
 _Documento gerado seguindo metodologia "Architect First, Code Later" - Arkheion Corp_
+````

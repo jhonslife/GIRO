@@ -1,10 +1,10 @@
 # 🗄️ Database Roadmap - GIRO Enterprise
 
 > **Agente:** 01-database  
-> **Status:** ⚪ WAITING  
-> **Progresso:** 0/18 (0%)  
+> **Status:** 🟢 DONE  
+> **Progresso:** 18/18 (100%)  
 > **Bloqueador:** Nenhum  
-> **Última Atualização:** 25 de Janeiro de 2026
+> **Última Atualização:** 26 de Janeiro de 2026
 
 ---
 
@@ -23,10 +23,10 @@ Criar todas as entidades de banco de dados necessárias para o módulo Enterpris
 
 ### Fase 1: Enums (7 tasks)
 
-- [ ] **DB-001**: Adicionar `ENTERPRISE` ao enum `BusinessType`
+- [x] **DB-001**: Adicionar `ENTERPRISE` ao enum `BusinessType`
   - Arquivo: `packages/database/prisma/schema.prisma`
   - Linha: ~622 (após GENERAL)
-- [ ] **DB-002**: Criar enum `ContractStatus`
+- [x] **DB-002**: Criar enum `ContractStatus`
 
   ```prisma
   enum ContractStatus {
@@ -38,7 +38,7 @@ Criar todas as entidades de banco de dados necessárias para o módulo Enterpris
   }
   ```
 
-- [ ] **DB-003**: Criar enum `WorkFrontStatus`
+- [x] **DB-003**: Criar enum `WorkFrontStatus`
 
   ```prisma
   enum WorkFrontStatus {
@@ -48,7 +48,7 @@ Criar todas as entidades de banco de dados necessárias para o módulo Enterpris
   }
   ```
 
-- [ ] **DB-004**: Criar enum `ActivityStatus`
+- [x] **DB-004**: Criar enum `ActivityStatus`
 
   ```prisma
   enum ActivityStatus {
@@ -59,7 +59,7 @@ Criar todas as entidades de banco de dados necessárias para o módulo Enterpris
   }
   ```
 
-- [ ] **DB-005**: Criar enum `StockLocationType`
+- [x] **DB-005**: Criar enum `StockLocationType`
 
   ```prisma
   enum StockLocationType {
@@ -71,7 +71,7 @@ Criar todas as entidades de banco de dados necessárias para o módulo Enterpris
   }
   ```
 
-- [ ] **DB-006**: Criar enum `MaterialRequestStatus`
+- [x] **DB-006**: Criar enum `MaterialRequestStatus`
 
   ```prisma
   enum MaterialRequestStatus {
@@ -86,7 +86,7 @@ Criar todas as entidades de banco de dados necessárias para o módulo Enterpris
   }
   ```
 
-- [ ] **DB-007**: Criar enum `RequestPriority`
+- [x] **DB-007**: Criar enum `RequestPriority`
 
   ```prisma
   enum RequestPriority {
@@ -97,7 +97,7 @@ Criar todas as entidades de banco de dados necessárias para o módulo Enterpris
   }
   ```
 
-- [ ] **DB-008**: Criar enum `TransferStatus`
+- [x] **DB-008**: Criar enum `TransferStatus`
   ```prisma
   enum TransferStatus {
     PENDING     // Aguardando aprovação
@@ -111,7 +111,7 @@ Criar todas as entidades de banco de dados necessárias para o módulo Enterpris
 
 ### Fase 2: Entidades de Estrutura (4 tasks)
 
-- [ ] **DB-009**: Criar model `Contract`
+- [x] **DB-009**: Criar model `Contract`
 
   ```prisma
   /// Contratos/Obras
@@ -162,7 +162,7 @@ Criar todas as entidades de banco de dados necessárias para o módulo Enterpris
   }
   ```
 
-- [ ] **DB-010**: Criar model `WorkFront`
+- [x] **DB-010**: Criar model `WorkFront`
 
   ```prisma
   /// Frentes de Trabalho
@@ -200,7 +200,8 @@ Criar todas as entidades de banco de dados necessárias para o módulo Enterpris
   }
   ```
 
-- [ ] **DB-011**: Criar model `Activity`
+- [x] **DB-011**: Criar model `Activity`
+
   ```prisma
   /// Atividades de Obra
   model Activity {
@@ -243,7 +244,7 @@ Criar todas as entidades de banco de dados necessárias para o módulo Enterpris
 
 ### Fase 3: Entidades de Estoque Multi-Local (2 tasks)
 
-- [ ] **DB-012**: Criar model `StockLocation`
+- [x] **DB-012**: Criar model `StockLocation`
 
   ```prisma
   /// Locais de Estoque
@@ -291,7 +292,8 @@ Criar todas as entidades de banco de dados necessárias para o módulo Enterpris
   }
   ```
 
-- [ ] **DB-013**: Criar model `StockBalance`
+- [x] **DB-013**: Criar model `StockBalance`
+
   ```prisma
   /// Saldo de Estoque por Local
   model StockBalance {
@@ -327,7 +329,7 @@ Criar todas as entidades de banco de dados necessárias para o módulo Enterpris
 
 ### Fase 4: Entidades de Requisição (2 tasks)
 
-- [ ] **DB-014**: Criar model `MaterialRequest`
+- [x] **DB-014**: Criar model `MaterialRequest`
 
   ```prisma
   /// Requisições de Material
@@ -389,7 +391,8 @@ Criar todas as entidades de banco de dados necessárias para o módulo Enterpris
   }
   ```
 
-- [ ] **DB-015**: Criar model `MaterialRequestItem`
+- [x] **DB-015**: Criar model `MaterialRequestItem`
+
   ```prisma
   /// Itens de Requisição
   model MaterialRequestItem {
@@ -425,7 +428,7 @@ Criar todas as entidades de banco de dados necessárias para o módulo Enterpris
 
 ### Fase 5: Entidades de Transferência (2 tasks)
 
-- [ ] **DB-016**: Criar model `StockTransfer`
+- [x] **DB-016**: Criar model `StockTransfer`
 
   ```prisma
   /// Transferências de Estoque
@@ -483,7 +486,8 @@ Criar todas as entidades de banco de dados necessárias para o módulo Enterpris
   }
   ```
 
-- [ ] **DB-017**: Criar model `StockTransferItem`
+- [x] **DB-017**: Criar model `StockTransferItem`
+
   ```prisma
   /// Itens de Transferência
   model StockTransferItem {
@@ -515,7 +519,8 @@ Criar todas as entidades de banco de dados necessárias para o módulo Enterpris
 
 ### Fase 6: Entidade de Apropriação (1 task)
 
-- [ ] **DB-018**: Criar model `MaterialConsumption`
+- [x] **DB-018**: Criar model `MaterialConsumption`
+
   ```prisma
   /// Apropriação de Consumo de Material
   model MaterialConsumption {
@@ -652,10 +657,14 @@ CREATE INDEX idx_transfer_status_date ON stock_transfers(status, created_at);
 
 Após implementação, verificar:
 
-- [ ] `prisma validate` passa sem erros
-- [ ] `prisma generate` gera tipos corretamente
-- [ ] Migration aplicada com sucesso
+- [x] `prisma validate` passa sem erros
+- [x] `prisma generate` gera tipos corretamente
+- [x] Migration aplicada com sucesso
 - [ ] Queries básicas funcionando via SQLx
+
+---
+
+_Roadmap concluído em: 26 de Janeiro de 2026_
 
 ---
 

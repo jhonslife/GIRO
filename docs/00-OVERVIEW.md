@@ -57,13 +57,13 @@ O GIRO evoluiu de um único produto para um **ecossistema de aplicações** serv
 
 ### Produtos do Ecossistema
 
-| Produto | Segmento | Descrição | Status |
-|---------|----------|-----------|--------|
-| **GIRO Desktop** | Varejo | PDV, estoque, validade, funcionários | ✅ Produção |
-| **GIRO Enterprise** | Industrial | Almoxarifado, contratos, requisições | 🔄 Desenvolvimento |
-| **GIRO Mobile** | Complementar | Scanner PWA, inventário offline | ✅ Produção |
-| **License Server** | Infra | Licenciamento, métricas | ✅ Produção |
-| **Dashboard** | Admin | Painel do proprietário | ✅ Produção |
+| Produto             | Segmento     | Descrição                            | Status             |
+| ------------------- | ------------ | ------------------------------------ | ------------------ |
+| **GIRO Desktop**    | Varejo       | PDV, estoque, validade, funcionários | ✅ Produção        |
+| **GIRO Enterprise** | Industrial   | Almoxarifado, contratos, requisições | 🔄 Desenvolvimento |
+| **GIRO Mobile**     | Complementar | Scanner PWA, inventário offline      | ✅ Produção        |
+| **License Server**  | Infra        | Licenciamento, métricas              | ✅ Produção        |
+| **Dashboard**       | Admin        | Painel do proprietário               | ✅ Produção        |
 
 ---
 
@@ -93,14 +93,14 @@ O GIRO evoluiu de um único produto para um **ecossistema de aplicações** serv
 
 ### Diferenças por Produto
 
-| Aspecto | GIRO Desktop | GIRO Enterprise |
-|---------|--------------|-----------------|
-| **Foco** | PDV, vendas rápidas | Requisições, controle de custo |
-| **Caixa** | ✅ Central | ❌ Não aplicável |
-| **Contratos** | ❌ N/A | ✅ Gestão completa |
-| **Multi-localização** | ❌ Local único | ✅ Central + Obras |
-| **Hardware** | Impressora, balança, scanner | Scanner, impressora |
-| **Workflow** | Venda direta | Aprovação hierárquica |
+| Aspecto               | GIRO Desktop                 | GIRO Enterprise                |
+| --------------------- | ---------------------------- | ------------------------------ |
+| **Foco**              | PDV, vendas rápidas          | Requisições, controle de custo |
+| **Caixa**             | ✅ Central                   | ❌ Não aplicável               |
+| **Contratos**         | ❌ N/A                       | ✅ Gestão completa             |
+| **Multi-localização** | ❌ Local único               | ✅ Central + Obras             |
+| **Hardware**          | Impressora, balança, scanner | Scanner, impressora            |
+| **Workflow**          | Venda direta                 | Aprovação hierárquica          |
 
 ---
 

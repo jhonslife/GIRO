@@ -1,9 +1,8 @@
 # 🦀 Backend Roadmap - GIRO Enterprise
 
 > **Agente:** 02-backend  
-> **Status:** 🔴 BLOCKED  
-> **Progresso:** 0/24 (0%)  
-> **Bloqueador:** Depende de 01-database  
+> **Status:** 🟢 COMPLETED  
+> **Progresso:** 26/26 (100%)  
 > **Última Atualização:** 25 de Janeiro de 2026
 
 ---
@@ -22,7 +21,7 @@ Implementar todos os commands Tauri, services e repositories em Rust para o mód
 
 ### Fase 1: Contracts (5 tasks)
 
-- [ ] **BE-001**: Criar `commands/contracts.rs`
+- [x] **BE-001**: Criar `commands/contracts.rs` ✅
 
   ```rust
   // Estrutura do arquivo
@@ -46,27 +45,27 @@ Implementar todos os commands Tauri, services e repositories em Rust para o mód
   pub async fn get_contract_dashboard(...) -> Result<ContractDashboard, String>
   ```
 
-- [ ] **BE-002**: Implementar `create_contract`
+- [x] **BE-002**: Implementar `create_contract` ✅
 
   - Validar código único
   - Validar datas (start <= end)
   - Criar registro com status PLANNING
   - Registrar audit log
 
-- [ ] **BE-003**: Implementar `update_contract`
+- [x] **BE-003**: Implementar `update_contract` ✅
 
   - Verificar permissão (CONTRACT_MANAGER ou ADMIN)
   - Não permitir edição se COMPLETED/CANCELLED
   - Atualizar campos permitidos
   - Registrar audit log
 
-- [ ] **BE-004**: Implementar `list_contracts`
+- [x] **BE-004**: Implementar `list_contracts` ✅
 
   - Filtros: status, managerId, search (code/name)
   - Paginação cursor-based
   - Incluir contagem de workFronts e requests
 
-- [ ] **BE-005**: Implementar `get_contract_dashboard`
+- [x] **BE-005**: Implementar `get_contract_dashboard` ✅
   - Retornar métricas do contrato:
     - Total de requisições (por status)
     - Total de materiais consumidos
@@ -75,7 +74,7 @@ Implementar todos os commands Tauri, services e repositories em Rust para o mód
 
 ### Fase 2: Work Fronts (4 tasks)
 
-- [ ] **BE-006**: Criar `commands/work_fronts.rs`
+- [x] **BE-006**: Criar `commands/work_fronts.rs` ✅
 
   ```rust
   #[command]
@@ -91,20 +90,20 @@ Implementar todos os commands Tauri, services e repositories em Rust para o mód
   pub async fn get_work_front(...) -> Result<Option<WorkFront>, String>
   ```
 
-- [ ] **BE-007**: Implementar CRUD work_fronts
+- [x] **BE-007**: Implementar CRUD work_fronts ✅
 
   - Validar código único por contrato
   - Validar contrato ativo
   - Validar supervisor é funcionário ativo
 
-- [ ] **BE-008**: Implementar filtros de listagem
+- [x] **BE-008**: Implementar filtros de listagem ✅
   - Por contrato
   - Por supervisor
   - Por status
 
 ### Fase 3: Activities (3 tasks)
 
-- [ ] **BE-009**: Criar `commands/activities.rs`
+- [x] **BE-009**: Criar `commands/activities.rs` ✅
 
   ```rust
   #[command]
@@ -120,19 +119,19 @@ Implementar todos os commands Tauri, services e repositories em Rust para o mód
   pub async fn update_activity_progress(...) -> Result<Activity, String>
   ```
 
-- [ ] **BE-010**: Implementar CRUD activities
+- [x] **BE-010**: Implementar CRUD activities ✅
 
   - Validar código único por frente
   - Validar frente ativa
 
-- [ ] **BE-011**: Implementar `update_activity_progress`
+- [x] **BE-011**: Implementar `update_activity_progress` ✅
   - Atualizar executedQty
   - Calcular progresso percentual
   - Emitir alerta se > 100%
 
 ### Fase 4: Stock Locations (4 tasks)
 
-- [ ] **BE-012**: Criar `commands/stock_locations.rs`
+- [x] **BE-012**: Criar `commands/stock_locations.rs` ✅
 
   ```rust
   #[command]
@@ -151,18 +150,18 @@ Implementar todos os commands Tauri, services e repositories em Rust para o mód
   pub async fn adjust_location_balance(...) -> Result<StockBalance, String>
   ```
 
-- [ ] **BE-013**: Implementar CRUD stock_locations
+- [x] **BE-013**: Implementar CRUD stock_locations ✅
 
   - Validar código único
   - Validar tipo e vínculo com contrato
 
-- [ ] **BE-014**: Implementar `get_location_balances`
+- [x] **BE-014**: Implementar `get_location_balances` ✅
 
   - Listar todos os produtos com saldo no local
   - Incluir produto com detalhes
   - Filtrar por categoria, search
 
-- [ ] **BE-015**: Implementar `adjust_location_balance`
+- [x] **BE-015**: Implementar `adjust_location_balance` ✅
   - Ajuste manual de inventário
   - Requer justificativa
   - Registrar StockMovement
@@ -170,7 +169,7 @@ Implementar todos os commands Tauri, services e repositories em Rust para o mód
 
 ### Fase 5: Material Requests (6 tasks)
 
-- [ ] **BE-016**: Criar `commands/material_requests.rs`
+- [x] **BE-016**: Criar `commands/material_requests.rs` ✅
 
   ```rust
   #[command]
@@ -198,19 +197,19 @@ Implementar todos os commands Tauri, services e repositories em Rust para o mód
   pub async fn list_requests(...) -> Result<Vec<MaterialRequest>, String>
   ```
 
-- [ ] **BE-017**: Implementar `create_material_request`
+- [x] **BE-017**: Implementar `create_material_request` ✅
 
   - Criar requisição em status DRAFT
   - Gerar requestNumber sequencial por contrato
   - Vincular a contrato/frente/atividade
 
-- [ ] **BE-018**: Implementar `submit_request`
+- [x] **BE-018**: Implementar `submit_request` ✅
 
   - Alterar status DRAFT → PENDING
   - Validar itens > 0
   - Notificar aprovador (futuro)
 
-- [ ] **BE-019**: Implementar `approve_request`
+- [x] **BE-019**: Implementar `approve_request` ✅
 
   - Verificar permissão de aprovação
   - Verificar limite de valor
@@ -218,13 +217,13 @@ Implementar todos os commands Tauri, services e repositories em Rust para o mód
   - Alterar status → APPROVED ou PARTIALLY_APPROVED
   - Reservar quantidades no estoque
 
-- [ ] **BE-020**: Implementar `reject_request`
+- [x] **BE-020**: Implementar `reject_request` ✅
 
   - Requer motivo
   - Alterar status → REJECTED
   - Liberar reservas se houver
 
-- [ ] **BE-021**: Implementar `separate_request` e `deliver_request`
+- [x] **BE-021**: Implementar `separate_request` e `deliver_request` ✅
   - Separar: status → SEPARATING
   - Entregar: status → DELIVERED
   - Baixar estoque do local de origem
@@ -233,7 +232,7 @@ Implementar todos os commands Tauri, services e repositories em Rust para o mód
 
 ### Fase 6: Stock Transfers (4 tasks)
 
-- [ ] **BE-022**: Criar `commands/stock_transfers.rs`
+- [x] **BE-022**: Criar `commands/stock_transfers.rs` ✅
 
   ```rust
   #[command]
@@ -255,13 +254,13 @@ Implementar todos os commands Tauri, services e repositories em Rust para o mód
   pub async fn list_transfers(...) -> Result<Vec<StockTransfer>, String>
   ```
 
-- [ ] **BE-023**: Implementar `create_stock_transfer`
+- [x] **BE-023**: Implementar `create_stock_transfer` ✅
 
   - Gerar transferNumber sequencial
   - Validar locais diferentes
   - Validar disponibilidade no local de origem
 
-- [ ] **BE-024**: Implementar workflow de transferência
+- [x] **BE-024**: Implementar workflow de transferência ✅
   - `approve_transfer`: PENDING → APPROVED
     - Reservar quantidades na origem
   - `ship_transfer`: APPROVED → IN_TRANSIT
@@ -272,7 +271,7 @@ Implementar todos os commands Tauri, services e repositories em Rust para o mód
 
 ### Fase 7: Reports Enterprise (2 tasks)
 
-- [ ] **BE-025**: Criar `commands/reports_enterprise.rs`
+- [x] **BE-025**: Criar `commands/reports_enterprise.rs` ✅
 
   ```rust
   #[command]
@@ -291,7 +290,7 @@ Implementar todos os commands Tauri, services e repositories em Rust para o mód
   pub async fn report_pending_requests(...) -> Result<PendingRequestsReport, String>
   ```
 
-- [ ] **BE-026**: Implementar relatórios
+- [x] **BE-026**: Implementar relatórios ✅
   - Consumo por Contrato: agregar MaterialConsumption
   - Consumo por Atividade: detalhar por atividade
   - Consumo por Centro de Custo: agregar por costCenter
