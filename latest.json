@@ -1,15 +1,15 @@
 {
-  "version": "v2.0.6",
-  "notes": "Versão 2.0.6 do GIRO Desktop\n\n- Novo modal de ajuste de estoque (adicionar/subtrair/definir)\n- Correções de bugs\n- Melhorias de usabilidade",
-  "pub_date": "2026-01-26T22:00:00Z",
+  "version": "2.0.5",
+  "notes": "Atualização disponível para versão 2.0.5",
+  "pub_date": "2026-01-26T23:05:57Z",
   "platforms": {
     "windows-x86_64": {
       "signature": "",
-      "url": "https://github.com/jhonslife/GIRO/releases/download/v2.0.6/GIRO_2.0.6_x64-setup.exe"
+      "url": "https://github.com/jhonslife/GIRO/releases/download/v2.0.5/GIRO_2.0.5_x64-setup.exe.zip"
     },
     "linux-x86_64": {
       "signature": "",
-      "url": "https://github.com/jhonslife/GIRO/releases/download/v2.0.6/GIRO_2.0.6_amd64.AppImage"
+      "url": "https://github.com/jhonslife/GIRO/releases/download/v2.0.5/giro_2.0.5_amd64.AppImage.tar.gz"
     }
   }
 }
