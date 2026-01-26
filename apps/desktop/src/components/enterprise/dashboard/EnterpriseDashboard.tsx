@@ -1,10 +1,11 @@
 /**
- * 🏗️ Enterprise Dashboard - Componente Principal
+ * Enterprise Dashboard - Componente Principal
  *
- * Dashboard visual para o módulo Enterprise com KPIs, gráficos e resumos.
+ * Dashboard visual para o modulo Enterprise com KPIs, graficos e resumos.
+ * Otimizado com React.memo para performance.
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -25,7 +26,7 @@ import {
   Warehouse,
 } from 'lucide-react';
 
-// Re-exportar ícones para evitar tree-shaking
+// Re-exportar icones para evitar tree-shaking
 export const EnterpriseIcons = {
   ContractIcon,
   MaterialRequestIcon,
@@ -87,16 +88,16 @@ interface EnterpriseDashboardProps {
 // =============================================================================
 
 /**
- * Card de KPI com ícone e tendência
+ * Card de KPI com icone e tendencia
  */
-export const KPICard: React.FC<KPICardProps> = ({
+export const KPICard: React.FC<KPICardProps> = memo(function KPICard({
   title,
   value,
   description,
   icon,
   trend,
   variant = 'default',
-}) => {
+}: KPICardProps) {
   const variantStyles = {
     default: 'border-border',
     success: 'border-l-4 border-l-green-500',
@@ -129,12 +130,16 @@ export const KPICard: React.FC<KPICardProps> = ({
       </CardContent>
     </Card>
   );
-};
+});
 
 /**
  * Card de contrato com progresso
  */
-export const ContractCard: React.FC<{ contract: ContractSummary }> = ({ contract }) => {
+export const ContractCard: React.FC<{ contract: ContractSummary }> = memo(function ContractCard({
+  contract,
+}: {
+  contract: ContractSummary;
+}) {
   const statusColors = {
     PLANNING: 'bg-blue-100 text-blue-800',
     ACTIVE: 'bg-green-100 text-green-800',
@@ -146,11 +151,18 @@ export const ContractCard: React.FC<{ contract: ContractSummary }> = ({ contract
     PLANNING: 'Planejamento',
     ACTIVE: 'Ativo',
     SUSPENDED: 'Suspenso',
-    COMPLETED: 'Concluído',
+    COMPLETED: 'Concluido',
   };
 
   return (
-    <Card className="hover:shadow-md transition-shadow cursor-pointer">
+    <Card
+      className="hover:shadow-md transition-shadow cursor-pointer focus-within:ring-2 focus-within:ring-primary"
+      tabIndex={0}
+      role="article"
+      aria-label={`Contrato ${contract.code}: ${contract.name}, ${statusLabels[contract.status]}, ${
+        contract.progress
+      }% concluido`}
+    >
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -171,24 +183,35 @@ export const ContractCard: React.FC<{ contract: ContractSummary }> = ({ contract
           {contract.pendingRequests > 0 && (
             <div className="flex items-center gap-1 text-xs text-yellow-600">
               <Clock className="h-3 w-3" />
-              {contract.pendingRequests} requisições pendentes
+              {contract.pendingRequests} requisicoes pendentes
             </div>
           )}
         </div>
       </CardContent>
     </Card>
   );
-};
+});
 
 /**
  * Item pendente na lista
  */
-export const PendingItemRow: React.FC<{ item: PendingItem }> = ({ item }) => {
+export const PendingItemRow: React.FC<{ item: PendingItem }> = memo(function PendingItemRow({
+  item,
+}: {
+  item: PendingItem;
+}) {
   const priorityStyles = {
     LOW: 'bg-gray-100 text-gray-600',
     NORMAL: 'bg-blue-100 text-blue-600',
     HIGH: 'bg-orange-100 text-orange-600',
     URGENT: 'bg-red-100 text-red-600',
+  };
+
+  const priorityLabels = {
+    LOW: 'Baixa',
+    NORMAL: 'Normal',
+    HIGH: 'Alta',
+    URGENT: 'Urgente',
   };
 
   const typeIcons = {
@@ -197,9 +220,24 @@ export const PendingItemRow: React.FC<{ item: PendingItem }> = ({ item }) => {
     approval: <CheckCircle2 size={16} />,
   };
 
+  const typeLabels = {
+    request: 'Requisicao',
+    transfer: 'Transferencia',
+    approval: 'Aprovacao',
+  };
+
   return (
-    <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
-      <div className="text-muted-foreground">{typeIcons[item.type]}</div>
+    <div
+      className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors focus-within:ring-2 focus-within:ring-primary cursor-pointer"
+      tabIndex={0}
+      role="listitem"
+      aria-label={`${typeLabels[item.type]} ${item.code}: ${item.description}, prioridade ${
+        priorityLabels[item.priority]
+      }`}
+    >
+      <div className="text-muted-foreground" aria-hidden="true">
+        {typeIcons[item.type]}
+      </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <span className="font-medium text-sm">{item.code}</span>
@@ -212,7 +250,7 @@ export const PendingItemRow: React.FC<{ item: PendingItem }> = ({ item }) => {
       <span className="text-xs text-muted-foreground whitespace-nowrap">{item.createdAt}</span>
     </div>
   );
-};
+});
 
 // =============================================================================
 // COMPONENTE PRINCIPAL
@@ -229,7 +267,7 @@ export const EnterpriseDashboard: React.FC<EnterpriseDashboardProps> = ({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Dashboard Enterprise</h1>
-          <p className="text-muted-foreground">Visão geral do almoxarifado industrial</p>
+          <p className="text-muted-foreground">Visao geral do almoxarifado industrial</p>
         </div>
       </div>
 
@@ -239,17 +277,17 @@ export const EnterpriseDashboard: React.FC<EnterpriseDashboardProps> = ({
           title="Contratos Ativos"
           value={kpis.activeContracts}
           icon={<ContractIcon size={20} />}
-          description="Em execução"
+          description="Em execucao"
         />
         <KPICard
-          title="Requisições Pendentes"
+          title="Requisicoes Pendentes"
           value={kpis.pendingRequests}
           icon={<MaterialRequestIcon size={20} />}
           variant={kpis.pendingRequests > 10 ? 'warning' : 'default'}
-          description="Aguardando aprovação"
+          description="Aguardando aprovacao"
         />
         <KPICard
-          title="Transferências em Trânsito"
+          title="Transferencias em Transito"
           value={kpis.inTransitTransfers}
           icon={<StockTransferIcon size={20} />}
           description="Em andamento"
@@ -259,11 +297,11 @@ export const EnterpriseDashboard: React.FC<EnterpriseDashboardProps> = ({
           value={kpis.lowStockItems}
           icon={<AlertTriangle size={20} />}
           variant={kpis.lowStockItems > 0 ? 'danger' : 'default'}
-          description="Itens abaixo do mínimo"
+          description="Itens abaixo do minimo"
         />
       </div>
 
-      {/* Consumo do Mês */}
+      {/* Consumo do Mes */}
       <div className="grid gap-4 md:grid-cols-3">
         <Card className="md:col-span-2">
           <CardHeader>
@@ -291,7 +329,7 @@ export const EnterpriseDashboard: React.FC<EnterpriseDashboardProps> = ({
                 ) : (
                   <ArrowDown className="h-4 w-4" />
                 )}
-                {Math.abs(kpis.consumptionTrend)}% vs mês anterior
+                {Math.abs(kpis.consumptionTrend)}% vs mes anterior
               </span>
             </div>
           </CardContent>
@@ -323,7 +361,7 @@ export const EnterpriseDashboard: React.FC<EnterpriseDashboardProps> = ({
         </Card>
       </div>
 
-      {/* Contratos e Pendências */}
+      {/* Contratos e Pendencias */}
       <div className="grid gap-4 md:grid-cols-2">
         {/* Contratos Ativos */}
         <Card>
@@ -332,7 +370,7 @@ export const EnterpriseDashboard: React.FC<EnterpriseDashboardProps> = ({
               <WorkFrontIcon size={20} />
               Contratos em Andamento
             </CardTitle>
-            <CardDescription>Últimos contratos ativos</CardDescription>
+            <CardDescription>Ultimos contratos ativos</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {contracts.slice(0, 4).map((contract) => (
@@ -341,14 +379,14 @@ export const EnterpriseDashboard: React.FC<EnterpriseDashboardProps> = ({
           </CardContent>
         </Card>
 
-        {/* Pendências */}
+        {/* Pendencias */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Clock size={20} />
-              Ações Pendentes
+              Acoes Pendentes
             </CardTitle>
-            <CardDescription>Itens aguardando sua ação</CardDescription>
+            <CardDescription>Itens aguardando sua acao</CardDescription>
           </CardHeader>
           <CardContent className="space-y-1">
             {pendingItems.slice(0, 5).map((item) => (
@@ -357,7 +395,7 @@ export const EnterpriseDashboard: React.FC<EnterpriseDashboardProps> = ({
             {pendingItems.length === 0 && (
               <div className="text-center py-6 text-muted-foreground">
                 <CheckCircle2 className="h-8 w-8 mx-auto mb-2 text-green-500" />
-                <p>Nenhuma pendência!</p>
+                <p>Nenhuma pendencia!</p>
               </div>
             )}
           </CardContent>

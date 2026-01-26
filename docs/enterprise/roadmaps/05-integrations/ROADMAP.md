@@ -1,9 +1,9 @@
 # 🔌 Integrations Roadmap - GIRO Enterprise
 
 > **Agente:** 05-integrations  
-> **Status:** 🔴 BLOCKED  
+> **Status:** � READY  
 > **Progresso:** 0/6 (0%)  
-> **Bloqueador:** Depende de 02-backend, 03-frontend  
+> **Bloqueador:** -  
 > **Última Atualização:** 25 de Janeiro de 2026
 
 ---
@@ -257,7 +257,7 @@ Adaptar e criar integrações específicas para o perfil Enterprise:
 
 ## 🔄 Fluxo de Sincronização Mobile
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                   SYNC INVENTÁRIO MOBILE                        │
 ├─────────────────────────────────────────────────────────────────┤
@@ -320,4 +320,4 @@ Adaptar e criar integrações específicas para o perfil Enterprise:
 
 ---
 
-_Roadmap criado em: 25 de Janeiro de 2026_
+<!-- Roadmap criado em: 25 de Janeiro de 2026 -->

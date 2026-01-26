@@ -27,7 +27,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import type { WorkFront, WorkFrontActivity, MaterialRequest } from '@/types/enterprise';
+import type {
+  WorkFront,
+  WorkFrontActivity,
+  MaterialRequest,
+  Contract,
+  Employee,
+} from '@/types/enterprise';
 
 // Status badge colors
 const statusColors: Record<string, string> = {
@@ -98,13 +104,13 @@ export function WorkFrontDetailPage() {
           managerId: 'mgr-1',
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-        } as any,
+        } as Contract,
         supervisor: {
           id: 'sup-1',
           name: 'Carlos Ferreira',
           email: 'carlos@empresa.com',
           role: 'SUPERVISOR',
-        } as any,
+        } as Employee,
         location: 'Área de Fundações',
       };
 
@@ -484,10 +490,8 @@ export function WorkFrontDetailPage() {
                 <Users className="h-5 w-5 text-muted-foreground mt-0.5" />
                 <div>
                   <p className="text-sm text-muted-foreground">Supervisor</p>
-                  <p className="font-medium">{(workFront.supervisor as any)?.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {(workFront.supervisor as any)?.email}
-                  </p>
+                  <p className="font-medium">{workFront.supervisor?.name}</p>
+                  <p className="text-sm text-muted-foreground">{workFront.supervisor?.email}</p>
                 </div>
               </div>
 

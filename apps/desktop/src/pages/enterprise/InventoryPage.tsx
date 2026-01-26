@@ -86,8 +86,8 @@ const LoadingSkeleton: FC = () => (
 );
 
 const EmptyState: FC<{ message: string }> = ({ message }) => (
-  <div className="flex flex-col items-center justify-center py-16 text-center">
-    <ClipboardList className="h-16 w-16 text-muted-foreground mb-4" />
+  <div className="flex flex-col items-center justify-center py-16 text-center" role="status">
+    <ClipboardList className="h-16 w-16 text-muted-foreground mb-4" aria-hidden="true" />
     <h3 className="text-lg font-medium">Nenhum Item</h3>
     <p className="text-muted-foreground max-w-sm">{message}</p>
   </div>
@@ -113,10 +113,20 @@ const StatsCard: FC<StatsCardProps> = ({ title, value, icon: Icon, variant = 'de
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-muted-foreground">{title}</p>
-            <p className={cn('text-2xl font-bold', variantClasses[variant])}>{value}</p>
+            <p
+              className="text-sm text-muted-foreground"
+              id={`stat-${title.replace(/\s+/g, '-').toLowerCase()}`}
+            >
+              {title}
+            </p>
+            <p
+              className={cn('text-2xl font-bold', variantClasses[variant])}
+              aria-describedby={`stat-${title.replace(/\s+/g, '-').toLowerCase()}`}
+            >
+              {value}
+            </p>
           </div>
-          <Icon className={cn('h-8 w-8', variantClasses[variant])} />
+          <Icon className={cn('h-8 w-8', variantClasses[variant])} aria-hidden="true" />
         </div>
       </CardContent>
     </Card>
@@ -321,8 +331,16 @@ export const InventoryPage: FC = () => {
             Controle e contagem de materiais por local de estoque
           </p>
         </div>
-        <Button variant="outline" onClick={() => refetch()} disabled={loadingBalances}>
-          <RefreshCw className={cn('mr-2 h-4 w-4', loadingBalances && 'animate-spin')} />
+        <Button
+          variant="outline"
+          onClick={() => refetch()}
+          disabled={loadingBalances}
+          aria-label="Atualizar inventário"
+        >
+          <RefreshCw
+            className={cn('mr-2 h-4 w-4', loadingBalances && 'animate-spin')}
+            aria-hidden="true"
+          />
           Atualizar
         </Button>
       </div>
@@ -331,7 +349,7 @@ export const InventoryPage: FC = () => {
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2">
-            <Warehouse className="h-5 w-5" />
+            <Warehouse className="h-5 w-5" aria-hidden="true" />
             Local de Estoque
           </CardTitle>
           <CardDescription>Selecione um local para visualizar o inventário</CardDescription>
@@ -344,7 +362,7 @@ export const InventoryPage: FC = () => {
               setIsCountingMode(false);
             }}
           >
-            <SelectTrigger className="max-w-md">
+            <SelectTrigger className="max-w-md" aria-label="Selecionar local de estoque">
               <SelectValue placeholder="Selecione um local" />
             </SelectTrigger>
             <SelectContent>
@@ -367,7 +385,11 @@ export const InventoryPage: FC = () => {
       {selectedLocationId && (
         <>
           {/* Stats */}
-          <div className="grid gap-4 md:grid-cols-4">
+          <div
+            className="grid gap-4 md:grid-cols-4"
+            role="region"
+            aria-label="Estatísticas do inventário"
+          >
             <StatsCard title="Total de Itens" value={stats.total} icon={Package} />
             <StatsCard
               title="Estoque Baixo"
@@ -399,33 +421,48 @@ export const InventoryPage: FC = () => {
               <CardContent className="py-4">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-medium">Progresso da Contagem</span>
-                  <span className="text-sm text-muted-foreground">{stats.progress}%</span>
+                  <span className="text-sm text-muted-foreground" aria-live="polite">
+                    {stats.progress}%
+                  </span>
                 </div>
-                <Progress value={stats.progress} className="h-2" />
+                <Progress
+                  value={stats.progress}
+                  className="h-2"
+                  aria-label={`Progresso da contagem: ${stats.progress}%`}
+                />
               </CardContent>
             </Card>
           )}
 
           {/* Filters & Actions */}
-          <div className="flex items-center gap-4 flex-wrap">
+          <div
+            className="flex items-center gap-4 flex-wrap"
+            role="search"
+            aria-label="Filtros e ações de inventário"
+          >
             <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Search
+                className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+                aria-hidden="true"
+              />
               <Input
                 placeholder="Buscar material..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-9"
+                aria-label="Buscar materiais no inventário"
               />
             </div>
             <Button
               variant={showOnlyLow ? 'default' : 'outline'}
               onClick={() => setShowOnlyLow(!showOnlyLow)}
               className="shrink-0"
+              aria-pressed={showOnlyLow}
             >
-              <AlertTriangle className="mr-2 h-4 w-4" />
+              <AlertTriangle className="mr-2 h-4 w-4" aria-hidden="true" />
               Estoque Baixo
               {stats.lowStock > 0 && (
-                <Badge variant="secondary" className="ml-2">
+                <Badge variant="secondary" className="ml-2" aria-label={`${stats.lowStock} itens`}>
                   {stats.lowStock}
                 </Badge>
               )}
@@ -435,7 +472,7 @@ export const InventoryPage: FC = () => {
 
             {!isCountingMode ? (
               <Button onClick={handleStartCounting} disabled={inventoryItems.length === 0}>
-                <ClipboardList className="mr-2 h-4 w-4" />
+                <ClipboardList className="mr-2 h-4 w-4" aria-hidden="true" />
                 Iniciar Contagem
               </Button>
             ) : (
@@ -444,7 +481,7 @@ export const InventoryPage: FC = () => {
                   Cancelar
                 </Button>
                 <Button onClick={handleFinishCounting}>
-                  <Check className="mr-2 h-4 w-4" />
+                  <Check className="mr-2 h-4 w-4" aria-hidden="true" />
                   Finalizar Contagem
                 </Button>
               </div>
@@ -455,8 +492,15 @@ export const InventoryPage: FC = () => {
           <Card>
             <CardContent className="p-0">
               {loadingBalances ? (
-                <div className="flex items-center justify-center py-16">
-                  <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                <div
+                  className="flex items-center justify-center py-16"
+                  role="status"
+                  aria-label="Carregando inventário"
+                >
+                  <Loader2
+                    className="h-8 w-8 animate-spin text-muted-foreground"
+                    aria-hidden="true"
+                  />
                 </div>
               ) : filteredItems.length === 0 ? (
                 <EmptyState
@@ -469,7 +513,7 @@ export const InventoryPage: FC = () => {
                   }
                 />
               ) : (
-                <Table>
+                <Table aria-label="Lista de itens do inventário">
                   <TableHeader>
                     <TableRow>
                       <TableHead className="w-[35%]">Material</TableHead>
@@ -481,7 +525,9 @@ export const InventoryPage: FC = () => {
                         <>
                           <TableHead className="text-center">Contagem</TableHead>
                           <TableHead className="text-center">Diferença</TableHead>
-                          <TableHead className="w-[100px]"></TableHead>
+                          <TableHead className="w-[100px]">
+                            <span className="sr-only">Ações</span>
+                          </TableHead>
                         </>
                       )}
                     </TableRow>
@@ -499,6 +545,9 @@ export const InventoryPage: FC = () => {
                             isLowStock && 'bg-amber-50 dark:bg-amber-950/20',
                             item.status === 'adjusted' && 'bg-green-50 dark:bg-green-950/20'
                           )}
+                          aria-label={`${item.productName}, estoque ${item.quantity} ${
+                            item.productUnit
+                          }${isLowStock ? ', estoque baixo' : ''}`}
                         >
                           <TableCell>
                             <div>
@@ -538,6 +587,7 @@ export const InventoryPage: FC = () => {
                                         e.target.value ? parseFloat(e.target.value) : null
                                       )
                                     }
+                                    aria-label={`Quantidade contada de ${item.productName}`}
                                   />
                                 </div>
                               </TableCell>
@@ -551,9 +601,17 @@ export const InventoryPage: FC = () => {
                                       item.difference < 0 &&
                                         'bg-red-100 text-red-800 border-red-200'
                                     )}
+                                    role="status"
+                                    aria-label={`Diferença: ${item.difference > 0 ? '+' : ''}${
+                                      item.difference
+                                    }`}
                                   >
-                                    {item.difference > 0 && <ArrowUp className="mr-1 h-3 w-3" />}
-                                    {item.difference < 0 && <ArrowDown className="mr-1 h-3 w-3" />}
+                                    {item.difference > 0 && (
+                                      <ArrowUp className="mr-1 h-3 w-3" aria-hidden="true" />
+                                    )}
+                                    {item.difference < 0 && (
+                                      <ArrowDown className="mr-1 h-3 w-3" aria-hidden="true" />
+                                    )}
                                     {item.difference > 0 ? '+' : ''}
                                     {item.difference}
                                   </Badge>
@@ -570,8 +628,8 @@ export const InventoryPage: FC = () => {
                                   </Button>
                                 )}
                                 {item.status === 'adjusted' && (
-                                  <Badge variant="outline" className="bg-green-50">
-                                    <Check className="mr-1 h-3 w-3" />
+                                  <Badge variant="outline" className="bg-green-50" role="status">
+                                    <Check className="mr-1 h-3 w-3" aria-hidden="true" />
                                     OK
                                   </Badge>
                                 )}
@@ -591,31 +649,37 @@ export const InventoryPage: FC = () => {
 
       {/* Adjustment Modal */}
       <Dialog open={adjustmentModal !== null} onOpenChange={() => setAdjustmentModal(null)}>
-        <DialogContent>
+        <DialogContent aria-describedby="adjustment-description">
           <DialogHeader>
             <DialogTitle>Ajustar Estoque</DialogTitle>
-            <DialogDescription>
+            <DialogDescription id="adjustment-description">
               Confirme o ajuste de estoque para <strong>{adjustmentModal?.item.productName}</strong>
             </DialogDescription>
           </DialogHeader>
           {adjustmentModal && (
-            <div className="space-y-4">
+            <div className="space-y-4" role="region" aria-label="Detalhes do ajuste">
               <div className="grid grid-cols-2 gap-4 p-4 bg-muted rounded-lg">
                 <div>
-                  <p className="text-sm text-muted-foreground">Estoque Atual</p>
-                  <p className="text-lg font-bold">
+                  <p className="text-sm text-muted-foreground" id="current-stock-label">
+                    Estoque Atual
+                  </p>
+                  <p className="text-lg font-bold" aria-labelledby="current-stock-label">
                     {adjustmentModal.item.quantity} {adjustmentModal.item.productUnit}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Quantidade Contada</p>
-                  <p className="text-lg font-bold text-primary">
+                  <p className="text-sm text-muted-foreground" id="counted-qty-label">
+                    Quantidade Contada
+                  </p>
+                  <p className="text-lg font-bold text-primary" aria-labelledby="counted-qty-label">
                     {adjustmentModal.item.countedQty} {adjustmentModal.item.productUnit}
                   </p>
                 </div>
               </div>
               <div className="p-3 rounded-lg border flex items-center justify-between">
-                <span className="text-sm">Diferença</span>
+                <span className="text-sm" id="difference-label">
+                  Diferença
+                </span>
                 <Badge
                   variant="outline"
                   className={cn(
@@ -624,18 +688,24 @@ export const InventoryPage: FC = () => {
                       ? 'bg-green-100 text-green-800'
                       : 'bg-red-100 text-red-800'
                   )}
+                  role="status"
+                  aria-labelledby="difference-label"
                 >
                   {(adjustmentModal.item.difference ?? 0) > 0 ? '+' : ''}
                   {adjustmentModal.item.difference} {adjustmentModal.item.productUnit}
                 </Badge>
               </div>
               <div>
-                <label className="text-sm font-medium">Motivo do Ajuste *</label>
+                <label htmlFor="adjustment-reason" className="text-sm font-medium">
+                  Motivo do Ajuste *
+                </label>
                 <Textarea
+                  id="adjustment-reason"
                   placeholder="Informe o motivo do ajuste de estoque..."
                   value={adjustmentReason}
                   onChange={(e) => setAdjustmentReason(e.target.value)}
                   className="mt-1.5"
+                  aria-required="true"
                 />
               </div>
             </div>
@@ -646,11 +716,11 @@ export const InventoryPage: FC = () => {
             </Button>
             <Button onClick={handleConfirmAdjustment} disabled={isAdjusting}>
               {isAdjusting ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
               ) : (
-                <Save className="mr-2 h-4 w-4" />
+                <Save className="mr-2 h-4 w-4" aria-hidden="true" />
               )}
-              Confirmar Ajuste
+              {isAdjusting ? 'Ajustando...' : 'Confirmar Ajuste'}
             </Button>
           </DialogFooter>
         </DialogContent>

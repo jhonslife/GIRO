@@ -165,12 +165,12 @@ export function RequestDetailPage() {
     loadRequest();
   }, [loadRequest]);
 
-  async function handleStatusChange(newStatus: string, _reason?: string) {
+  async function handleStatusChange(newStatus: string, reason?: string) {
     if (!request) return;
     try {
       // TODO: Replace with actual Tauri invoke
       // await invoke('update_material_request_status', { id: request.id, status: newStatus, reason });
-      console.log('Status changed to:', newStatus);
+      console.log('Status changed to:', newStatus, reason ? `Reason: ${reason}` : '');
       await loadRequest();
     } catch (error) {
       console.error('Failed to update status:', error);
@@ -211,14 +211,31 @@ export function RequestDetailPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/enterprise/requests')}>
-            <ArrowLeft className="h-5 w-5" />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate('/enterprise/requests')}
+            aria-label="Voltar para requisições"
+          >
+            <ArrowLeft className="h-5 w-5" aria-hidden="true" />
           </Button>
           <div>
             <div className="flex items-center gap-3">
               <h1 className="text-2xl font-bold">{request.code}</h1>
-              <Badge className={statusColors[request.status]}>{statusLabels[request.status]}</Badge>
-              <Badge className={priorityColors[request.priority]}>{request.priority}</Badge>
+              <Badge
+                className={statusColors[request.status]}
+                role="status"
+                aria-label={`Status: ${statusLabels[request.status]}`}
+              >
+                {statusLabels[request.status]}
+              </Badge>
+              <Badge
+                className={priorityColors[request.priority]}
+                role="status"
+                aria-label={`Prioridade: ${request.priority}`}
+              >
+                {request.priority}
+              </Badge>
             </div>
             <p className="text-muted-foreground">
               Criada em {new Date(request.createdAt).toLocaleDateString('pt-BR')}
@@ -229,12 +246,12 @@ export function RequestDetailPage() {
         <div className="flex gap-2">
           {request.status === 'DRAFT' && (
             <Button variant="outline" onClick={() => navigate(`/enterprise/requests/${id}/edit`)}>
-              <Edit className="h-4 w-4 mr-2" />
+              <Edit className="h-4 w-4 mr-2" aria-hidden="true" />
               Editar
             </Button>
           )}
           <Button variant="outline" onClick={handlePrint}>
-            <Printer className="h-4 w-4 mr-2" />
+            <Printer className="h-4 w-4 mr-2" aria-hidden="true" />
             Imprimir
           </Button>
         </div>
@@ -251,7 +268,7 @@ export function RequestDetailPage() {
             <CardContent className="grid grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
-                  <Package className="h-5 w-5 text-muted-foreground mt-0.5" />
+                  <Package className="h-5 w-5 text-muted-foreground mt-0.5" aria-hidden="true" />
                   <div>
                     <p className="text-sm text-muted-foreground">Contrato</p>
                     <p className="font-medium">{request.contract?.name}</p>
@@ -260,7 +277,7 @@ export function RequestDetailPage() {
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <MapPin className="h-5 w-5 text-muted-foreground mt-0.5" />
+                  <MapPin className="h-5 w-5 text-muted-foreground mt-0.5" aria-hidden="true" />
                   <div>
                     <p className="text-sm text-muted-foreground">Frente de Trabalho</p>
                     <p className="font-medium">{request.workFront?.name}</p>
@@ -271,7 +288,7 @@ export function RequestDetailPage() {
 
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
-                  <User className="h-5 w-5 text-muted-foreground mt-0.5" />
+                  <User className="h-5 w-5 text-muted-foreground mt-0.5" aria-hidden="true" />
                   <div>
                     <p className="text-sm text-muted-foreground">Solicitante</p>
                     <p className="font-medium">{request.requester?.name}</p>
@@ -279,7 +296,7 @@ export function RequestDetailPage() {
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <Calendar className="h-5 w-5 text-muted-foreground mt-0.5" />
+                  <Calendar className="h-5 w-5 text-muted-foreground mt-0.5" aria-hidden="true" />
                   <div>
                     <p className="text-sm text-muted-foreground">Data de Necessidade</p>
                     <p className="font-medium">
@@ -291,7 +308,7 @@ export function RequestDetailPage() {
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <Clock className="h-5 w-5 text-muted-foreground mt-0.5" />
+                  <Clock className="h-5 w-5 text-muted-foreground mt-0.5" aria-hidden="true" />
                   <div>
                     <p className="text-sm text-muted-foreground">Atividade</p>
                     <p className="font-medium">{request.activity?.name || '-'}</p>
@@ -311,7 +328,7 @@ export function RequestDetailPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Table>
+              <Table aria-label="Itens da requisição de material">
                 <TableHeader>
                   <TableRow>
                     <TableHead>Código</TableHead>
@@ -328,9 +345,19 @@ export function RequestDetailPage() {
                     const approvedQty = item.approvedQuantity ?? 0;
                     const isComplete = deliveredQty >= item.requestedQuantity;
                     const isPartial = approvedQty > 0 || deliveredQty > 0;
+                    const statusText = isComplete
+                      ? 'Entregue completamente'
+                      : isPartial
+                      ? 'Parcialmente entregue'
+                      : 'Pendente';
 
                     return (
-                      <TableRow key={item.id}>
+                      <TableRow
+                        key={item.id}
+                        aria-label={`${item.product?.name ?? 'Produto'}, ${
+                          item.requestedQuantity
+                        } solicitado, ${statusText}`}
+                      >
                         <TableCell className="font-mono text-sm">{item.productId}</TableCell>
                         <TableCell>{item.product?.name ?? 'Produto'}</TableCell>
                         <TableCell className="text-right">{item.requestedQuantity}</TableCell>
@@ -338,13 +365,26 @@ export function RequestDetailPage() {
                         <TableCell className="text-right">{deliveredQty}</TableCell>
                         <TableCell className="text-center">
                           {isComplete ? (
-                            <CheckCircle className="h-5 w-5 text-green-500 inline" />
+                            <CheckCircle
+                              className="h-5 w-5 text-green-500 inline"
+                              aria-label="Completo"
+                            />
                           ) : isPartial ? (
-                            <Badge variant="outline" className="text-yellow-600">
+                            <Badge
+                              variant="outline"
+                              className="text-yellow-600"
+                              role="status"
+                              aria-label="Parcialmente entregue"
+                            >
                               Parcial
                             </Badge>
                           ) : (
-                            <Badge variant="outline" className="text-gray-500">
+                            <Badge
+                              variant="outline"
+                              className="text-gray-500"
+                              role="status"
+                              aria-label="Pendente"
+                            >
                               Pendente
                             </Badge>
                           )}

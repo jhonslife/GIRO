@@ -668,4 +668,4 @@ interface WSInventoryResponse {
 
 ---
 
-_Documento gerado seguindo metodologia "Architect First, Code Later" - Arkheion Corp_
+<!-- Documento gerado seguindo metodologia "Architect First, Code Later" - Arkheion Corp -->

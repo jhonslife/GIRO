@@ -664,8 +664,8 @@ Após implementação, verificar:
 
 ---
 
-_Roadmap concluído em: 26 de Janeiro de 2026_
+<!-- Roadmap concluído em: 26 de Janeiro de 2026 -->
 
 ---
 
-_Roadmap criado em: 25 de Janeiro de 2026_
+<!-- Roadmap criado em: 25 de Janeiro de 2026 -->

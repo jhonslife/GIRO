@@ -45,14 +45,29 @@ const contractStatusConfig: Record<ContractStatus, { label: string; color: strin
 interface ContractStatusBadgeProps {
   status: ContractStatus | string;
   className?: string;
+  /** Descrição adicional para leitores de tela */
+  'aria-description'?: string;
 }
 
-export const ContractStatusBadge: FC<ContractStatusBadgeProps> = ({ status, className }) => {
+export const ContractStatusBadge: FC<ContractStatusBadgeProps> = ({
+  status,
+  className,
+  'aria-description': ariaDescription,
+}) => {
   const config = contractStatusConfig[status as ContractStatus] || {
     label: status,
     color: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300',
   };
-  return <Badge className={cn('font-normal', config.color, className)}>{config.label}</Badge>;
+  return (
+    <Badge
+      className={cn('font-normal', config.color, className)}
+      role="status"
+      aria-label={`Status do contrato: ${config.label}`}
+      aria-description={ariaDescription}
+    >
+      {config.label}
+    </Badge>
+  );
 };
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -97,14 +112,31 @@ const requestStatusConfig: Record<MaterialRequestStatus, { label: string; color:
 interface RequestStatusBadgeProps {
   status: MaterialRequestStatus | string;
   className?: string;
+  /** Número da requisição para contexto */
+  requestNumber?: string;
 }
 
-export const RequestStatusBadge: FC<RequestStatusBadgeProps> = ({ status, className }) => {
+export const RequestStatusBadge: FC<RequestStatusBadgeProps> = ({
+  status,
+  className,
+  requestNumber,
+}) => {
   const config = requestStatusConfig[status as MaterialRequestStatus] || {
     label: status,
     color: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300',
   };
-  return <Badge className={cn('font-normal', config.color, className)}>{config.label}</Badge>;
+  const ariaLabel = requestNumber
+    ? `Requisição ${requestNumber}: ${config.label}`
+    : `Status da requisição: ${config.label}`;
+  return (
+    <Badge
+      className={cn('font-normal', config.color, className)}
+      role="status"
+      aria-label={ariaLabel}
+    >
+      {config.label}
+    </Badge>
+  );
 };
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -149,14 +181,31 @@ const transferStatusConfig: Record<TransferStatus, { label: string; color: strin
 interface TransferStatusBadgeProps {
   status: TransferStatus | string;
   className?: string;
+  /** Número da transferência para contexto */
+  transferNumber?: string;
 }
 
-export const TransferStatusBadge: FC<TransferStatusBadgeProps> = ({ status, className }) => {
+export const TransferStatusBadge: FC<TransferStatusBadgeProps> = ({
+  status,
+  className,
+  transferNumber,
+}) => {
   const config = transferStatusConfig[status as TransferStatus] || {
     label: status,
     color: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300',
   };
-  return <Badge className={cn('font-normal', config.color, className)}>{config.label}</Badge>;
+  const ariaLabel = transferNumber
+    ? `Transferência ${transferNumber}: ${config.label}`
+    : `Status da transferência: ${config.label}`;
+  return (
+    <Badge
+      className={cn('font-normal', config.color, className)}
+      role="status"
+      aria-label={ariaLabel}
+    >
+      {config.label}
+    </Badge>
+  );
 };
 
 // ────────────────────────────────────────────────────────────────────────────

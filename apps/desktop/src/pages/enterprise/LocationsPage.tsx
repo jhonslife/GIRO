@@ -66,51 +66,71 @@ const StatsCards = ({ stats }: { stats: LocationStats }) => {
     }).format(value);
 
   return (
-    <div className="grid gap-4 md:grid-cols-4">
+    <div
+      className="grid gap-4 md:grid-cols-4"
+      role="region"
+      aria-label="Estatísticas de locais de estoque"
+    >
       <Card>
         <CardContent className="flex items-center gap-4 pt-6">
-          <div className="rounded-full bg-blue-100 p-3">
+          <div className="rounded-full bg-blue-100 p-3" aria-hidden="true">
             <Warehouse className="h-5 w-5 text-blue-600" />
           </div>
           <div>
-            <p className="text-2xl font-bold">{stats.central}</p>
-            <p className="text-sm text-muted-foreground">Almoxarifados Centrais</p>
+            <p className="text-2xl font-bold" aria-describedby="stat-central">
+              {stats.central}
+            </p>
+            <p id="stat-central" className="text-sm text-muted-foreground">
+              Almoxarifados Centrais
+            </p>
           </div>
         </CardContent>
       </Card>
 
       <Card>
         <CardContent className="flex items-center gap-4 pt-6">
-          <div className="rounded-full bg-green-100 p-3">
+          <div className="rounded-full bg-green-100 p-3" aria-hidden="true">
             <MapPin className="h-5 w-5 text-green-600" />
           </div>
           <div>
-            <p className="text-2xl font-bold">{stats.field}</p>
-            <p className="text-sm text-muted-foreground">Almoxarifados de Campo</p>
+            <p className="text-2xl font-bold" aria-describedby="stat-field">
+              {stats.field}
+            </p>
+            <p id="stat-field" className="text-sm text-muted-foreground">
+              Almoxarifados de Campo
+            </p>
           </div>
         </CardContent>
       </Card>
 
       <Card>
         <CardContent className="flex items-center gap-4 pt-6">
-          <div className="rounded-full bg-purple-100 p-3">
+          <div className="rounded-full bg-purple-100 p-3" aria-hidden="true">
             <Package className="h-5 w-5 text-purple-600" />
           </div>
           <div>
-            <p className="text-2xl font-bold">{stats.totalItems.toLocaleString()}</p>
-            <p className="text-sm text-muted-foreground">Total de Itens</p>
+            <p className="text-2xl font-bold" aria-describedby="stat-items">
+              {stats.totalItems.toLocaleString()}
+            </p>
+            <p id="stat-items" className="text-sm text-muted-foreground">
+              Total de Itens
+            </p>
           </div>
         </CardContent>
       </Card>
 
       <Card>
         <CardContent className="flex items-center gap-4 pt-6">
-          <div className="rounded-full bg-yellow-100 p-3">
+          <div className="rounded-full bg-yellow-100 p-3" aria-hidden="true">
             <Box className="h-5 w-5 text-yellow-600" />
           </div>
           <div>
-            <p className="text-2xl font-bold">{formatCurrency(stats.totalValue)}</p>
-            <p className="text-sm text-muted-foreground">Valor em Estoque</p>
+            <p className="text-2xl font-bold" aria-describedby="stat-value">
+              {formatCurrency(stats.totalValue)}
+            </p>
+            <p id="stat-value" className="text-sm text-muted-foreground">
+              Valor em Estoque
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -149,10 +169,23 @@ const LocationCard = ({ location, onView, onEdit, onViewStock }: LocationCardPro
   const config = typeConfig[locationType];
   const Icon = config.icon;
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onView(location.id);
+    }
+  };
+
   return (
     <Card
-      className="cursor-pointer transition-shadow hover:shadow-md"
+      className="cursor-pointer transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       onClick={() => onView(location.id)}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      role="article"
+      aria-label={`${config.label} ${location.name}, código ${location.code}, ${
+        location.itemCount?.toLocaleString() || 0
+      } itens, ${location.isActive ? 'ativo' : 'inativo'}`}
     >
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between">
@@ -162,6 +195,7 @@ const LocationCard = ({ location, onView, onEdit, onViewStock }: LocationCardPro
                 'rounded-lg p-2',
                 config.color.replace('text-', 'bg-').replace('-700', '-100')
               )}
+              aria-hidden="true"
             >
               <Icon className={cn('h-5 w-5', config.color.split(' ')[1])} />
             </div>
@@ -171,11 +205,17 @@ const LocationCard = ({ location, onView, onEdit, onViewStock }: LocationCardPro
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Badge className={cn('font-normal', config.color)}>{config.label}</Badge>
+            <Badge
+              className={cn('font-normal', config.color)}
+              role="status"
+              aria-label={`Tipo: ${config.label}`}
+            >
+              {config.label}
+            </Badge>
             <DropdownMenu>
               <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <MoreVertical className="h-4 w-4" />
+                <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Mais ações">
+                  <MoreVertical className="h-4 w-4" aria-hidden="true" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -196,7 +236,7 @@ const LocationCard = ({ location, onView, onEdit, onViewStock }: LocationCardPro
         {/* Contract */}
         {location.contractCode && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Building className="h-4 w-4" />
+            <Building className="h-4 w-4" aria-hidden="true" />
             <span className="truncate">{location.contractCode}</span>
           </div>
         )}
@@ -204,7 +244,7 @@ const LocationCard = ({ location, onView, onEdit, onViewStock }: LocationCardPro
         {/* Address */}
         {location.address && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <MapPin className="h-4 w-4 shrink-0" />
+            <MapPin className="h-4 w-4 shrink-0" aria-hidden="true" />
             <span className="truncate">{location.address}</span>
           </div>
         )}
@@ -222,12 +262,17 @@ const LocationCard = ({ location, onView, onEdit, onViewStock }: LocationCardPro
         </div>
 
         {/* Active status */}
-        <div className="flex items-center gap-2">
+        <div
+          className="flex items-center gap-2"
+          role="status"
+          aria-label={location.isActive ? 'Local ativo' : 'Local inativo'}
+        >
           <span
             className={cn(
               'h-2 w-2 rounded-full',
               location.isActive ? 'bg-green-500' : 'bg-gray-400'
             )}
+            aria-hidden="true"
           />
           <span className="text-xs text-muted-foreground">
             {location.isActive ? 'Ativo' : 'Inativo'}
@@ -319,12 +364,20 @@ export function LocationsPage() {
           <p className="text-muted-foreground">Gerencie almoxarifados centrais e de campo</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="icon" onClick={() => refetch()}>
-            <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => refetch()}
+            aria-label="Atualizar lista"
+          >
+            <RefreshCw
+              className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`}
+              aria-hidden="true"
+            />
           </Button>
           <PermissionGuard permission="locations.create">
             <Button onClick={handleNewLocation}>
-              <Plus className="mr-2 h-4 w-4" />
+              <Plus className="mr-2 h-4 w-4" aria-hidden="true" />
               Novo Local
             </Button>
           </PermissionGuard>
@@ -338,7 +391,7 @@ export function LocationsPage() {
       <Card>
         <CardHeader className="pb-3">
           <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4" />
+            <Filter className="h-4 w-4" aria-hidden="true" />
             <CardTitle className="text-base">Filtros</CardTitle>
             {hasActiveFilters && (
               <Button variant="ghost" size="sm" onClick={clearFilters} className="ml-auto h-7">
@@ -348,14 +401,22 @@ export function LocationsPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 md:grid-cols-3">
+          <div
+            className="grid gap-4 md:grid-cols-3"
+            role="search"
+            aria-label="Filtros de locais de estoque"
+          >
             <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Search
+                className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"
+                aria-hidden="true"
+              />
               <Input
                 placeholder="Buscar por nome ou código..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-8"
+                aria-label="Buscar locais de estoque"
               />
             </div>
 
@@ -363,7 +424,7 @@ export function LocationsPage() {
               value={typeFilter}
               onValueChange={(value) => setTypeFilter(value as StockLocationType | 'ALL')}
             >
-              <SelectTrigger>
+              <SelectTrigger aria-label="Filtrar por tipo">
                 <SelectValue placeholder="Tipo" />
               </SelectTrigger>
               <SelectContent>
@@ -378,7 +439,7 @@ export function LocationsPage() {
               value={contractFilter || 'ALL'}
               onValueChange={(value) => setContractFilter(value === 'ALL' ? '' : value)}
             >
-              <SelectTrigger>
+              <SelectTrigger aria-label="Filtrar por contrato">
                 <SelectValue placeholder="Contrato" />
               </SelectTrigger>
               <SelectContent>
@@ -394,9 +455,23 @@ export function LocationsPage() {
         </CardContent>
       </Card>
 
+      {/* Results count */}
+      <p
+        className="text-sm text-muted-foreground"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {isLoading
+          ? 'Carregando locais...'
+          : `${filteredLocations.length} loca${
+              filteredLocations.length !== 1 ? 'is' : 'l'
+            } encontrado${filteredLocations.length !== 1 ? 's' : ''}`}
+      </p>
+
       {/* Content */}
       {isLoading ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3" aria-hidden="true">
           {Array.from({ length: 6 }).map((_, i) => (
             <Card key={i}>
               <CardHeader className="pb-2">
@@ -421,8 +496,8 @@ export function LocationsPage() {
         </div>
       ) : filteredLocations.length === 0 ? (
         <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <Warehouse className="h-12 w-12 text-muted-foreground" />
+          <CardContent className="flex flex-col items-center justify-center py-12" role="status">
+            <Warehouse className="h-12 w-12 text-muted-foreground" aria-hidden="true" />
             <h3 className="mt-4 text-lg font-semibold">Nenhum local encontrado</h3>
             <p className="mt-2 text-center text-muted-foreground">
               {hasActiveFilters
@@ -436,7 +511,7 @@ export function LocationsPage() {
             ) : (
               <PermissionGuard permission="locations.create">
                 <Button onClick={handleNewLocation} className="mt-4">
-                  <Plus className="mr-2 h-4 w-4" />
+                  <Plus className="mr-2 h-4 w-4" aria-hidden="true" />
                   Novo Local
                 </Button>
               </PermissionGuard>
@@ -445,7 +520,11 @@ export function LocationsPage() {
         </Card>
       ) : typeFilter !== 'ALL' ? (
         // Show flat list when filtering by type
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div
+          className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+          role="list"
+          aria-label="Lista de locais de estoque"
+        >
           {filteredLocations.map((location) => (
             <LocationCard
               key={location.id}
@@ -461,13 +540,19 @@ export function LocationsPage() {
         <div className="space-y-8">
           {/* Central */}
           {centralLocations.length > 0 && (
-            <div>
+            <section aria-label="Almoxarifados Centrais">
               <div className="mb-4 flex items-center gap-2">
-                <Warehouse className="h-5 w-5 text-blue-600" />
+                <Warehouse className="h-5 w-5 text-blue-600" aria-hidden="true" />
                 <h2 className="text-lg font-semibold">Almoxarifados Centrais</h2>
-                <Badge variant="secondary">{centralLocations.length}</Badge>
+                <Badge variant="secondary" aria-label={`${centralLocations.length} locais`}>
+                  {centralLocations.length}
+                </Badge>
               </div>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <div
+                className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+                role="list"
+                aria-label="Lista de almoxarifados centrais"
+              >
                 {centralLocations.map((location) => (
                   <LocationCard
                     key={location.id}
@@ -478,18 +563,24 @@ export function LocationsPage() {
                   />
                 ))}
               </div>
-            </div>
+            </section>
           )}
 
           {/* Field */}
           {fieldLocations.length > 0 && (
-            <div>
+            <section aria-label="Almoxarifados de Campo">
               <div className="mb-4 flex items-center gap-2">
-                <MapPin className="h-5 w-5 text-green-600" />
+                <MapPin className="h-5 w-5 text-green-600" aria-hidden="true" />
                 <h2 className="text-lg font-semibold">Almoxarifados de Campo</h2>
-                <Badge variant="secondary">{fieldLocations.length}</Badge>
+                <Badge variant="secondary" aria-label={`${fieldLocations.length} locais`}>
+                  {fieldLocations.length}
+                </Badge>
               </div>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <div
+                className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+                role="list"
+                aria-label="Lista de almoxarifados de campo"
+              >
                 {fieldLocations.map((location) => (
                   <LocationCard
                     key={location.id}
@@ -500,18 +591,24 @@ export function LocationsPage() {
                   />
                 ))}
               </div>
-            </div>
+            </section>
           )}
 
           {/* Transit */}
           {transitLocations.length > 0 && (
-            <div>
+            <section aria-label="Locais de Trânsito">
               <div className="mb-4 flex items-center gap-2">
-                <Package className="h-5 w-5 text-yellow-600" />
+                <Package className="h-5 w-5 text-yellow-600" aria-hidden="true" />
                 <h2 className="text-lg font-semibold">Locais de Trânsito</h2>
-                <Badge variant="secondary">{transitLocations.length}</Badge>
+                <Badge variant="secondary" aria-label={`${transitLocations.length} locais`}>
+                  {transitLocations.length}
+                </Badge>
               </div>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <div
+                className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+                role="list"
+                aria-label="Lista de locais de trânsito"
+              >
                 {transitLocations.map((location) => (
                   <LocationCard
                     key={location.id}
@@ -522,7 +619,7 @@ export function LocationsPage() {
                   />
                 ))}
               </div>
-            </div>
+            </section>
           )}
         </div>
       )}

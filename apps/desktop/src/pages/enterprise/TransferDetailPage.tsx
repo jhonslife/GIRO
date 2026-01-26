@@ -26,7 +26,7 @@ import {
 } from '@/components/ui/table';
 import { TransferWorkflow } from '@/components/enterprise';
 import { useCanDo } from '@/hooks/useEnterprisePermission';
-import type { StockTransfer, StockTransferItem } from '@/types/enterprise';
+import type { StockTransfer, StockTransferItem, Employee, Product } from '@/types/enterprise';
 
 // Status badge colors
 const statusColors: Record<string, string> = {
@@ -72,7 +72,6 @@ export function TransferDetailPage() {
       // const itemsData = await invoke<StockTransferItem[]>('get_stock_transfer_items', { transferId: id });
 
       // Mock data for development
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const mockTransfer: StockTransfer = {
         id,
         code: 'TRF-2026-0001',
@@ -95,7 +94,7 @@ export function TransferDetailPage() {
           isActive: true,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-        } as any,
+        },
         destinationLocation: {
           id: 'loc-2',
           code: 'FR-001',
@@ -104,9 +103,9 @@ export function TransferDetailPage() {
           isActive: true,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-        } as any,
-        requester: { id: 'emp-1', name: 'Maria Santos', role: 'REQUESTER' },
-        shipper: { id: 'emp-2', name: 'Carlos Oliveira', role: 'WAREHOUSE' },
+        },
+        requester: { id: 'emp-1', name: 'Maria Santos', role: 'REQUESTER' } as Employee,
+        shipper: { id: 'emp-2', name: 'Carlos Oliveira', role: 'WAREHOUSE' } as Employee,
       };
 
       const mockItems: StockTransferItem[] = [
@@ -121,7 +120,7 @@ export function TransferDetailPage() {
             name: 'Cimento Portland CP-II 50kg',
             internalCode: 'CIM-001',
             unit: 'SC',
-          } as any,
+          } as Product,
         },
         {
           id: 'item-2',
@@ -134,7 +133,7 @@ export function TransferDetailPage() {
             name: 'Tijolo Cerâmico 6 Furos',
             internalCode: 'TIJ-001',
             unit: 'UN',
-          } as any,
+          } as Product,
         },
         {
           id: 'item-3',
@@ -147,7 +146,7 @@ export function TransferDetailPage() {
             name: 'Vergalhão CA-50 12mm 12m',
             internalCode: 'VER-001',
             unit: 'BR',
-          } as any,
+          } as Product,
         },
       ];
 
@@ -164,12 +163,12 @@ export function TransferDetailPage() {
     loadTransfer();
   }, [loadTransfer]);
 
-  async function handleStatusChange(newStatus: string, _reason?: string) {
+  async function handleStatusChange(newStatus: string, reason?: string) {
     if (!transfer) return;
     try {
       // TODO: Replace with actual Tauri invoke
       // await invoke('update_stock_transfer_status', { id: transfer.id, status: newStatus, reason });
-      console.log('Status changed to:', newStatus);
+      console.log('Status changed to:', newStatus, reason ? `Reason: ${reason}` : '');
       await loadTransfer();
     } catch (error) {
       console.error('Failed to update status:', error);
@@ -259,9 +258,11 @@ export function TransferDetailPage() {
                     <div>
                       <p className="text-sm text-muted-foreground">Origem</p>
                       <p className="font-semibold text-lg">
-                        {(transfer.originLocation as any)?.name}
+                        {transfer.sourceLocation?.name || transfer.originLocation?.name}
                       </p>
-                      <Badge variant="outline">{(transfer.originLocation as any)?.type}</Badge>
+                      <Badge variant="outline">
+                        {transfer.sourceLocation?.type || transfer.originLocation?.type}
+                      </Badge>
                     </div>
                   </div>
                 </div>
@@ -276,9 +277,9 @@ export function TransferDetailPage() {
                     <div>
                       <p className="text-sm text-muted-foreground text-right">Destino</p>
                       <p className="font-semibold text-lg text-right">
-                        {(transfer.destinationLocation as any)?.name}
+                        {transfer.destinationLocation?.name}
                       </p>
-                      <Badge variant="outline">{(transfer.destinationLocation as any)?.type}</Badge>
+                      <Badge variant="outline">{transfer.destinationLocation?.type}</Badge>
                     </div>
                     <div className="p-3 bg-green-100 rounded-lg">
                       <MapPin className="h-6 w-6 text-green-600" />
@@ -370,7 +371,7 @@ export function TransferDetailPage() {
                     return (
                       <TableRow key={item.id}>
                         <TableCell className="font-mono text-sm">
-                          {(item.product as any)?.internalCode || (item.product as any)?.code}
+                          {item.product?.internalCode || item.product?.code}
                         </TableCell>
                         <TableCell>{item.product?.name}</TableCell>
                         <TableCell className="text-right">

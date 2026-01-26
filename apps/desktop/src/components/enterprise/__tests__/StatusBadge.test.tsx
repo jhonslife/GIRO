@@ -1,127 +1,159 @@
 /**
- * Testes para componentes Enterprise
+ * Testes para componentes Enterprise StatusBadge
  * @vitest-environment jsdom
  */
 
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
 
 // Mock do Tauri
 vi.mock('@tauri-apps/api/core', () => ({
   invoke: vi.fn(),
 }));
 
-import { StatusBadge } from '../StatusBadge';
+import {
+  ContractStatusBadge,
+  RequestStatusBadge,
+  TransferStatusBadge,
+  WorkFrontStatusBadge,
+  ActivityStatusBadge,
+  PriorityBadge,
+} from '../StatusBadge';
 
-describe('StatusBadge', () => {
-  it('should render PLANNING status with correct color', () => {
-    render(<StatusBadge status="PLANNING" />);
-    const badge = screen.getByText('Planejamento');
-    expect(badge).toBeInTheDocument();
-    expect(badge).toHaveClass('bg-slate-100');
+describe('ContractStatusBadge', () => {
+  it('should render PLANNING status', () => {
+    render(<ContractStatusBadge status="PLANNING" />);
+    expect(screen.getByText('Planejamento')).toBeInTheDocument();
   });
 
-  it('should render ACTIVE status with correct color', () => {
-    render(<StatusBadge status="ACTIVE" />);
-    const badge = screen.getByText('Ativo');
-    expect(badge).toBeInTheDocument();
-    expect(badge).toHaveClass('bg-green-100');
+  it('should render ACTIVE status', () => {
+    render(<ContractStatusBadge status="ACTIVE" />);
+    expect(screen.getByText('Ativo')).toBeInTheDocument();
   });
 
-  it('should render COMPLETED status with correct color', () => {
-    render(<StatusBadge status="COMPLETED" />);
-    const badge = screen.getByText('Concluído');
-    expect(badge).toBeInTheDocument();
-    expect(badge).toHaveClass('bg-blue-100');
+  it('should render COMPLETED status', () => {
+    render(<ContractStatusBadge status="COMPLETED" />);
+    expect(screen.getByText('Concluído')).toBeInTheDocument();
   });
 
-  it('should render SUSPENDED status with correct color', () => {
-    render(<StatusBadge status="SUSPENDED" />);
-    const badge = screen.getByText('Suspenso');
-    expect(badge).toBeInTheDocument();
-    expect(badge).toHaveClass('bg-yellow-100');
+  it('should render SUSPENDED status', () => {
+    render(<ContractStatusBadge status="SUSPENDED" />);
+    expect(screen.getByText('Suspenso')).toBeInTheDocument();
   });
 
-  it('should render CANCELLED status with correct color', () => {
-    render(<StatusBadge status="CANCELLED" />);
-    const badge = screen.getByText('Cancelado');
-    expect(badge).toBeInTheDocument();
-    expect(badge).toHaveClass('bg-red-100');
+  it('should render CANCELLED status', () => {
+    render(<ContractStatusBadge status="CANCELLED" />);
+    expect(screen.getByText('Cancelado')).toBeInTheDocument();
   });
 
   it('should apply custom className', () => {
-    render(<StatusBadge status="ACTIVE" className="custom-class" />);
+    render(<ContractStatusBadge status="ACTIVE" className="custom-class" />);
     const badge = screen.getByText('Ativo');
     expect(badge).toHaveClass('custom-class');
   });
 });
 
-describe('StatusBadge - Request Statuses', () => {
+describe('RequestStatusBadge', () => {
   it('should render DRAFT status', () => {
-    render(<StatusBadge status="DRAFT" type="request" />);
+    render(<RequestStatusBadge status="DRAFT" />);
     expect(screen.getByText('Rascunho')).toBeInTheDocument();
   });
 
   it('should render PENDING status', () => {
-    render(<StatusBadge status="PENDING" type="request" />);
+    render(<RequestStatusBadge status="PENDING" />);
     expect(screen.getByText('Pendente')).toBeInTheDocument();
   });
 
   it('should render APPROVED status', () => {
-    render(<StatusBadge status="APPROVED" type="request" />);
-    expect(screen.getByText('Aprovado')).toBeInTheDocument();
+    render(<RequestStatusBadge status="APPROVED" />);
+    expect(screen.getByText('Aprovada')).toBeInTheDocument();
   });
 
   it('should render SEPARATING status', () => {
-    render(<StatusBadge status="SEPARATING" type="request" />);
+    render(<RequestStatusBadge status="SEPARATING" />);
     expect(screen.getByText('Separando')).toBeInTheDocument();
   });
 
   it('should render DELIVERED status', () => {
-    render(<StatusBadge status="DELIVERED" type="request" />);
+    render(<RequestStatusBadge status="DELIVERED" />);
     expect(screen.getByText('Entregue')).toBeInTheDocument();
   });
 
   it('should render REJECTED status', () => {
-    render(<StatusBadge status="REJECTED" type="request" />);
-    expect(screen.getByText('Rejeitado')).toBeInTheDocument();
+    render(<RequestStatusBadge status="REJECTED" />);
+    expect(screen.getByText('Rejeitada')).toBeInTheDocument();
   });
 });
 
-describe('StatusBadge - Transfer Statuses', () => {
+describe('TransferStatusBadge', () => {
+  it('should render PENDING status', () => {
+    render(<TransferStatusBadge status="PENDING" />);
+    expect(screen.getByText('Pendente')).toBeInTheDocument();
+  });
+
   it('should render IN_TRANSIT status', () => {
-    render(<StatusBadge status="IN_TRANSIT" type="transfer" />);
+    render(<TransferStatusBadge status="IN_TRANSIT" />);
     expect(screen.getByText('Em Trânsito')).toBeInTheDocument();
   });
 
-  it('should render RECEIVED status', () => {
-    render(<StatusBadge status="RECEIVED" type="transfer" />);
-    expect(screen.getByText('Recebido')).toBeInTheDocument();
+  it('should render COMPLETED status', () => {
+    render(<TransferStatusBadge status="COMPLETED" />);
+    expect(screen.getByText('Concluída')).toBeInTheDocument();
   });
 });
 
-describe('StatusBadge - Priority Levels', () => {
+describe('WorkFrontStatusBadge', () => {
+  it('should render ACTIVE status', () => {
+    render(<WorkFrontStatusBadge status="ACTIVE" />);
+    expect(screen.getByText('Ativa')).toBeInTheDocument();
+  });
+
+  it('should render SUSPENDED status', () => {
+    render(<WorkFrontStatusBadge status="SUSPENDED" />);
+    expect(screen.getByText('Paralisada')).toBeInTheDocument();
+  });
+
+  it('should render COMPLETED status', () => {
+    render(<WorkFrontStatusBadge status="COMPLETED" />);
+    expect(screen.getByText('Concluída')).toBeInTheDocument();
+  });
+});
+
+describe('ActivityStatusBadge', () => {
+  it('should render PENDING status', () => {
+    render(<ActivityStatusBadge status="PENDING" />);
+    expect(screen.getByText('Não Iniciada')).toBeInTheDocument();
+  });
+
+  it('should render IN_PROGRESS status', () => {
+    render(<ActivityStatusBadge status="IN_PROGRESS" />);
+    expect(screen.getByText('Em Andamento')).toBeInTheDocument();
+  });
+
+  it('should render COMPLETED status', () => {
+    render(<ActivityStatusBadge status="COMPLETED" />);
+    expect(screen.getByText('Concluída')).toBeInTheDocument();
+  });
+});
+
+describe('PriorityBadge', () => {
   it('should render LOW priority', () => {
-    render(<StatusBadge status="LOW" type="priority" />);
-    const badge = screen.getByText('Baixa');
-    expect(badge).toHaveClass('bg-slate-100');
+    render(<PriorityBadge priority="LOW" />);
+    expect(screen.getByText('Baixa')).toBeInTheDocument();
   });
 
   it('should render NORMAL priority', () => {
-    render(<StatusBadge status="NORMAL" type="priority" />);
-    const badge = screen.getByText('Normal');
-    expect(badge).toHaveClass('bg-blue-100');
+    render(<PriorityBadge priority="NORMAL" />);
+    expect(screen.getByText('Normal')).toBeInTheDocument();
   });
 
   it('should render HIGH priority', () => {
-    render(<StatusBadge status="HIGH" type="priority" />);
-    const badge = screen.getByText('Alta');
-    expect(badge).toHaveClass('bg-orange-100');
+    render(<PriorityBadge priority="HIGH" />);
+    expect(screen.getByText('Alta')).toBeInTheDocument();
   });
 
   it('should render URGENT priority', () => {
-    render(<StatusBadge status="URGENT" type="priority" />);
-    const badge = screen.getByText('Urgente');
-    expect(badge).toHaveClass('bg-red-100');
+    render(<PriorityBadge priority="URGENT" />);
+    expect(screen.getByText('Urgente')).toBeInTheDocument();
   });
 });

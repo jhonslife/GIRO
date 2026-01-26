@@ -149,15 +149,24 @@ const WorkflowStepItem: FC<WorkflowStepItemProps> = ({ step, isLast }) => {
   };
 
   const styles = getStatusStyles();
+  const ariaLabel = `${step.label}: ${step.description}${
+    step.status === 'current' ? ' (etapa atual)' : ''
+  }${step.status === 'completed' ? ' (concluído)' : ''}`;
 
   return (
-    <div className="flex items-start">
+    <div
+      className="flex items-start"
+      role="listitem"
+      aria-label={ariaLabel}
+      aria-current={step.status === 'current' ? 'step' : undefined}
+    >
       <div className="flex flex-col items-center">
         <div
           className={cn(
             'flex h-10 w-10 items-center justify-center rounded-full transition-all',
             styles.circle
           )}
+          aria-hidden="true"
         >
           {step.status === 'completed' ? (
             <CheckCircle2 className="h-5 w-5" />
@@ -167,7 +176,7 @@ const WorkflowStepItem: FC<WorkflowStepItemProps> = ({ step, isLast }) => {
             step.icon
           )}
         </div>
-        {!isLast && <div className={cn('mt-2 h-12 w-0.5', styles.line)} />}
+        {!isLast && <div className={cn('mt-2 h-12 w-0.5', styles.line)} aria-hidden="true" />}
       </div>
       <div className="ml-4 pb-8">
         <p className={cn('text-sm font-medium', styles.text)}>{step.label}</p>
@@ -362,11 +371,13 @@ export const RequestWorkflow: FC<RequestWorkflowProps> = ({
         </CardHeader>
         <CardContent>
           {/* Workflow Steps */}
-          <div className="mb-6">
-            {steps.map((step, index) => (
-              <WorkflowStepItem key={step.id} step={step} isLast={index === steps.length - 1} />
-            ))}
-          </div>
+          <nav aria-label="Etapas do fluxo de requisição" className="mb-6">
+            <ol role="list" className="list-none p-0 m-0">
+              {steps.map((step, index) => (
+                <WorkflowStepItem key={step.id} step={step} isLast={index === steps.length - 1} />
+              ))}
+            </ol>
+          </nav>
 
           {/* Rejection Reason */}
           {status === 'REJECTED' && request.rejectionReason && (

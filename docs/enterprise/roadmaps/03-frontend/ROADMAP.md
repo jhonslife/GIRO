@@ -521,4 +521,4 @@ apps/desktop/src/
 
 ---
 
-_Roadmap criado em: 25 de Janeiro de 2026_
+<!-- Roadmap criado em: 25 de Janeiro de 2026 -->

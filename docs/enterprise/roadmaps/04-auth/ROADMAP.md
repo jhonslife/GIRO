@@ -339,4 +339,4 @@ Implementar o sistema de autenticação e autorização para o perfil Enterprise
 
 ---
 
-_Roadmap criado em: 25 de Janeiro de 2026_
+<!-- Roadmap criado em: 25 de Janeiro de 2026 -->

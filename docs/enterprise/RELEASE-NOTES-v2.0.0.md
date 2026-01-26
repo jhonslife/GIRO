@@ -106,6 +106,34 @@ O **GIRO Enterprise** é um novo perfil do sistema GIRO focado em **empresas de 
 
 ---
 
+## 🎨 Design System Unificado (v2.0.0)
+
+### Correções de Consistência (25/01/2026)
+
+| Projeto   | Antes      | Depois      | Status     |
+| --------- | ---------- | ----------- | ---------- |
+| Desktop   | HSL básico | GIRO Tokens | ✅ Migrado |
+| Mobile    | HEX custom | GIRO HEX    | ✅ Migrado |
+| Dashboard | Gray OKLCH | Verde GIRO  | ✅ Rebrand |
+
+### Pacote `@giro/design-tokens`
+
+```css
+/* packages/design-tokens/giro-tokens.css */
+--giro-green-500: 142 71% 45%;
+--giro-orange-500: 25 95% 53%;
+--giro-enterprise-500: 217 91% 60%;
+```
+
+### Classes Padronizadas `.giro-*`
+
+- `.giro-btn-primary`, `.giro-btn-secondary`
+- `.giro-card`, `.giro-badge-success`
+- `.giro-input`, `.giro-table`
+- `.theme-enterprise` para perfil Enterprise
+
+---
+
 ## 📱 Integrações
 
 ### Mobile Scanner (Inventário)
@@ -123,16 +151,25 @@ O **GIRO Enterprise** é um novo perfil do sistema GIRO focado em **empresas de 
 | Tipo             | Quantidade | Coverage |
 | ---------------- | ---------- | -------- |
 | Unit (Rust)      | 25+        | 85%      |
-| Unit (React)     | 50+        | 82%      |
+| Unit (React)     | 374+       | 82%      |
 | Integration      | 15+        | -        |
 | E2E (Playwright) | 8 flows    | -        |
 
-### Acessibilidade
+### Acessibilidade (WCAG 2.1 AA)
 
-- WCAG 2.1 Level AA
-- Navegação por teclado completa
-- Contraste > 4.5:1
-- Screen reader tested
+- ✅ `role="status"` em todos os badges
+- ✅ `aria-label` contextualizado
+- ✅ `aria-current="step"` em workflows
+- ✅ `tabIndex` para navegação por teclado
+- ✅ `focus-within:ring-2` para foco visível
+- ✅ Contraste > 4.5:1
+
+### Otimizações de Performance
+
+- ✅ `React.memo()` em KPICard, ContractCard, PendingItemRow
+- ✅ `useMemo()` para cálculos de workflow
+- ✅ Query keys otimizadas com React Query
+- ✅ Stale time configurado (1-5 minutos)
 
 ---
 
@@ -207,10 +244,10 @@ pnpm prisma db seed
 
 ## 📞 Suporte
 
-- **Email**: suporte@giro.arkheion.com.br
-- **Docs**: https://docs.giro.arkheion.com.br/enterprise
-- **Issues**: https://github.com/jhonslife/GIRO/issues
+- **Email**: <suporte@giro.arkheion.com.br>
+- **Docs**: <https://docs.giro.arkheion.com.br/enterprise>
+- **Issues**: <https://github.com/jhonslife/GIRO/issues>
 
 ---
 
-_GIRO Enterprise v2.0.0 - Desenvolvido por Arkheion Corp_
+<!-- GIRO Enterprise v2.0.0 - Desenvolvido por Arkheion Corp -->

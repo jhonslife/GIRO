@@ -321,10 +321,10 @@ CREATE INDEX IF NOT EXISTS idx_inventory_count_items_product ON inventory_count_
 -- ENTERPRISE SETTINGS (Configurações do Módulo)
 -- ═══════════════════════════════════════════════════════════════════════════════
 
-INSERT OR IGNORE INTO settings (id, key, value, value_type, group_name, description, created_at, updated_at)
+INSERT OR IGNORE INTO settings (id, key, value, type, group_name, description, created_at, updated_at)
 VALUES 
-    (lower(hex(randomblob(16))), 'enterprise.enabled', 'false', 'boolean', 'enterprise', 'Habilita o módulo Enterprise', datetime('now'), datetime('now')),
-    (lower(hex(randomblob(16))), 'enterprise.require_approval', 'true', 'boolean', 'enterprise', 'Exigir aprovação para requisições', datetime('now'), datetime('now')),
-    (lower(hex(randomblob(16))), 'enterprise.auto_reserve_stock', 'true', 'boolean', 'enterprise', 'Reservar estoque ao aprovar requisição', datetime('now'), datetime('now')),
-    (lower(hex(randomblob(16))), 'enterprise.approval_limit', '5000', 'number', 'enterprise', 'Limite de aprovação sem gerente (R$)', datetime('now'), datetime('now')),
-    (lower(hex(randomblob(16))), 'enterprise.default_priority', 'NORMAL', 'string', 'enterprise', 'Prioridade padrão de requisições', datetime('now'), datetime('now'));
+    (lower(hex(randomblob(16))), 'enterprise.enabled', 'false', 'BOOLEAN', 'enterprise', 'Habilita o módulo Enterprise', datetime('now'), datetime('now')),
+    (lower(hex(randomblob(16))), 'enterprise.require_approval', 'true', 'BOOLEAN', 'enterprise', 'Exigir aprovação para requisições', datetime('now'), datetime('now')),
+    (lower(hex(randomblob(16))), 'enterprise.auto_reserve_stock', 'true', 'BOOLEAN', 'enterprise', 'Reservar estoque ao aprovar requisição', datetime('now'), datetime('now')),
+    (lower(hex(randomblob(16))), 'enterprise.approval_limit', '5000', 'NUMBER', 'enterprise', 'Limite de aprovação sem gerente (R$)', datetime('now'), datetime('now')),
+    (lower(hex(randomblob(16))), 'enterprise.default_priority', 'NORMAL', 'STRING', 'enterprise', 'Prioridade padrão de requisições', datetime('now'), datetime('now'));

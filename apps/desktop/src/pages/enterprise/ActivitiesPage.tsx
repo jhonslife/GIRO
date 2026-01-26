@@ -76,31 +76,43 @@ const ActivityCard: FC<ActivityCardProps> = ({ activity, onClick }) => {
   const progressColor =
     progress >= 100 ? 'bg-green-500' : progress >= 50 ? 'bg-blue-500' : 'bg-amber-500';
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onClick();
+    }
+  };
+
   return (
     <Card
-      className="cursor-pointer transition-all hover:shadow-md hover:border-primary/50"
+      className="cursor-pointer transition-all hover:shadow-md hover:border-primary/50 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
       onClick={onClick}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      role="article"
+      aria-label={`Atividade ${activity.name}, ${status.label}, ${progress}% concluído`}
     >
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
             <div
               className={cn('h-10 w-10 rounded-lg flex items-center justify-center', status.color)}
+              aria-hidden="true"
             >
-              <StatusIcon className="h-5 w-5" />
+              <StatusIcon className="h-5 w-5" aria-hidden="true" />
             </div>
             <div>
               <CardTitle className="text-base">{activity.name}</CardTitle>
               <CardDescription>{activity.code}</CardDescription>
             </div>
           </div>
-          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          <ChevronRight className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Work Front */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <HardHat className="h-4 w-4" />
+          <HardHat className="h-4 w-4" aria-hidden="true" />
           <span>{activity.workFrontName}</span>
         </div>
 
@@ -113,7 +125,14 @@ const ActivityCard: FC<ActivityCardProps> = ({ activity, onClick }) => {
               {activity.plannedQty.toLocaleString('pt-BR')} {activity.unit}
             </span>
           </div>
-          <div className="relative h-2 w-full overflow-hidden rounded-full bg-secondary">
+          <div
+            className="relative h-2 w-full overflow-hidden rounded-full bg-secondary"
+            role="progressbar"
+            aria-valuenow={Math.min(progress, 100)}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label={`Progresso: ${progress}%`}
+          >
             <div
               className={cn('h-full transition-all', progressColor)}
               style={{ width: `${Math.min(progress, 100)}%` }}
@@ -122,7 +141,7 @@ const ActivityCard: FC<ActivityCardProps> = ({ activity, onClick }) => {
           <div className="flex justify-between text-xs text-muted-foreground">
             <span>{progress}% concluído</span>
             {progress >= 100 && (
-              <Badge variant="outline" className="h-5">
+              <Badge variant="outline" className="h-5" role="status">
                 Concluída
               </Badge>
             )}
@@ -132,7 +151,7 @@ const ActivityCard: FC<ActivityCardProps> = ({ activity, onClick }) => {
         {/* Dates */}
         {(activity.plannedStartDate || activity.plannedEndDate) && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Calendar className="h-4 w-4" />
+            <Calendar className="h-4 w-4" aria-hidden="true" />
             <span>
               {activity.plannedStartDate
                 ? new Date(activity.plannedStartDate).toLocaleDateString('pt-BR')
@@ -154,7 +173,7 @@ const ActivityCard: FC<ActivityCardProps> = ({ activity, onClick }) => {
 // ────────────────────────────────────────────────────────────────────────────
 
 const ActivityCardSkeleton: FC = () => (
-  <Card>
+  <Card aria-hidden="true">
     <CardHeader className="pb-3">
       <div className="flex items-center gap-3">
         <Skeleton className="h-10 w-10 rounded-lg" />
@@ -269,11 +288,19 @@ export const ActivitiesPage: FC = () => {
           <p className="text-muted-foreground">Gerencie atividades das frentes de trabalho</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="icon" onClick={() => refetch()}>
-            <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => refetch()}
+            aria-label="Atualizar lista de atividades"
+          >
+            <RefreshCw
+              className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`}
+              aria-hidden="true"
+            />
           </Button>
           <Button onClick={handleNew} disabled={!workFrontFilter}>
-            <Plus className="mr-2 h-4 w-4" />
+            <Plus className="mr-2 h-4 w-4" aria-hidden="true" />
             Nova Atividade
           </Button>
         </div>
@@ -281,48 +308,80 @@ export const ActivitiesPage: FC = () => {
 
       {/* Stats */}
       {workFrontFilter && (
-        <div className="grid gap-4 md:grid-cols-4">
+        <div
+          className="grid gap-4 md:grid-cols-4"
+          role="region"
+          aria-label="Estatísticas das atividades"
+        >
           <Card>
             <CardContent className="flex items-center gap-4 p-4">
-              <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                <Layers className="h-5 w-5 text-blue-700" />
+              <div
+                className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center"
+                aria-hidden="true"
+              >
+                <Layers className="h-5 w-5 text-blue-700" aria-hidden="true" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Total</p>
-                <p className="text-xl font-bold">{stats.total}</p>
+                <p className="text-sm text-muted-foreground" id="stat-total-label">
+                  Total
+                </p>
+                <p className="text-xl font-bold" aria-describedby="stat-total-label">
+                  {stats.total}
+                </p>
               </div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="flex items-center gap-4 p-4">
-              <div className="h-10 w-10 rounded-lg bg-amber-100 flex items-center justify-center">
-                <Play className="h-5 w-5 text-amber-700" />
+              <div
+                className="h-10 w-10 rounded-lg bg-amber-100 flex items-center justify-center"
+                aria-hidden="true"
+              >
+                <Play className="h-5 w-5 text-amber-700" aria-hidden="true" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Em Andamento</p>
-                <p className="text-xl font-bold">{stats.inProgress}</p>
+                <p className="text-sm text-muted-foreground" id="stat-progress-label">
+                  Em Andamento
+                </p>
+                <p className="text-xl font-bold" aria-describedby="stat-progress-label">
+                  {stats.inProgress}
+                </p>
               </div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="flex items-center gap-4 p-4">
-              <div className="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center">
-                <CheckCircle2 className="h-5 w-5 text-green-700" />
+              <div
+                className="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center"
+                aria-hidden="true"
+              >
+                <CheckCircle2 className="h-5 w-5 text-green-700" aria-hidden="true" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Concluídas</p>
-                <p className="text-xl font-bold">{stats.completed}</p>
+                <p className="text-sm text-muted-foreground" id="stat-completed-label">
+                  Concluídas
+                </p>
+                <p className="text-xl font-bold" aria-describedby="stat-completed-label">
+                  {stats.completed}
+                </p>
               </div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="flex items-center gap-4 p-4">
-              <div className="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center">
-                <Target className="h-5 w-5 text-purple-700" />
+              <div
+                className="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center"
+                aria-hidden="true"
+              >
+                <Target className="h-5 w-5 text-purple-700" aria-hidden="true" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Progresso Médio</p>
-                <p className="text-xl font-bold">{stats.avgProgress}%</p>
+                <p className="text-sm text-muted-foreground" id="stat-avg-label">
+                  Progresso Médio
+                </p>
+                <p className="text-xl font-bold" aria-describedby="stat-avg-label">
+                  {stats.avgProgress}%
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -330,10 +389,10 @@ export const ActivitiesPage: FC = () => {
       )}
 
       {/* Filters */}
-      <Card>
+      <Card role="search" aria-label="Filtros de atividades">
         <CardHeader className="pb-3">
           <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4" />
+            <Filter className="h-4 w-4" aria-hidden="true" />
             <CardTitle className="text-base">Filtros</CardTitle>
             {hasActiveFilters && (
               <Button variant="ghost" size="sm" onClick={clearFilters} className="ml-auto h-7">
@@ -352,7 +411,7 @@ export const ActivitiesPage: FC = () => {
                 setWorkFrontFilter(''); // Reset work front when contract changes
               }}
             >
-              <SelectTrigger>
+              <SelectTrigger aria-label="Filtrar por contrato">
                 <SelectValue placeholder="Contrato" />
               </SelectTrigger>
               <SelectContent>
@@ -370,7 +429,7 @@ export const ActivitiesPage: FC = () => {
               value={workFrontFilter || 'ALL'}
               onValueChange={(value) => setWorkFrontFilter(value === 'ALL' ? '' : value)}
             >
-              <SelectTrigger>
+              <SelectTrigger aria-label="Filtrar por frente de trabalho">
                 <SelectValue placeholder="Frente de Trabalho" />
               </SelectTrigger>
               <SelectContent>
@@ -388,7 +447,7 @@ export const ActivitiesPage: FC = () => {
               value={statusFilter}
               onValueChange={(value) => setStatusFilter(value as ActivityStatus | 'ALL')}
             >
-              <SelectTrigger>
+              <SelectTrigger aria-label="Filtrar por status">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
@@ -402,12 +461,16 @@ export const ActivitiesPage: FC = () => {
 
             {/* Search */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Search
+                className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+                aria-hidden="true"
+              />
               <Input
                 placeholder="Buscar atividade..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-9"
+                aria-label="Buscar atividade por nome ou código"
               />
             </div>
           </div>
@@ -417,8 +480,8 @@ export const ActivitiesPage: FC = () => {
       {/* Content */}
       {!workFrontFilter ? (
         <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <HardHat className="h-12 w-12 text-muted-foreground" />
+          <CardContent className="flex flex-col items-center justify-center py-12" role="status">
+            <HardHat className="h-12 w-12 text-muted-foreground" aria-hidden="true" />
             <h3 className="mt-4 text-lg font-semibold">Selecione uma Frente de Trabalho</h3>
             <p className="mt-2 text-center text-muted-foreground">
               Use os filtros acima para selecionar uma frente e ver suas atividades.
@@ -426,15 +489,19 @@ export const ActivitiesPage: FC = () => {
           </CardContent>
         </Card>
       ) : isLoading ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div
+          className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+          role="status"
+          aria-label="Carregando atividades"
+        >
           {Array.from({ length: 6 }).map((_, i) => (
             <ActivityCardSkeleton key={i} />
           ))}
         </div>
       ) : filteredActivities.length === 0 ? (
         <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <Layers className="h-12 w-12 text-muted-foreground" />
+          <CardContent className="flex flex-col items-center justify-center py-12" role="status">
+            <Layers className="h-12 w-12 text-muted-foreground" aria-hidden="true" />
             <h3 className="mt-4 text-lg font-semibold">Nenhuma atividade encontrada</h3>
             <p className="mt-2 text-center text-muted-foreground">
               {hasActiveFilters
@@ -447,14 +514,19 @@ export const ActivitiesPage: FC = () => {
               </Button>
             ) : (
               <Button onClick={handleNew} className="mt-4">
-                <Plus className="mr-2 h-4 w-4" />
+                <Plus className="mr-2 h-4 w-4" aria-hidden="true" />
                 Nova Atividade
               </Button>
             )}
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div
+          className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+          role="region"
+          aria-label={`${filteredActivities.length} atividades encontradas`}
+          aria-live="polite"
+        >
           {filteredActivities.map((activity) => (
             <ActivityCard
               key={activity.id}

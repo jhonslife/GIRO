@@ -58,32 +58,51 @@ interface ContractCardProps {
 const ContractCard: FC<ContractCardProps> = ({ contract, onClick }) => {
   const statusInfo = statusConfig[contract.status as ContractStatus] || statusConfig.ACTIVE;
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onClick();
+    }
+  };
+
   return (
     <Card
-      className="cursor-pointer transition-all hover:shadow-md hover:border-primary/50"
+      className="cursor-pointer transition-all hover:shadow-md hover:border-primary/50 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
       onClick={onClick}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      role="article"
+      aria-label={`Contrato ${contract.code}: ${contract.name}, cliente ${contract.clientName}, status ${statusInfo.label}`}
     >
       <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
-          <div>
-            <CardTitle className="text-lg">{contract.code}</CardTitle>
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0 flex-1">
+            <CardTitle className="text-lg truncate">{contract.code}</CardTitle>
             <CardDescription className="line-clamp-1">{contract.name}</CardDescription>
           </div>
-          <Badge className={cn('font-normal', statusInfo.color)}>{statusInfo.label}</Badge>
+          <Badge
+            className={cn('font-normal shrink-0', statusInfo.color)}
+            role="status"
+            aria-label={`Status: ${statusInfo.label}`}
+          >
+            {statusInfo.label}
+          </Badge>
         </div>
       </CardHeader>
       <CardContent className="space-y-3">
         {/* Cliente */}
         <div className="flex items-center gap-2 text-sm">
-          <Building2 className="h-4 w-4 text-muted-foreground" />
-          <span className="truncate">{contract.clientName}</span>
+          <Building2 className="h-4 w-4 text-muted-foreground shrink-0" aria-hidden="true" />
+          <span className="truncate" title={contract.clientName}>
+            {contract.clientName}
+          </span>
         </div>
 
         {/* Localização */}
         {contract.city && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <MapPin className="h-4 w-4" />
-            <span>
+            <MapPin className="h-4 w-4 shrink-0" aria-hidden="true" />
+            <span className="truncate">
               {contract.city}
               {contract.state && `, ${contract.state}`}
             </span>
@@ -92,7 +111,7 @@ const ContractCard: FC<ContractCardProps> = ({ contract, onClick }) => {
 
         {/* Período */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Calendar className="h-4 w-4" />
+          <Calendar className="h-4 w-4 shrink-0" aria-hidden="true" />
           <span>
             {new Date(contract.startDate).toLocaleDateString('pt-BR')}
             {contract.endDate && ` - ${new Date(contract.endDate).toLocaleDateString('pt-BR')}`}
@@ -101,8 +120,8 @@ const ContractCard: FC<ContractCardProps> = ({ contract, onClick }) => {
 
         {/* Gerente */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <User className="h-4 w-4" />
-          <span>{contract.managerName || 'Não definido'}</span>
+          <User className="h-4 w-4 shrink-0" aria-hidden="true" />
+          <span className="truncate">{contract.managerName || 'Não definido'}</span>
         </div>
       </CardContent>
     </Card>
@@ -216,12 +235,16 @@ export const ContractsPage: FC = () => {
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
             {/* Search */}
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Search
+                className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+                aria-hidden="true"
+              />
               <Input
                 placeholder="Buscar por código, nome ou cliente..."
                 className="pl-9"
                 value={filters.search}
                 onChange={(e) => updateFilters({ search: e.target.value })}
+                aria-label="Buscar contratos"
               />
             </div>
 
@@ -230,11 +253,13 @@ export const ContractsPage: FC = () => {
               variant={showFilters ? 'secondary' : 'outline'}
               size="sm"
               onClick={() => setShowFilters(!showFilters)}
+              aria-expanded={showFilters}
+              aria-controls="contract-filters"
             >
-              <Filter className="mr-2 h-4 w-4" />
+              <Filter className="mr-2 h-4 w-4" aria-hidden="true" />
               Filtros
               {hasActiveFilters && (
-                <Badge variant="secondary" className="ml-2">
+                <Badge variant="secondary" className="ml-2" aria-label="Filtros ativos">
                   {
                     [filters.status !== 'ALL' && 1, filters.managerId !== 'ALL' && 1].filter(
                       Boolean
@@ -245,8 +270,8 @@ export const ContractsPage: FC = () => {
             </Button>
 
             {hasActiveFilters && (
-              <Button variant="ghost" size="sm" onClick={resetFilters}>
-                <X className="mr-2 h-4 w-4" />
+              <Button variant="ghost" size="sm" onClick={resetFilters} aria-label="Limpar filtros">
+                <X className="mr-2 h-4 w-4" aria-hidden="true" />
                 Limpar
               </Button>
             )}
@@ -254,7 +279,12 @@ export const ContractsPage: FC = () => {
 
           {/* Extended Filters */}
           {showFilters && (
-            <div className="mt-4 grid gap-4 border-t pt-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div
+              id="contract-filters"
+              className="mt-4 grid gap-4 border-t pt-4 sm:grid-cols-2 lg:grid-cols-3"
+              role="region"
+              aria-label="Filtros avançados de contratos"
+            >
               <div className="space-y-2">
                 <label className="text-sm font-medium">Status</label>
                 <Select
@@ -336,8 +366,11 @@ export const ContractsPage: FC = () => {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-muted-foreground">
+            <nav
+              className="flex items-center justify-between"
+              aria-label="Navegação de páginas dos contratos"
+            >
+              <p className="text-sm text-muted-foreground" aria-live="polite">
                 Mostrando {(page - 1) * ITEMS_PER_PAGE + 1} -{' '}
                 {Math.min(page * ITEMS_PER_PAGE, filteredContracts.length)} de{' '}
                 {filteredContracts.length} contratos
@@ -348,8 +381,9 @@ export const ContractsPage: FC = () => {
                   size="sm"
                   disabled={page === 1}
                   onClick={() => setPage(page - 1)}
+                  aria-label="Página anterior"
                 >
-                  <ChevronLeft className="h-4 w-4" />
+                  <ChevronLeft className="h-4 w-4" aria-hidden="true" />
                   Anterior
                 </Button>
                 <Button
@@ -357,12 +391,13 @@ export const ContractsPage: FC = () => {
                   size="sm"
                   disabled={page === totalPages}
                   onClick={() => setPage(page + 1)}
+                  aria-label="Próxima página"
                 >
                   Próxima
-                  <ChevronRight className="h-4 w-4" />
+                  <ChevronRight className="h-4 w-4" aria-hidden="true" />
                 </Button>
               </div>
-            </div>
+            </nav>
           )}
         </>
       )}

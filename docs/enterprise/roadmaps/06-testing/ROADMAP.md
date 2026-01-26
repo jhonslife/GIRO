@@ -1,9 +1,9 @@
 # 🧪 Testing Roadmap - GIRO Enterprise
 
 > **Agente:** 06-testing  
-> **Status:** 🔴 BLOCKED  
-> **Progresso:** 0/12 (0%)  
-> **Bloqueador:** Depende de 02-backend, 03-frontend  
+> **Status:** 🟡 IN PROGRESS  
+> **Progresso:** 5/12 (42%)  
+> **Bloqueador:** -  
 > **Última Atualização:** 25 de Janeiro de 2026
 
 ---
@@ -16,6 +16,26 @@ Garantir qualidade do módulo Enterprise através de testes abrangentes:
 - Testes de integração (API/Commands)
 - Testes E2E (Playwright)
 - Coverage mínimo: 80%
+
+---
+
+## ✅ Progresso
+
+### Testes Rust (Backend) - Existentes
+
+- ✅ `tests/enterprise/contract_tests.rs` - Testes de contrato
+- ✅ `tests/enterprise/material_request_tests.rs` - Testes de requisição
+- ✅ `tests/enterprise/stock_transfer_tests.rs` - Testes de transferência
+- ✅ `tests/enterprise/stock_location_tests.rs` - Testes de localização
+- ✅ `tests/enterprise/activity_tests.rs` - Testes de atividade
+
+### Testes TypeScript (Frontend) - Criados
+
+- ✅ `tests/unit/enterprise/permissions.test.ts` - Testes de permissões
+- ✅ `tests/unit/enterprise/store.test.ts` - Testes do store
+- ✅ `tests/unit/enterprise/hooks.test.ts` - Testes dos hooks
+- ✅ `tests/unit/enterprise/components.test.tsx` - Testes de componentes
+- ✅ `tests/unit/enterprise/test-utils.ts` - Utilitários de teste
 
 ---
 
@@ -221,6 +241,7 @@ Garantir qualidade do módulo Enterprise através de testes abrangentes:
   ```
 
 - [ ] **TE-004**: Testes para `inventory_service.rs`
+
   ```rust
   #[tokio::test]
   async fn test_inventory_count_and_adjustment() {
@@ -659,4 +680,4 @@ Garantir qualidade do módulo Enterprise através de testes abrangentes:
 
 ---
 
-_Roadmap criado em: 25 de Janeiro de 2026_
+<!-- Roadmap criado em: 25 de Janeiro de 2026 -->

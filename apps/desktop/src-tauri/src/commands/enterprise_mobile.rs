@@ -1,5 +1,5 @@
 //! Comandos Tauri para Inventário Enterprise (Mobile Integration)
-//! 
+//!
 //! Este módulo fornece endpoints para integração com o app mobile
 //! para inventário de locais de estoque enterprise.
 
@@ -109,35 +109,77 @@ pub async fn sync_mobile_counts(
     input: MobileBatchSyncInput,
     app_state: State<'_, AppState>,
 ) -> AppResult<MobileSyncResult> {
-    app_state.session.require_authenticated()?;
+    use crate::models::inventory::InventoryItem;
+    use chrono::Utc;
+    use uuid::Uuid;
+
+    let session = app_state.session.require_authenticated()?;
+    let user_id = session.employee_id;
 
     let repo = InventoryRepository::new(app_state.pool());
-    
+
+    // Verify inventory exists
+    let inventory = match repo.get_by_id(&input.inventory_id).await? {
+        Some(inv) => inv,
+        None => {
+            return Ok(MobileSyncResult {
+                success: false,
+                processed_count: 0,
+                failed_count: input.counts.len() as i32,
+                errors: vec![format!("Inventory {} not found", input.inventory_id)],
+            });
+        }
+    };
+
     let mut processed = 0;
     let mut failed = 0;
     let mut errors = Vec::new();
 
     for count in &input.counts {
-        match repo.get_by_id(&input.inventory_id).await {
-            Ok(Some(_inventory)) => {
-                // Inventory exists, count recorded
+        // Get expected stock for divergence calculation
+        let expected = repo
+            .get_expected_stock(&count.product_id)
+            .await
+            .unwrap_or(0.0);
+        let divergence = count.counted_quantity - expected;
+
+        let item = InventoryItem {
+            id: Uuid::new_v4().to_string(),
+            inventory_id: inventory.id.clone(),
+            product_id: count.product_id.clone(),
+            lot_id: None,
+            expected_quantity: expected,
+            counted_quantity: count.counted_quantity,
+            divergence,
+            notes: count.notes.clone(),
+            counted_by: user_id.clone(),
+            counted_at: Utc::now(),
+            created_at: Utc::now(),
+        };
+
+        match repo.add_count(&item).await {
+            Ok(()) => {
                 processed += 1;
-            }
-            Ok(None) => {
-                failed += 1;
-                errors.push(format!("Inventory {} not found", input.inventory_id));
+                tracing::debug!(
+                    "Mobile count synced: product={}, qty={}, divergence={}",
+                    count.product_id,
+                    count.counted_quantity,
+                    divergence
+                );
             }
             Err(e) => {
                 failed += 1;
                 errors.push(format!("Error for {}: {}", count.product_id, e));
+                tracing::warn!("Failed to sync count for {}: {}", count.product_id, e);
             }
         }
     }
 
     tracing::info!(
-        "Synced {} counts from device {} (failed: {})",
+        "Synced {} counts from device {} for inventory {} (failed: {})",
         processed,
         input.device_id,
+        input.inventory_id,
         failed
     );
 
@@ -152,9 +194,7 @@ pub async fn sync_mobile_counts(
 /// Check if mobile sync is available
 #[tauri::command]
 #[specta::specta]
-pub async fn check_mobile_sync_status(
-    app_state: State<'_, AppState>,
-) -> AppResult<bool> {
+pub async fn check_mobile_sync_status(app_state: State<'_, AppState>) -> AppResult<bool> {
     app_state.session.require_authenticated()?;
     Ok(true)
 }

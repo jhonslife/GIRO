@@ -58,15 +58,28 @@ interface WorkFrontCardProps {
 const WorkFrontCard = ({ workFront, onView, onEdit }: WorkFrontCardProps) => {
   const progress = workFront.progress || 0;
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onView(workFront.id);
+    }
+  };
+
   return (
     <Card
-      className="cursor-pointer transition-shadow hover:shadow-md"
+      className="cursor-pointer transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       onClick={() => onView(workFront.id)}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      role="article"
+      aria-label={`Frente ${workFront.name}, código ${workFront.code}, ${Math.round(
+        progress
+      )}% concluído, status ${workFront.status}`}
     >
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2">
-            <div className="rounded-lg bg-primary/10 p-2">
+            <div className="rounded-lg bg-primary/10 p-2" aria-hidden="true">
               <HardHat className="h-5 w-5 text-primary" />
             </div>
             <div>
@@ -78,8 +91,8 @@ const WorkFrontCard = ({ workFront, onView, onEdit }: WorkFrontCardProps) => {
             <WorkFrontStatusBadge status={workFront.status} />
             <DropdownMenu>
               <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <MoreVertical className="h-4 w-4" />
+                <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Mais ações">
+                  <MoreVertical className="h-4 w-4" aria-hidden="true" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -96,7 +109,7 @@ const WorkFrontCard = ({ workFront, onView, onEdit }: WorkFrontCardProps) => {
         {/* Contract info */}
         {workFront.contractCode && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Building className="h-4 w-4" />
+            <Building className="h-4 w-4" aria-hidden="true" />
             <span>{workFront.contractCode}</span>
           </div>
         )}
@@ -104,14 +117,14 @@ const WorkFrontCard = ({ workFront, onView, onEdit }: WorkFrontCardProps) => {
         {/* Supervisor */}
         {workFront.supervisorName && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Users className="h-4 w-4" />
+            <Users className="h-4 w-4" aria-hidden="true" />
             <span>{workFront.supervisorName}</span>
           </div>
         )}
 
         {/* Activities count */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <ListTodo className="h-4 w-4" />
+          <ListTodo className="h-4 w-4" aria-hidden="true" />
           <span>{workFront.activityCount || 0} atividades</span>
         </div>
 
@@ -121,7 +134,11 @@ const WorkFrontCard = ({ workFront, onView, onEdit }: WorkFrontCardProps) => {
             <span className="text-muted-foreground">Progresso</span>
             <span className="font-medium">{Math.round(progress)}%</span>
           </div>
-          <Progress value={progress} className="h-2" />
+          <Progress
+            value={progress}
+            className="h-2"
+            aria-label={`Progresso: ${Math.round(progress)}%`}
+          />
         </div>
 
         {/* Location */}
@@ -220,12 +237,20 @@ export function WorkFrontsPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="icon" onClick={() => refetch()}>
-            <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => refetch()}
+            aria-label="Atualizar lista"
+          >
+            <RefreshCw
+              className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`}
+              aria-hidden="true"
+            />
           </Button>
           <PermissionGuard permission="workFronts.create">
             <Button onClick={handleNewWorkFront}>
-              <Plus className="mr-2 h-4 w-4" />
+              <Plus className="mr-2 h-4 w-4" aria-hidden="true" />
               Nova Frente
             </Button>
           </PermissionGuard>
@@ -236,7 +261,7 @@ export function WorkFrontsPage() {
       <Card>
         <CardHeader className="pb-3">
           <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4" />
+            <Filter className="h-4 w-4" aria-hidden="true" />
             <CardTitle className="text-base">Filtros</CardTitle>
             {hasActiveFilters && (
               <Button variant="ghost" size="sm" onClick={clearFilters} className="ml-auto h-7">
@@ -246,14 +271,22 @@ export function WorkFrontsPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 md:grid-cols-3">
+          <div
+            className="grid gap-4 md:grid-cols-3"
+            role="search"
+            aria-label="Filtros de frentes de trabalho"
+          >
             <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Search
+                className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"
+                aria-hidden="true"
+              />
               <Input
                 placeholder="Buscar por nome ou código..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-8"
+                aria-label="Buscar frentes de trabalho"
               />
             </div>
 
@@ -261,7 +294,7 @@ export function WorkFrontsPage() {
               value={statusFilter}
               onValueChange={(value) => setStatusFilter(value as WorkFrontStatus | 'ALL')}
             >
-              <SelectTrigger>
+              <SelectTrigger aria-label="Filtrar por status">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
@@ -277,7 +310,7 @@ export function WorkFrontsPage() {
               value={contractFilter || 'ALL'}
               onValueChange={(value) => setContractFilter(value === 'ALL' ? '' : value)}
             >
-              <SelectTrigger>
+              <SelectTrigger aria-label="Filtrar por contrato">
                 <SelectValue placeholder="Contrato" />
               </SelectTrigger>
               <SelectContent>
@@ -293,9 +326,23 @@ export function WorkFrontsPage() {
         </CardContent>
       </Card>
 
+      {/* Results count */}
+      <p
+        className="text-sm text-muted-foreground"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {isLoading
+          ? 'Carregando frentes de trabalho...'
+          : `${filteredWorkFronts.length} frente${
+              filteredWorkFronts.length !== 1 ? 's' : ''
+            } encontrada${filteredWorkFronts.length !== 1 ? 's' : ''}`}
+      </p>
+
       {/* Content */}
       {isLoading ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3" aria-hidden="true">
           {Array.from({ length: 6 }).map((_, i) => (
             <Card key={i}>
               <CardHeader className="pb-2">
@@ -317,8 +364,8 @@ export function WorkFrontsPage() {
         </div>
       ) : filteredWorkFronts.length === 0 ? (
         <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <HardHat className="h-12 w-12 text-muted-foreground" />
+          <CardContent className="flex flex-col items-center justify-center py-12" role="status">
+            <HardHat className="h-12 w-12 text-muted-foreground" aria-hidden="true" />
             <h3 className="mt-4 text-lg font-semibold">Nenhuma frente encontrada</h3>
             <p className="mt-2 text-center text-muted-foreground">
               {hasActiveFilters
@@ -332,7 +379,7 @@ export function WorkFrontsPage() {
             ) : (
               <PermissionGuard permission="workFronts.create">
                 <Button onClick={handleNewWorkFront} className="mt-4">
-                  <Plus className="mr-2 h-4 w-4" />
+                  <Plus className="mr-2 h-4 w-4" aria-hidden="true" />
                   Nova Frente
                 </Button>
               </PermissionGuard>
@@ -341,7 +388,11 @@ export function WorkFrontsPage() {
         </Card>
       ) : contractFilter ? (
         // Show flat list when filtering by contract
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div
+          className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+          role="list"
+          aria-label="Lista de frentes de trabalho"
+        >
           {filteredWorkFronts.map((wf: WorkFrontWithDetails) => (
             <WorkFrontCard key={wf.id} workFront={wf} onView={handleView} onEdit={handleEdit} />
           ))}
@@ -350,13 +401,22 @@ export function WorkFrontsPage() {
         // Group by contract when showing all
         <div className="space-y-8">
           {workFrontsByContract.map(({ contractCode, workFronts: groupWorkFronts }) => (
-            <div key={contractCode || 'none'}>
+            <section
+              key={contractCode || 'none'}
+              aria-label={`Contrato ${contractCode || 'Sem contrato'}`}
+            >
               <div className="mb-4 flex items-center gap-2">
-                <Building className="h-5 w-5 text-muted-foreground" />
+                <Building className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
                 <h2 className="text-lg font-semibold">{contractCode || 'Sem contrato'}</h2>
-                <Badge variant="secondary">{groupWorkFronts.length}</Badge>
+                <Badge variant="secondary" aria-label={`${groupWorkFronts.length} frentes`}>
+                  {groupWorkFronts.length}
+                </Badge>
               </div>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <div
+                className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+                role="list"
+                aria-label={`Frentes do contrato ${contractCode}`}
+              >
                 {groupWorkFronts.map((wf: WorkFrontWithDetails) => (
                   <WorkFrontCard
                     key={wf.id}
@@ -366,7 +426,7 @@ export function WorkFrontsPage() {
                   />
                 ))}
               </div>
-            </div>
+            </section>
           ))}
         </div>
       )}

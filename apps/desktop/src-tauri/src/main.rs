@@ -904,6 +904,18 @@ async fn main() {
             commands::report_consumption_by_cost_center,
             commands::report_stock_position,
             commands::report_pending_requests,
+            // Enterprise Module - ERP Exports
+            commands::export_sienge_csv,
+            commands::export_uau_xml,
+            // Enterprise Module - Catalog Import
+            commands::detect_catalog_structure,
+            commands::preview_catalog_import,
+            commands::import_supplier_catalog,
+            // Enterprise Module - Mobile Integration
+            commands::get_mobile_locations,
+            commands::get_mobile_location,
+            commands::sync_mobile_counts,
+            commands::check_mobile_sync_status,
         ])
         .run(tauri::generate_context!())
         .expect("Erro ao executar aplicação Tauri");
