@@ -1,15 +1,15 @@
 {
-  "version": "2.0.7",
-  "notes": "Atualização disponível para versão 2.0.7",
-  "pub_date": "2026-01-27T13:17:10Z",
+  "version": "2.1.0",
+  "notes": "Atualização disponível para versão 2.1.0",
+  "pub_date": "2026-01-27T15:27:17Z",
   "platforms": {
     "windows-x86_64": {
       "signature": "",
-      "url": "https://github.com/jhonslife/GIRO/releases/download/v2.0.7/GIRO_2.0.7_x64-setup.exe.zip"
+      "url": "https://github.com/jhonslife/GIRO/releases/download/v2.1.0/GIRO_2.1.0_x64-setup.exe.zip"
     },
     "linux-x86_64": {
       "signature": "",
-      "url": "https://github.com/jhonslife/GIRO/releases/download/v2.0.7/giro_2.0.7_amd64.AppImage.tar.gz"
+      "url": "https://github.com/jhonslife/GIRO/releases/download/v2.1.0/giro_2.1.0_amd64.AppImage.tar.gz"
     }
   }
 }
