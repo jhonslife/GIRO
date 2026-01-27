@@ -1,1 +1,1 @@
-Manifest updated for v2.1.0
+Manifest updated for v2.1.1
